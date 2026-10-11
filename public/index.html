@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="iTales – Ruang informasi publik TK SIBER UINSSC. Jelajahi jadwal kegiatan tanpa perlu login.">
+    <title>iTales – Ruang Informasi Publik</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+    <!-- ==================== NAVBAR ==================== -->
+    <header class="navbar">
+        <div class="container navbar-content">
+
+            <div class="logo">
+                <div class="logo-icon-svg">
+                    <img src="assets/Logo_uin.png" alt="Logo UINSSC" width="36" height="36">
+                </div>
+                <div class="logo-brand">
+                    <span class="logo-text">iTales</span>
+                    <span class="logo-sub">Ruang informasi publik</span>
+                </div>
+            </div>
+
+            <nav class="nav-menu">
+                <a href="/" id="nav-beranda" class="nav-link active">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                    Beranda
+                </a>
+                <a href="/kelola-jadwal" id="nav-jadwal" class="nav-link">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                    Jadwal Publik
+                </a>
+                <a href="/login" id="nav-login" class="login-btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+                    Login
+                </a>
+            </nav>
+
+        </div>
+    </header>
+
+
+    <main>
+
+        <!-- ==================== HERO ==================== -->
+        <section class="hero">
+            <div class="container hero-content">
+
+                <!-- Kiri -->
+                <div class="hero-left">
+                    <span class="hero-badge">Selamat datang di iTales</span>
+                    <h1>Cerita kecil,<br>langkah besar.</h1>
+                    <p class="hero-desc">
+                        iTales membantu sekolah dan keluarga terhubung melalui informasi kegiatan.
+                        Jelajahi agenda publik tanpa perlu login.
+                    </p>
+                    <div class="hero-actions">
+                        <a href="/kelola-jadwal" id="btn-lihat-jadwal" class="btn-primary">
+                            Lihat jadwal publik
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                        </a>
+                        <a href="/login" id="btn-hero-login" class="btn-ghost">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+                            Login
+                        </a>
+                    </div>
+                    <p class="hero-hint">Sudah memiliki akun? Login untuk akses sesuai peran Anda.</p>
+                </div>
+
+                <!-- Kanan -->
+                <div class="hero-right">
+                    <div class="hero-image-card">
+                        <img src="assets/gedung.jpg" alt="Gedung TK SIBER UINSSC">
+                        <div class="image-caption">
+                            <span class="caption-title">TK SIBER · UINSSC</span>
+                            <span class="caption-sub">Ruang belajar, bermain, dan bertumbuh.</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+
+        <!-- ==================== KEGIATAN MENDATANG ==================== -->
+        <section class="jadwal-section">
+            <div class="container">
+
+                <div class="section-header">
+                    <div>
+                        <h2>Kegiatan mendatang</h2>
+                        <p class="section-sub">Momen belajar dan kebersamaan yang terbuka untuk umum.</p>
+                    </div>
+                    <a href="/kelola-jadwal" id="btn-semua-jadwal" class="btn-outline-sm">
+                        Semua jadwal
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                    </a>
+                </div>
+
+                <!-- Grid card jadwal (diisi JS) -->
+                <div class="jadwal-grid" id="jadwal-grid">
+                    <!-- skeleton loader -->
+                    <div class="jadwal-card skeleton-card"></div>
+                    <div class="jadwal-card skeleton-card"></div>
+                    <div class="jadwal-card skeleton-card"></div>
+                </div>
+
+                <div class="info-bar">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                    Hanya kegiatan hari ini yang ditampilkan di sini. Data anak dan logbook internal tidak tersedia untuk tamu.
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+
+    <!-- ==================== FOOTER ==================== -->
+    <footer class="footer">
+        <div class="container footer-content">
+            <div class="footer-brand">
+                <div class="logo footer-logo">
+                    <div class="logo-icon-svg">
+                        <img src="assets/Logo_uin.png" alt="Logo UINSSC" width="30" height="30">
+                    </div>
+                    <span class="logo-text">iTales</span>
+                </div>
+                <p class="footer-tagline">Cerita tumbuh, kegiatan terhubung.</p>
+            </div>
+            <p class="footer-note">Informasi publik · Dapat dilihat tanpa login</p>
+        </div>
+    </footer>
+
+
+    <script>
+        // Ikon per kategori kegiatan
+        const ikonMap = {
+            'literasi': `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>`,
+            'seni': `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="13.5" cy="6.5" r=".5"/><circle cx="17.5" cy="10.5" r=".5"/><circle cx="8.5" cy="7.5" r=".5"/><circle cx="6.5" cy="12.5" r=".5"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></svg>`,
+            'musik': `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>`,
+            'default': `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>`
+        };
+
+        const warnaMap = ['card-hijau', 'card-kuning', 'card-ungu'];
+
+        function getIkon(kegiatan = '') {
+            const k = kegiatan.toLowerCase();
+            if (k.includes('baca') || k.includes('cerita') || k.includes('dongeng') || k.includes('literasi')) return ikonMap['literasi'];
+            if (k.includes('seni') || k.includes('warna') || k.includes('kreasi') || k.includes('gambar')) return ikonMap['seni'];
+            if (k.includes('musik') || k.includes('lagu') || k.includes('pentas') || k.includes('gerak')) return ikonMap['musik'];
+            return ikonMap['default'];
+        }
+
+        function formatWaktu(jam) {
+            return jam ? jam.substring(0, 5) : '';
+        }
+
+        function formatTanggal(dateStr) {
+            const d = new Date(dateStr);
+            return d.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+        }
+
+        async function muatJadwal() {
+            const grid = document.getElementById('jadwal-grid');
+            try {
+                const res = await fetch('/api/jadwal-hari-ini');
+                const data = await res.json();
+
+                if (!data.jadwal || data.jadwal.length === 0) {
+                    grid.innerHTML = `
+                        <div class="jadwal-empty">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                            <p>Tidak ada kegiatan hari ini.</p>
+                        </div>`;
+                    return;
+                }
+
+                grid.innerHTML = data.jadwal.map((item, i) => `
+                    <article class="jadwal-card ${warnaMap[i % warnaMap.length]}">
+                        <div class="card-top">
+                            <div class="card-icon-wrap">${getIkon(item.kegiatan)}</div>
+                        </div>
+                        <div class="card-category">${item.keterangan || 'Kegiatan umum'}</div>
+                        <h3 class="card-title">${item.kegiatan}</h3>
+                        <div class="card-meta">
+                            <span class="card-date">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                                ${data.hari}, ${new Date().toLocaleDateString('id-ID', {day: 'numeric', month: 'long', year: 'numeric'})}
+                            </span>
+                            <span class="card-time">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                                ${formatWaktu(item.jam_mulai)}–${formatWaktu(item.jam_selesai)} WIB
+                            </span>
+                        </div>
+                        <div class="card-kelas">${item.nama_kelas} · Terbuka untuk umum</div>
+                        <a href="/kelola-jadwal" class="card-link">
+                            Lihat detail
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                        </a>
+                    </article>
+                `).join('');
+
+            } catch (err) {
+                grid.innerHTML = `
+                    <div class="jadwal-empty">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                        <p>Gagal memuat jadwal. Coba refresh halaman.</p>
+                    </div>`;
+            }
+        }
+
+        muatJadwal();
+    </script>
+
+</body>
+
+</html>

@@ -1,0 +1,1293 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kelola Anak – TK SIBER (iTales)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --sidebar-bg: #405d4d;
+            --sidebar-active: #537a63;
+            --text-dark: #124b3c;
+            --text-muted: #5a7366;
+            --bg-color: #f6f8f7;
+            --card-bg: #ffffff;
+            --accent: #124b3c;
+            --accent-light: #d6ead2;
+            --accent-hover: #1b6351;
+            --border-color: #e5e9e6;
+            --danger: #ef4444;
+            --danger-bg: #fee2e2;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            display: flex;
+            background-color: var(--bg-color);
+            min-height: 100vh;
+            color: #1f2937;
+        }
+
+        /* ===== SIDEBAR ===== */
+        .sidebar {
+            width: 250px;
+            background-color: var(--sidebar-bg);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100vh;
+            z-index: 100;
+        }
+
+        .sidebar-brand {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 26px 22px;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+        }
+
+        .sidebar-brand img {
+            width: 42px;
+            height: 42px;
+            object-fit: contain;
+        }
+
+        .sidebar-brand h2 {
+            font-size: 16px;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+        }
+
+        .sidebar-brand p {
+            font-size: 12px;
+            font-weight: 400;
+            color: #d1d5db;
+        }
+
+        .sidebar-menu {
+            display: flex;
+            flex-direction: column;
+            margin-top: 15px;
+            flex: 1;
+            gap: 4px;
+            padding: 0 10px;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 13px 18px;
+            color: #e2e8e4;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+            border-radius: 10px;
+            transition: all 0.15s ease;
+        }
+
+        .menu-item:hover {
+            background-color: rgba(255,255,255,0.08);
+            color: white;
+        }
+
+        .menu-item.active {
+            background-color: var(--sidebar-active);
+            color: white;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        .menu-item i {
+            font-size: 17px;
+            width: 22px;
+            text-align: center;
+        }
+
+        .sidebar-footer {
+            padding: 15px 10px 20px;
+            border-top: 1px solid rgba(255,255,255,0.08);
+        }
+
+        .btn-logout-sidebar {
+            width: 100%;
+            background: none;
+            border: none;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 12px 18px;
+            color: #fca5a5;
+            font-size: 14px;
+            font-weight: 600;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .btn-logout-sidebar:hover {
+            background-color: rgba(239, 68, 68, 0.15);
+            color: #fee2e2;
+        }
+
+        /* ===== MAIN CONTENT ===== */
+        .main-content {
+            flex: 1;
+            margin-left: 250px;
+            padding: 30px 40px;
+            min-height: 100vh;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .header-title h1 {
+            color: var(--text-dark);
+            font-size: 26px;
+            font-weight: 800;
+        }
+
+        .header-title p {
+            color: var(--text-muted);
+            font-size: 14px;
+            font-weight: 500;
+            margin-top: 3px;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .user-pill {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: white;
+            padding: 6px 14px 6px 8px;
+            border-radius: 50px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            border: 1px solid var(--border-color);
+        }
+
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--accent);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        .user-info-text {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text-dark);
+        }
+
+        .user-info-role {
+            font-size: 11px;
+            color: #6b7280;
+            font-weight: 500;
+        }
+
+        .btn-logout-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: #fee2e2;
+            color: #dc2626;
+            border: 1px solid #fecaca;
+            padding: 8px 16px;
+            border-radius: 50px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.15s ease;
+        }
+
+        .btn-logout-header:hover {
+            background: #fca5a5;
+            color: #991b1b;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(220,38,38,0.2);
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 25px;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            border-radius: 14px;
+            padding: 18px 20px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+            border: 1px solid var(--border-color);
+        }
+
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .icon-green { background: #d7ede1; color: #124b3c; }
+        .icon-blue  { background: #e0f2fe; color: #0284c7; }
+        .icon-pink  { background: #fce7f3; color: #db2777; }
+        .icon-amber { background: #fef3c7; color: #d97706; }
+
+        .stat-info h3 {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--text-dark);
+            line-height: 1.1;
+        }
+
+        .stat-info p {
+            font-size: 12.5px;
+            font-weight: 600;
+            color: #6b7280;
+            margin-top: 2px;
+        }
+
+        /* Card Wrapper */
+        .card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 0;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+        }
+
+        /* Action Toolbar */
+        .toolbar {
+            padding: 20px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 14px;
+            border-bottom: 1px solid #f0f2f1;
+        }
+
+        .toolbar-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex: 1;
+            min-width: 280px;
+        }
+
+        .search-box {
+            position: relative;
+            flex: 1;
+            max-width: 320px;
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #9ca3af;
+            font-size: 14px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 10px 14px 10px 38px;
+            border: 1.5px solid var(--border-color);
+            border-radius: 10px;
+            font-size: 13.5px;
+            outline: none;
+            transition: all 0.15s;
+            background: #fafbfa;
+        }
+
+        .search-input:focus {
+            border-color: var(--accent);
+            background: white;
+            box-shadow: 0 0 0 3px rgba(18,75,60,0.1);
+        }
+
+        .filter-select {
+            padding: 10px 14px;
+            border: 1.5px solid var(--border-color);
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 500;
+            color: #374151;
+            outline: none;
+            background: #fafbfa;
+            cursor: pointer;
+            transition: border-color 0.15s;
+        }
+
+        .filter-select:focus {
+            border-color: var(--accent);
+            background: white;
+        }
+
+        .btn-tambah {
+            background-color: var(--accent);
+            color: white;
+            border: none;
+            padding: 10px 22px;
+            border-radius: 10px;
+            font-size: 13.5px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 12px rgba(18,75,60,0.25);
+            transition: all 0.2s;
+        }
+
+        .btn-tambah:hover {
+            background-color: var(--accent-hover);
+            transform: translateY(-1px);
+        }
+
+        /* Table */
+        .table-container {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background-color: #f7faf8;
+            color: #3d7a5c;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            font-size: 11.5px;
+            padding: 16px 24px;
+            text-align: left;
+            border-bottom: 1.5px solid #e8edea;
+        }
+
+        td {
+            padding: 16px 24px;
+            font-size: 13.5px;
+            color: #1f2937;
+            font-weight: 500;
+            border-bottom: 1px solid #f3f5f4;
+            vertical-align: middle;
+        }
+
+        tbody tr {
+            transition: background-color 0.15s ease;
+        }
+
+        tbody tr:hover {
+            background-color: #fbfdfc;
+        }
+
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* Badges */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 4px 11px;
+            border-radius: 30px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .badge-laki {
+            background: #e0f2fe;
+            color: #0369a1;
+        }
+
+        .badge-perempuan {
+            background: #fce7f3;
+            color: #be185d;
+        }
+
+        .badge-kelas {
+            background: #dcfce7;
+            color: #15803d;
+            font-weight: 700;
+        }
+
+        .nisn-pill {
+            font-family: monospace;
+            background: #f3f4f6;
+            color: #374151;
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-size: 12.5px;
+            letter-spacing: 0.5px;
+        }
+
+        /* Action Buttons */
+        .action-btns {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-action {
+            width: 34px;
+            height: 34px;
+            border-radius: 8px;
+            border: 1px solid #e5e7eb;
+            background: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            transition: all 0.15s;
+        }
+
+        .btn-action-edit {
+            color: #059669;
+        }
+
+        .btn-action-edit:hover {
+            background: #ecfdf5;
+            border-color: #a7f3d0;
+            transform: scale(1.05);
+        }
+
+        .btn-action-delete {
+            color: #dc2626;
+        }
+
+        .btn-action-delete:hover {
+            background: #fef2f2;
+            border-color: #fecaca;
+            transform: scale(1.05);
+        }
+
+        /* Table Footer */
+        .table-footer {
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid #f0f2f1;
+            font-size: 13px;
+            color: #6b7280;
+            background: #fafbfa;
+        }
+
+        /* ===== MODAL POPUP ===== */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(18, 75, 60, 0.4);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: white;
+            border-radius: 20px;
+            width: 480px;
+            max-width: 100%;
+            box-shadow: 0 25px 60px rgba(0,0,0,0.2);
+            overflow: hidden;
+            animation: modalPop 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes modalPop {
+            from { opacity: 0; transform: translateY(15px) scale(0.97); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .modal-header {
+            background: var(--accent-light);
+            padding: 22px 28px;
+            border-bottom: 1px solid #c8e4d2;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h2 {
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--text-dark);
+        }
+
+        .btn-close-modal {
+            background: none;
+            border: none;
+            font-size: 18px;
+            color: #5a7366;
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 6px;
+            transition: color 0.15s;
+        }
+
+        .btn-close-modal:hover {
+            color: #111;
+        }
+
+        .modal-body {
+            padding: 26px 28px;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+        }
+
+        .form-group label {
+            font-size: 13.5px;
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .form-group input, 
+        .form-group select {
+            padding: 11px 14px;
+            border: 1.5px solid #d1d5db;
+            border-radius: 10px;
+            font-size: 14px;
+            color: #111827;
+            outline: none;
+            transition: border-color 0.15s, box-shadow 0.15s;
+        }
+
+        .form-group input:focus, 
+        .form-group select:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(18,75,60,0.12);
+        }
+
+        .form-group .hint {
+            font-size: 11.5px;
+            color: #6b7280;
+        }
+
+        .gender-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .gender-radio-label {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 11px;
+            border: 1.5px solid #d1d5db;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 13.5px;
+            font-weight: 600;
+            color: #4b5563;
+            transition: all 0.15s;
+        }
+
+        .gender-radio-label input {
+            display: none;
+        }
+
+        .gender-radio-label.checked {
+            border-color: var(--accent);
+            background: #eef7f2;
+            color: var(--accent);
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            padding: 0 28px 24px;
+        }
+
+        .btn-batal {
+            padding: 10px 22px;
+            border-radius: 50px;
+            border: 1px solid #d1d5db;
+            background: #f9fafb;
+            color: #374151;
+            font-size: 13.5px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+
+        .btn-batal:hover {
+            background: #e5e7eb;
+        }
+
+        .btn-simpan {
+            padding: 10px 26px;
+            border-radius: 50px;
+            border: none;
+            background: var(--accent);
+            color: white;
+            font-size: 13.5px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 14px rgba(18,75,60,0.3);
+            transition: background 0.15s, transform 0.1s;
+        }
+
+        .btn-simpan:hover {
+            background: var(--accent-hover);
+        }
+
+        /* Alert notifications */
+        .alert {
+            display: none;
+            padding: 11px 15px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+
+        .alert-error {
+            background: #fef2f2;
+            color: #dc2626;
+            border: 1px solid #fecaca;
+        }
+
+        .alert-success {
+            background: #f0fdf4;
+            color: #16a34a;
+            border: 1px solid #bbf7d0;
+        }
+
+        /* Responsive */
+        @media (max-width: 900px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== SIDEBAR ===== -->
+    <aside class="sidebar">
+        <div class="sidebar-brand">
+            <img src="/assets/Logo_uin.png" alt="Logo" onerror="this.src='https://ui-avatars.com/api/?name=TK&background=fff&color=124b3c'">
+            <div>
+                <h2>TK SIBER</h2>
+                <p>Logbook & Kegiatan</p>
+            </div>
+        </div>
+        
+        <nav class="sidebar-menu">
+            <a href="/dashboard-guru" class="menu-item">
+                <i class="fa-solid fa-house"></i> Dashboard
+            </a>
+            <a href="/kelola-anak" class="menu-item active">
+                <i class="fa-solid fa-user-group"></i> Kelola Anak
+            </a>
+            <a href="/kelola-jadwal" class="menu-item">
+                <i class="fa-solid fa-calendar-days"></i> Kelola Jadwal
+            </a>
+            <a href="/kelola-logbook" class="menu-item">
+                <i class="fa-solid fa-book"></i> Kelola Logbook
+            </a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <button type="button" class="btn-logout-sidebar" onclick="keluarAplikasi(event)">
+                <i class="fa-solid fa-right-from-bracket"></i> Keluar
+            </button>
+        </div>
+    </aside>
+
+    <!-- ===== MAIN CONTENT ===== -->
+    <main class="main-content">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-title">
+                <h1>Kelola Anak</h1>
+                <p>Manajemen data siswa dan pembagian kelas TK SIBER</p>
+            </div>
+            <div class="header-actions">
+                <div class="user-pill">
+                    <div class="user-avatar" id="user-avatar">G</div>
+                    <div>
+                        <div class="user-info-text" id="user-name">Guru Kelas</div>
+                        <div class="user-info-role">Pendidik</div>
+                    </div>
+                </div>
+                <a href="/logout" class="btn-logout-header" title="Keluar dari akun" onclick="keluarAplikasi(event)">
+                    <i class="fa-solid fa-right-from-bracket"></i> Keluar
+                </a>
+            </div>
+        </header>
+
+        <!-- Stats Cards -->
+        <section class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon icon-green">
+                    <i class="fa-solid fa-children"></i>
+                </div>
+                <div class="stat-info">
+                    <h3 id="stat-total">0</h3>
+                    <p>Total Siswa</p>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon icon-blue">
+                    <i class="fa-solid fa-mars"></i>
+                </div>
+                <div class="stat-info">
+                    <h3 id="stat-laki">0</h3>
+                    <p>Laki-laki</p>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon icon-pink">
+                    <i class="fa-solid fa-venus"></i>
+                </div>
+                <div class="stat-info">
+                    <h3 id="stat-perempuan">0</h3>
+                    <p>Perempuan</p>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon icon-amber">
+                    <i class="fa-solid fa-school"></i>
+                </div>
+                <div class="stat-info">
+                    <h3 id="stat-kelas">2</h3>
+                    <p>Rombongan Belajar</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Main Card & Table -->
+        <div class="card">
+            <div class="toolbar">
+                <div class="toolbar-left">
+                    <div class="search-box">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input type="text" id="input-search" class="search-input" placeholder="Cari nama atau NISN...">
+                    </div>
+                    <select id="filter-kelas" class="filter-select" onchange="terapkanFilter()">
+                        <option value="semua">Semua Kelas</option>
+                        <option value="TK A">TK A</option>
+                        <option value="TK B">TK B</option>
+                    </select>
+                    <select id="filter-gender" class="filter-select" onchange="terapkanFilter()">
+                        <option value="semua">Semua Gender</option>
+                        <option value="L">Laki-laki</option>
+                        <option value="P">Perempuan</option>
+                    </select>
+                </div>
+
+                <button class="btn-tambah" onclick="bukaModalTambah()">
+                    <i class="fa-solid fa-plus"></i> Tambah Siswa
+                </button>
+            </div>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width: 60px;">No</th>
+                            <th style="width: 140px;">NISN</th>
+                            <th>Nama Lengkap Siswa</th>
+                            <th style="width: 150px;">Jenis Kelamin</th>
+                            <th style="width: 130px;">Kelas</th>
+                            <th style="width: 100px; text-align: center;">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbody-anak">
+                        <tr>
+                            <td colspan="6" style="text-align:center; padding: 40px; color: #9ca3af;">
+                                <i class="fa-solid fa-spinner fa-spin" style="font-size: 20px; margin-bottom: 8px;"></i>
+                                <p>Memuat data siswa...</p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="table-footer">
+                <span id="footer-count">Menampilkan data siswa</span>
+                <span style="font-size: 12px; color: #9ca3af;">TK SIBER · Tahun Ajaran 2026/2027</span>
+            </div>
+        </div>
+    </main>
+
+    <!-- ===== MODAL TAMBAH / EDIT ANAK ===== -->
+    <div class="modal-overlay" id="modal-anak">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 id="modal-title">Tambah Siswa Baru</h2>
+                <button class="btn-close-modal" onclick="tutupModal()">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <div class="alert alert-error" id="modal-alert-error"></div>
+                <div class="alert alert-success" id="modal-alert-success"></div>
+
+                <input type="hidden" id="input-id-anak">
+
+                <div class="form-group">
+                    <label for="input-nama">Nama Lengkap Siswa *</label>
+                    <input type="text" id="input-nama" placeholder="Contoh: Budi Santoso" autocomplete="off">
+                </div>
+
+                <div class="form-group">
+                    <label for="input-nisn">NISN (Nomor Induk Siswa Nasional) *</label>
+                    <input type="text" id="input-nisn" placeholder="Contoh: 0012345678" maxlength="15" autocomplete="off">
+                    <span class="hint">NISN akan digunakan sebagai identitas login untuk orang tua.</span>
+                </div>
+
+                <div class="form-group">
+                    <label>Jenis Kelamin *</label>
+                    <div class="gender-options">
+                        <label class="gender-radio-label" id="label-gender-l" onclick="pilihGender('L')">
+                            <input type="radio" name="gender" value="L" id="radio-gender-l">
+                            <i class="fa-solid fa-mars" style="color: #0284c7;"></i> Laki-laki
+                        </label>
+                        <label class="gender-radio-label" id="label-gender-p" onclick="pilihGender('P')">
+                            <input type="radio" name="gender" value="P" id="radio-gender-p">
+                            <i class="fa-solid fa-venus" style="color: #db2777;"></i> Perempuan
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="input-kelas">Kelas *</label>
+                    <select id="input-kelas">
+                        <option value="" disabled selected>Pilih kelas...</option>
+                        <option value="1">TK A</option>
+                        <option value="2">TK B</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn-batal" onclick="tutupModal()">Batal</button>
+                <button class="btn-simpan" id="btn-simpan-anak" onclick="simpanAnak()">Simpan Data</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== JAVASCRIPT LOGIC ===== -->
+    <script>
+        // Cegah akses lewat tombol Back setelah logout (bfcache fix)
+        window.addEventListener('pageshow', async function(event) {
+            if (event.persisted) {
+                try {
+                    const r = await fetch('/api/me', { cache: 'no-store' });
+                    if (!r.ok) window.location.replace('/login');
+                } catch(e) {
+                    window.location.replace('/login');
+                }
+                return;
+            }
+            if (sessionStorage.getItem('kpalya_logged_out') === 'true') {
+                window.location.replace('/login');
+            }
+        });
+
+        function keluarAplikasi(e) {
+            if (e) e.preventDefault();
+            try {
+                fetch('/logout', { method: 'POST' });
+            } catch(err) {}
+            sessionStorage.clear();
+            sessionStorage.setItem('kpalya_logged_out', 'true');
+            localStorage.removeItem('kpalya_user');
+
+            let target = '/login';
+            if (window.location.protocol === 'file:') {
+                target = '../login/index.html';
+            } else if (window.location.pathname.includes('/public/')) {
+                target = window.location.origin + '/public/login/index.html';
+            }
+            window.location.replace(target);
+        }
+
+        // Data master awal (Mock Data & Fallback jika backend/API belum siap)
+        const INITIAL_ANAK = [
+            { id_anak: 1, nama_lengkap: "Budi Santoso", nisn: "202601001", jenis_kelamin: "L", id_kelas: 1, nama_kelas: "TK A" },
+            { id_anak: 2, nama_lengkap: "Siti Aminah", nisn: "202601002", jenis_kelamin: "P", id_kelas: 1, nama_kelas: "TK A" },
+            { id_anak: 3, nama_lengkap: "Andi Wijaya", nisn: "202601003", jenis_kelamin: "L", id_kelas: 2, nama_kelas: "TK B" },
+            { id_anak: 4, nama_lengkap: "Rina Kartika", nisn: "202601004", jenis_kelamin: "P", id_kelas: 2, nama_kelas: "TK B" },
+            { id_anak: 5, nama_lengkap: "Muhammad Rayhan", nisn: "202601005", jenis_kelamin: "L", id_kelas: 1, nama_kelas: "TK A" },
+            { id_anak: 6, nama_lengkap: "Aisyah Putri", nisn: "202601006", jenis_kelamin: "P", id_kelas: 2, nama_kelas: "TK B" }
+        ];
+
+        let listAnak = [];
+        let genderTerpilih = '';
+        let isEditMode = false;
+
+        // Inisialisasi data
+        function loadLocalData() {
+            const saved = localStorage.getItem('kpalya_data_anak');
+            if (saved) {
+                try {
+                    listAnak = JSON.parse(saved);
+                } catch(e) {
+                    listAnak = [...INITIAL_ANAK];
+                }
+            } else {
+                listAnak = [...INITIAL_ANAK];
+                saveLocalData();
+            }
+        }
+
+        function saveLocalData() {
+            localStorage.setItem('kpalya_data_anak', JSON.stringify(listAnak));
+        }
+
+        // Muat info user login
+        async function muatUser() {
+            try {
+                const res = await fetch('/api/me');
+                if (res.ok) {
+                    const user = await res.json();
+                    document.getElementById('user-name').textContent = user.username || 'Guru';
+                    document.getElementById('user-avatar').textContent = (user.username || 'G').charAt(0).toUpperCase();
+                }
+            } catch(e) {}
+        }
+
+        // Ambil data siswa (coba API backend dulu, jika gagal fallback ke local storage)
+        async function muatDataAnak() {
+            try {
+                const res = await fetch('/api/anak');
+                if (res.ok) {
+                    const data = await res.json();
+                    if (Array.isArray(data) && data.length > 0) {
+                        listAnak = data;
+                        saveLocalData();
+                        terapkanFilter();
+                        updateStats();
+                        return;
+                    }
+                }
+            } catch(e) {
+                console.log('Menggunakan data lokal:', e);
+            }
+
+            // Fallback
+            loadLocalData();
+            terapkanFilter();
+            updateStats();
+        }
+
+        // Update kartu statistik
+        function updateStats() {
+            const total = listAnak.length;
+            const laki = listAnak.filter(a => a.jenis_kelamin === 'L').length;
+            const perempuan = listAnak.filter(a => a.jenis_kelamin === 'P').length;
+
+            document.getElementById('stat-total').textContent = total;
+            document.getElementById('stat-laki').textContent = laki;
+            document.getElementById('stat-perempuan').textContent = perempuan;
+        }
+
+        // Terapkan filter & pencarian
+        function terapkanFilter() {
+            const keyword = document.getElementById('input-search').value.toLowerCase().trim();
+            const filterKelas = document.getElementById('filter-kelas').value;
+            const filterGender = document.getElementById('filter-gender').value;
+
+            let filtered = listAnak.filter(anak => {
+                const matchSearch = anak.nama_lengkap.toLowerCase().includes(keyword) ||
+                                    (anak.nisn && anak.nisn.toLowerCase().includes(keyword));
+                const matchKelas = filterKelas === 'semua' || anak.nama_kelas === filterKelas;
+                const matchGender = filterGender === 'semua' || anak.jenis_kelamin === filterGender;
+
+                return matchSearch && matchKelas && matchGender;
+            });
+
+            renderTabel(filtered);
+        }
+
+        // Render tabel HTML
+        function renderTabel(data) {
+            const tbody = document.getElementById('tbody-anak');
+            const footerCount = document.getElementById('footer-count');
+
+            if (!data || data.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="6" style="text-align: center; padding: 50px 20px; color: #9ca3af;">
+                            <i class="fa-solid fa-user-slash" style="font-size: 32px; margin-bottom: 12px; color: #d1d5db;"></i>
+                            <p style="font-weight: 600; font-size: 15px; color: #4b5563;">Tidak ada data siswa ditemukan</p>
+                            <span style="font-size: 13px;">Coba sesuaikan kata kunci pencarian atau filter kelas Anda.</span>
+                        </td>
+                    </tr>
+                `;
+                footerCount.textContent = `Menampilkan 0 dari ${listAnak.length} siswa`;
+                return;
+            }
+
+            tbody.innerHTML = data.map((anak, idx) => {
+                const isLaki = anak.jenis_kelamin === 'L';
+                const genderBadge = isLaki
+                    ? `<span class="badge badge-laki"><i class="fa-solid fa-mars"></i> Laki-laki</span>`
+                    : `<span class="badge badge-perempuan"><i class="fa-solid fa-venus"></i> Perempuan</span>`;
+
+                const kelasNama = anak.nama_kelas || (anak.id_kelas == 1 ? 'TK A' : 'TK B');
+
+                return `
+                    <tr>
+                        <td><strong>${idx + 1}</strong></td>
+                        <td><span class="nisn-pill">${anak.nisn || '-'}</span></td>
+                        <td>
+                            <strong style="color: #124b3c; font-size: 14px;">${anak.nama_lengkap}</strong>
+                        </td>
+                        <td>${genderBadge}</td>
+                        <td><span class="badge badge-kelas">${kelasNama}</span></td>
+                        <td>
+                            <div class="action-btns" style="justify-content: center;">
+                                <button class="btn-action btn-action-edit" title="Edit Siswa" onclick="bukaModalEdit(${anak.id_anak})">
+                                    <i class="fa-regular fa-pen-to-square"></i>
+                                </button>
+                                <button class="btn-action btn-action-delete" title="Hapus Siswa" onclick="hapusAnak(${anak.id_anak}, '${anak.nama_lengkap.replace(/'/g, "\\'")}')">
+                                    <i class="fa-regular fa-trash-can"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+
+            footerCount.textContent = `Menampilkan ${data.length} dari ${listAnak.length} siswa`;
+        }
+
+        // Handler pilihan gender radio
+        function pilihGender(gender) {
+            genderTerpilih = gender;
+            document.getElementById('label-gender-l').classList.toggle('checked', gender === 'L');
+            document.getElementById('label-gender-p').classList.toggle('checked', gender === 'P');
+        }
+
+        // Buka Modal Tambah
+        function bukaModalTambah() {
+            isEditMode = false;
+            document.getElementById('modal-title').textContent = 'Tambah Siswa Baru';
+            document.getElementById('input-id-anak').value = '';
+            document.getElementById('input-nama').value = '';
+            document.getElementById('input-nisn').value = '';
+            document.getElementById('input-kelas').value = '';
+            pilihGender('');
+            sembunyikanAlert();
+            document.getElementById('modal-anak').classList.add('active');
+            document.getElementById('input-nama').focus();
+        }
+
+        // Buka Modal Edit
+        function bukaModalEdit(id) {
+            const anak = listAnak.find(a => a.id_anak == id);
+            if (!anak) return;
+
+            isEditMode = true;
+            document.getElementById('modal-title').textContent = 'Edit Data Siswa';
+            document.getElementById('input-id-anak').value = anak.id_anak;
+            document.getElementById('input-nama').value = anak.nama_lengkap;
+            document.getElementById('input-nisn').value = anak.nisn;
+            document.getElementById('input-kelas').value = anak.id_kelas || (anak.nama_kelas === 'TK A' ? '1' : '2');
+            pilihGender(anak.jenis_kelamin);
+            sembunyikanAlert();
+            document.getElementById('modal-anak').classList.add('active');
+        }
+
+        function tutupModal() {
+            document.getElementById('modal-anak').classList.remove('active');
+        }
+
+        function showAlert(tipe, pesan) {
+            sembunyikanAlert();
+            const el = document.getElementById(`modal-alert-${tipe}`);
+            el.textContent = pesan;
+            el.style.display = 'block';
+        }
+
+        function sembunyikanAlert() {
+            document.getElementById('modal-alert-error').style.display = 'none';
+            document.getElementById('modal-alert-success').style.display = 'none';
+        }
+
+        // Simpan Anak (Tambah / Edit)
+        async function simpanAnak() {
+            const id = document.getElementById('input-id-anak').value;
+            const nama = document.getElementById('input-nama').value.trim();
+            const nisn = document.getElementById('input-nisn').value.trim();
+            const id_kelas = document.getElementById('input-kelas').value;
+            const jenis_kelamin = genderTerpilih;
+
+            // Validasi
+            if (!nama) return showAlert('error', 'Nama lengkap siswa wajib diisi!');
+            if (!nisn) return showAlert('error', 'NISN wajib diisi!');
+            if (!jenis_kelamin) return showAlert('error', 'Silakan pilih jenis kelamin!');
+            if (!id_kelas) return showAlert('error', 'Silakan pilih kelas!');
+
+            // Cek duplikasi NISN (kecuali anak yang sedang diedit)
+            const duplikat = listAnak.find(a => a.nisn === nisn && a.id_anak != id);
+            if (duplikat) {
+                return showAlert('error', `NISN "${nisn}" sudah terdaftar untuk siswa lain!`);
+            }
+
+            const btn = document.getElementById('btn-simpan-anak');
+            btn.disabled = true;
+            btn.textContent = 'Menyimpan...';
+
+            const nama_kelas = id_kelas == '1' ? 'TK A' : 'TK B';
+
+            // Coba simpan ke Backend API jika tersedia
+            let apiBerhasil = false;
+            try {
+                if (!isEditMode) {
+                    const res = await fetch('/api/anak', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ nama_lengkap: nama, nisn, jenis_kelamin, id_kelas })
+                    });
+                    if (res.ok) {
+                        const data = await res.json();
+                        apiBerhasil = true;
+                    }
+                }
+            } catch(e) {}
+
+            // Update state lokal
+            if (isEditMode) {
+                const idx = listAnak.findIndex(a => a.id_anak == id);
+                if (idx !== -1) {
+                    listAnak[idx] = {
+                        ...listAnak[idx],
+                        nama_lengkap: nama,
+                        nisn: nisn,
+                        jenis_kelamin: jenis_kelamin,
+                        id_kelas: parseInt(id_kelas),
+                        nama_kelas: nama_kelas
+                    };
+                }
+                showAlert('success', 'Data siswa berhasil diperbarui!');
+            } else {
+                const newId = Date.now();
+                listAnak.unshift({
+                    id_anak: newId,
+                    nama_lengkap: nama,
+                    nisn: nisn,
+                    jenis_kelamin: jenis_kelamin,
+                    id_kelas: parseInt(id_kelas),
+                    nama_kelas: nama_kelas
+                });
+                showAlert('success', 'Siswa baru berhasil ditambahkan!');
+            }
+
+            saveLocalData();
+            updateStats();
+            terapkanFilter();
+
+            setTimeout(() => {
+                btn.disabled = false;
+                btn.textContent = 'Simpan Data';
+                tutupModal();
+            }, 800);
+        }
+
+        // Hapus Anak
+        async function hapusAnak(id, nama) {
+            if (!confirm(`Apakah Anda yakin ingin menghapus siswa "${nama}"?`)) {
+                return;
+            }
+
+            // Coba panggil API backend jika ada
+            try {
+                await fetch(`/api/anak/${id}`, { method: 'DELETE' });
+            } catch(e) {}
+
+            // Hapus dari state lokal
+            listAnak = listAnak.filter(a => a.id_anak != id);
+            saveLocalData();
+            updateStats();
+            terapkanFilter();
+        }
+
+        // Event Listeners
+        document.getElementById('input-search').addEventListener('input', terapkanFilter);
+
+        // Tutup modal jika klik di luar
+        document.getElementById('modal-anak').addEventListener('click', function(e) {
+            if (e.target === this) tutupModal();
+        });
+
+        // Shortcut Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') tutupModal();
+        });
+
+        // Jalankan saat halaman siap
+        window.addEventListener('DOMContentLoaded', () => {
+            muatUser();
+            muatDataAnak();
+        });
+    </script>
+</body>
+</html>
