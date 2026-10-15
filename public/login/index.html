@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login – iTales</title>
+    <!-- Font Awesome untuk ikon mata lihat password & refresh captcha -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
             margin: 0;
@@ -29,136 +31,215 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.18);
             z-index: 0;
         }
 
+        /* Card Container */
         .login-container {
             position: relative;
             z-index: 1;
-            background: rgba(94, 137, 115, 0.75);
-            backdrop-filter: blur(4px);
-            -webkit-backdrop-filter: blur(4px);
-            width: 400px;
-            padding: 40px 30px;
+            background: rgba(94, 137, 115, 0.88);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            width: 410px;
+            padding: 44px 34px;
             border-radius: 20px;
             display: flex;
             flex-direction: column;
             align-items: center;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 20px 45px rgba(0, 0, 0, 0.25);
+            border: 1px solid rgba(255, 255, 255, 0.25);
         }
 
         .login-logo {
             display: flex;
             flex-direction: column;
             align-items: center;
-            margin-bottom: 30px;
+            margin-bottom: 26px;
         }
 
         .login-logo img {
-            width: 48px;
-            height: 48px;
-            margin-bottom: 8px;
+            width: 54px;
+            height: 54px;
+            margin-bottom: 10px;
+            object-fit: contain;
         }
 
         .login-logo h1 {
             color: #0b4928;
-            font-size: 18px;
+            font-size: 22px;
             font-weight: bold;
             letter-spacing: 1px;
         }
 
+        /* Universal Input Group Styling — Semua 3 Bar Identik */
         .input-group {
             width: 100%;
-            margin-bottom: 20px;
+            margin-bottom: 18px;
+            position: relative;
+            background: white;
+            border-radius: 12px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            border: 1.5px solid transparent;
+            transition: all 0.2s ease;
+            box-sizing: border-box;
+        }
+
+        .input-group:focus-within {
+            border-color: #0b4928;
+            box-shadow: 0 0 0 3px rgba(11, 73, 40, 0.18);
         }
 
         .input-group input {
             width: 100%;
-            padding: 15px 20px;
+            height: 100%;
+            padding: 0 20px;
             border-radius: 12px;
             border: none;
             outline: none;
             font-size: 14px;
             color: #333;
+            background: transparent;
+            box-sizing: border-box;
         }
 
         .input-group input::placeholder {
             color: #888;
+            font-size: 14px;
         }
 
-        .captcha-group {
-            display: flex;
-            justify-content: space-between;
-            width: 100%;
-            margin-bottom: 30px;
-            gap: 15px;
+        /* Password Group dengan Ikon Mata */
+        .password-wrap input {
+            padding-right: 50px;
         }
 
-        .captcha-box {
-            background: white;
-            flex: 0 0 auto;
-            white-space: nowrap;
-            padding: 15px 20px;
-            border-radius: 12px;
+        .btn-toggle-eye {
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #777;
+            font-size: 16px;
+            cursor: pointer;
+            padding: 6px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-weight: bold;
-            font-size: 14px;
-            color: #111;
+            transition: color 0.15s;
         }
 
-        .captcha-input {
+        .btn-toggle-eye:hover {
+            color: #0b4928;
+        }
+
+        /* Captcha Group — Dibuat Seragam 1 Bar Putih Penuh Seperti User & PW */
+        .captcha-wrap {
+            margin-bottom: 26px;
+            padding: 0 14px 0 20px;
+            cursor: text;
+        }
+
+        .captcha-prefix {
+            font-size: 14px;
+            font-weight: bold;
+            color: #0b4928;
+            white-space: nowrap;
+            user-select: none;
+            margin-right: 10px;
+            cursor: pointer;
+        }
+
+        .captcha-wrap input {
             flex: 1;
-            padding: 15px 20px;
-            border-radius: 12px;
+            padding: 0;
             border: none;
             outline: none;
-            text-align: center;
-            font-size: 16px;
-        }
-        
-        .captcha-input::placeholder {
-            color: #888;
+            font-size: 14px;
+            color: #333;
+            background: transparent;
+            -moz-appearance: textfield;
         }
 
+        .captcha-wrap input::-webkit-outer-spin-button,
+        .captcha-wrap input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        .captcha-wrap input::placeholder {
+            color: #888;
+            font-size: 14px;
+        }
+
+        .btn-refresh-math {
+            background: none;
+            border: none;
+            color: #888;
+            font-size: 14px;
+            padding: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: color 0.15s;
+            margin-left: 6px;
+        }
+
+        .btn-refresh-math:hover {
+            color: #0b4928;
+        }
+
+        /* Error Notification */
         .error-msg {
             width: 100%;
-            background: rgba(255,80,80,0.15);
-            border: 1.5px solid rgba(255,100,100,0.4);
-            color: #fff;
+            background: rgba(220, 38, 38, 0.9);
+            border: 1px solid rgba(254, 202, 202, 0.8);
+            color: #ffffff;
             border-radius: 10px;
-            padding: 12px 16px;
+            padding: 11px 16px;
             font-size: 13.5px;
             text-align: center;
-            margin-bottom: 10px;
+            margin-bottom: 16px;
             display: none;
+            font-weight: 500;
+            line-height: 1.4;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
 
+        /* Button Login */
         .btn-login {
             background: #2312d8;
             color: white;
             border: none;
-            padding: 14px 40px;
+            padding: 14px 52px;
             border-radius: 25px;
-            font-size: 16px;
+            font-size: 15px;
             font-weight: bold;
+            letter-spacing: 0.5px;
             cursor: pointer;
             transition: all 0.2s;
-            box-shadow: 0 4px 10px rgba(35, 18, 216, 0.3);
+            box-shadow: 0 4px 12px rgba(35, 18, 216, 0.35);
         }
 
         .btn-login:hover {
             background: #1c0eaa;
             transform: translateY(-2px);
-            box-shadow: 0 6px 15px rgba(35, 18, 216, 0.4);
+            box-shadow: 0 6px 18px rgba(35, 18, 216, 0.45);
+        }
+
+        .btn-login:active {
+            transform: translateY(0);
         }
 
         @media (max-width: 480px) {
             .login-container {
                 width: 90%;
-                padding: 30px 20px;
+                padding: 34px 22px;
             }
         }
     </style>
@@ -170,26 +251,36 @@
     <div class="login-container">
         
         <div class="login-logo">
-            <img src="/assets/Logo_uin.png" alt="Logo UINSSC">
+            <img src="/assets/Logo_uin.png" alt="Logo UINSSC" onerror="this.src='https://ui-avatars.com/api/?name=iTales&background=fff&color=0b4928'">
             <h1>iTales</h1>
         </div>
 
+        <!-- Pesan error (termasuk peringatan Anti Brute Force) -->
         <div class="error-msg" id="error-msg"></div>
 
         <form action="/login" method="POST" style="width: 100%; display: flex; flex-direction: column; align-items: center;">
+            <!-- Bar 1: Username Input -->
             <div class="input-group">
-                <input type="text" name="username" placeholder="Username..." required>
+                <input type="text" name="username" placeholder="Username..." required autocomplete="username">
             </div>
 
-            <div class="input-group">
-                <input type="password" name="password" placeholder="Password..." required>
+            <!-- Bar 2: Password Input dengan Ikon Mata -->
+            <div class="input-group password-wrap">
+                <input type="password" name="password" id="password-input" placeholder="Password..." required autocomplete="current-password">
+                <button type="button" class="btn-toggle-eye" onclick="togglePasswordVisibility()" title="Lihat/Sembunyikan password">
+                    <i class="fa-solid fa-eye" id="eye-icon"></i>
+                </button>
             </div>
 
-            <div class="captcha-group">
-                <div class="captcha-box" id="captcha-display">
+            <!-- Bar 3: Captcha Input Seragam Putih Penuh dengan Soal di Bagian Kiri -->
+            <div class="input-group captcha-wrap" onclick="document.getElementById('captcha-input').focus()">
+                <span class="captcha-prefix" id="captcha-display" onclick="muatCaptchaMath()" title="Klik untuk ganti soal penjumlahan">
                     3 + 4 =
-                </div>
-                <input type="text" name="captcha" id="captcha-input" class="captcha-input" placeholder="..." required>
+                </span>
+                <input type="number" name="captcha" id="captcha-input" placeholder="Jawaban..." required autocomplete="off">
+                <button type="button" class="btn-refresh-math" onclick="muatCaptchaMath(); event.stopPropagation();" title="Ganti soal penjumlahan">
+                    <i class="fa-solid fa-arrows-rotate" id="refresh-icon"></i>
+                </button>
             </div>
 
             <button type="submit" class="btn-login">LOGIN</button>
@@ -198,30 +289,43 @@
     </div>
 
     <script>
-        // Generate random math captcha (angka kecil 1-9)
-        function generateCaptcha() {
-            const num1 = Math.floor(Math.random() * 9) + 1;
-            const num2 = Math.floor(Math.random() * 9) + 1;
-            document.getElementById('captcha-display').innerText = `${num1} + ${num2} =`;
-            // Store the answer in a data attribute to validate before submit if needed
-            document.getElementById('captcha-display').dataset.answer = num1 + num2;
+        // Toggle Lihat / Sembunyikan Password ("Si Mata")
+        function togglePasswordVisibility() {
+            const input = document.getElementById('password-input');
+            const icon = document.getElementById('eye-icon');
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
         }
 
-        // Validate captcha before submit
-        document.querySelector('form').addEventListener('submit', function(e) {
-            const answer = document.getElementById('captcha-display').dataset.answer;
-            const input = document.getElementById('captcha-input').value;
-            if (parseInt(input) !== parseInt(answer)) {
-                e.preventDefault();
-                alert('Captcha salah, silakan coba lagi!');
-                generateCaptcha();
-                document.getElementById('captcha-input').value = '';
-            } else {
-                sessionStorage.removeItem('kpalya_logged_out');
-            }
-        });
+        // Muat Soal Penjumlahan Sederhana dari Server (Server-Side Session Math Captcha)
+        async function muatCaptchaMath() {
+            const display = document.getElementById('captcha-display');
+            const icon = document.getElementById('refresh-icon');
+            if (icon) icon.classList.add('fa-spin');
 
-        // Tampilkan error dari server jika ada
+            try {
+                const res = await fetch('/api/captcha-math?t=' + Date.now());
+                const data = await res.json();
+                display.textContent = data.question;
+            } catch(e) {
+                display.textContent = '3 + 4 =';
+            } finally {
+                if (icon) icon.classList.remove('fa-spin');
+            }
+
+            const input = document.getElementById('captcha-input');
+            input.value = '';
+            input.focus();
+        }
+
+        // Tampilkan pesan error dari URL parameter
         const params = new URLSearchParams(window.location.search);
         const errorMsg = params.get('error');
         if (errorMsg) {
@@ -230,8 +334,13 @@
             el.style.display = 'block';
         }
 
-        // Generate on load
-        window.onload = generateCaptcha;
+        // Bersihkan flag logout saat submit
+        document.querySelector('form').addEventListener('submit', function() {
+            sessionStorage.removeItem('kpalya_logged_out');
+        });
+
+        // Muat captcha saat pertama kali halaman dibuka
+        window.onload = muatCaptchaMath;
     </script>
 </body>
 </html>

@@ -78,6 +78,10 @@ app.get('/kelola-logbook', requireRole('admin', 'guru'), (req, res) => {
     res.sendFile(__dirname + '/public/kelola-logbook/index.html');
 });
 
+app.get('/detail-logbook', requireRole('admin', 'guru'), (req, res) => {
+    res.sendFile(__dirname + '/public/detail-logbook/index.html');
+});
+
 app.get('/dashboard-ortu', requireRole('admin', 'orang_tua'), (req, res) => {
     res.sendFile(__dirname + '/public/dashboard-ortu/index.html');
 });
@@ -92,14 +96,89 @@ app.get('/kelola-akun', requireRole('admin'), (req, res) => {
 
 // ===================== AUTH ROUTES =====================
 
-// POST /login
-app.post('/login', (req, res) => {
-    const { username, password } = req.body;
+// ===================== ANTI BRUTE FORCE =====================
+const loginAttempts = new Map(); // key: IP/username -> { count, lockedUntil }
+const MAX_ATTEMPTS = 5;
+const LOCKOUT_TIME_MS = 5 * 60 * 1000; // 5 menit
 
-    if (!username || !password) {
-        return res.redirect('/login?error=Data+tidak+lengkap');
+function checkBruteForce(identifier) {
+    const record = loginAttempts.get(identifier);
+    if (!record) return { blocked: false };
+
+    if (record.lockedUntil && Date.now() < record.lockedUntil) {
+        const remainingMinutes = Math.ceil((record.lockedUntil - Date.now()) / (60 * 1000));
+        return { 
+            blocked: true, 
+            message: `Akun/Akses terkunci sementara (Anti Brute Force). Silakan coba lagi dalam ${remainingMinutes} menit.` 
+        };
     }
 
+    // Jika lockout sudah lewat, hapus record
+    if (record.lockedUntil && Date.now() >= record.lockedUntil) {
+        loginAttempts.delete(identifier);
+        return { blocked: false };
+    }
+
+    return { blocked: false, attempts: record.count };
+}
+
+function recordFailedAttempt(identifier) {
+    let record = loginAttempts.get(identifier) || { count: 0, lockedUntil: null };
+    record.count += 1;
+    if (record.count >= MAX_ATTEMPTS) {
+        record.lockedUntil = Date.now() + LOCKOUT_TIME_MS;
+    }
+    loginAttempts.set(identifier, record);
+    return record;
+}
+
+function resetLoginAttempts(identifier) {
+    loginAttempts.delete(identifier);
+}
+
+// ===================== MATH CAPTCHA (PENJUMLAHAN SEDERHANA) =====================
+// GET /api/captcha-math — generate soal matematika acak & simpan jawaban di session
+app.get('/api/captcha-math', (req, res) => {
+    const num1 = Math.floor(Math.random() * 9) + 1;
+    const num2 = Math.floor(Math.random() * 9) + 1;
+    req.session.captcha_math = num1 + num2;
+    res.json({ question: `${num1} + ${num2} =` });
+});
+
+// POST /login (dengan Proteksi Anti Brute Force & Captcha Matematika)
+app.post('/login', (req, res) => {
+    const { username, password, captcha } = req.body;
+    const clientIp = req.ip || req.connection.remoteAddress || 'client';
+    const rateKey = `${clientIp}_${(username || '').toLowerCase()}`;
+
+    // 1. Cek Anti Brute Force
+    const bruteCheck = checkBruteForce(rateKey);
+    if (bruteCheck.blocked) {
+        return res.redirect(`/login?error=${encodeURIComponent(bruteCheck.message)}`);
+    }
+
+    if (!username || !password) {
+        return res.redirect('/login?error=Username+dan+password+wajib+diisi');
+    }
+
+    // 2. Cek Captcha Penjumlahan (Server-Side)
+    const sessionAnswer = req.session.captcha_math;
+    if (sessionAnswer === undefined || parseInt(captcha) !== parseInt(sessionAnswer)) {
+        const failRecord = recordFailedAttempt(rateKey);
+        req.session.captcha_math = null; // Reset captcha
+
+        if (failRecord.lockedUntil) {
+            return res.redirect('/login?error=Terlalu+banyak+kesalahan+(Anti+Brute+Force).+Akses+dikunci+selama+5+menit.');
+        }
+
+        const sisa = MAX_ATTEMPTS - failRecord.count;
+        return res.redirect(`/login?error=${encodeURIComponent(`Hasil captcha salah! (Sisa percobaan: ${sisa}x)`)}`);
+    }
+
+    // Reset captcha setelah verifikasi captcha lewat
+    req.session.captcha_math = null;
+
+    // 3. Cek Akun di Database
     const query = `SELECT * FROM users WHERE username = ? LIMIT 1`;
 
     db.query(query, [username], async (err, results) => {
@@ -109,16 +188,29 @@ app.post('/login', (req, res) => {
         }
 
         if (results.length === 0) {
-            return res.redirect('/login?error=Username+atau+password+salah');
+            const failRecord = recordFailedAttempt(rateKey);
+            if (failRecord.lockedUntil) {
+                return res.redirect('/login?error=Terlalu+banyak+kesalahan+(Anti+Brute+Force).+Akses+dikunci+selama+5+menit.');
+            }
+            const sisa = MAX_ATTEMPTS - failRecord.count;
+            return res.redirect(`/login?error=${encodeURIComponent(`Username atau password salah! (Sisa percobaan: ${sisa}x)`)}`);
         }
 
         const user = results[0];
 
-        // Cek password
+        // 4. Verifikasi Password
         const valid = await bcrypt.compare(password, user.password);
         if (!valid) {
-            return res.redirect('/login?error=Username+atau+password+salah');
+            const failRecord = recordFailedAttempt(rateKey);
+            if (failRecord.lockedUntil) {
+                return res.redirect('/login?error=Terlalu+banyak+kesalahan+(Anti+Brute+Force).+Akses+dikunci+selama+5+menit.');
+            }
+            const sisa = MAX_ATTEMPTS - failRecord.count;
+            return res.redirect(`/login?error=${encodeURIComponent(`Username atau password salah! (Sisa percobaan: ${sisa}x)`)}`);
         }
+
+        // Login Sukses! Reset record percobaan gagal
+        resetLoginAttempts(rateKey);
 
         // Set session
         req.session.user = {
@@ -139,8 +231,9 @@ app.post('/login', (req, res) => {
 
 // GET & POST /logout — logout bersih dan hapus cookie
 app.all('/logout', (req, res) => {
-    req.session.destroy(() => {
-        res.clearCookie('connect.sid');
+    setNoCache(res);
+    req.session.destroy((err) => {
+        res.clearCookie('connect.sid', { path: '/' });
         res.redirect('/login');
     });
 });
@@ -305,6 +398,293 @@ app.get('/api/kelas', requireLogin, (req, res) => {
     });
 });
 
+// ===================== API LOGBOOK =====================
+
+// GET /api/logbook?tanggal=...&kelas=...
+app.get('/api/logbook', requireLogin, (req, res) => {
+    const { tanggal, kelas } = req.query;
+    let query = `
+        SELECT 
+            l.id_logbook,
+            l.id_kelas,
+            DATE_FORMAT(l.tanggal, '%Y-%m-%d') AS tanggal,
+            l.created_by,
+            l.created_at,
+            k.nama_kelas,
+            (SELECT COUNT(*) FROM kegiatan_logbook kl WHERE kl.id_logbook = l.id_logbook) AS jumlah_kegiatan,
+            (SELECT COUNT(*) FROM catatan_anak ca WHERE ca.id_logbook = l.id_logbook) AS jumlah_catatan,
+            (SELECT COUNT(*) FROM dokumentasi d WHERE d.id_logbook = l.id_logbook) AS jumlah_dokumentasi,
+            (SELECT kl2.judul FROM kegiatan_logbook kl2 WHERE kl2.id_logbook = l.id_logbook ORDER BY kl2.urutan ASC, kl2.id_kegiatan ASC LIMIT 1) AS kegiatan_pertama
+        FROM logbook l
+        JOIN kelas k ON l.id_kelas = k.id_kelas
+        WHERE 1=1
+    `;
+    const params = [];
+
+    if (tanggal) {
+        query += ` AND DATE(l.tanggal) = ?`;
+        params.push(tanggal);
+    }
+    if (kelas) {
+        query += ` AND l.id_kelas = ?`;
+        params.push(kelas);
+    }
+
+    query += ` ORDER BY l.tanggal DESC, l.id_logbook DESC`;
+
+    db.query(query, params, (err, results) => {
+        if (err) {
+            console.error('Error get logbook:', err);
+            return res.status(500).json({ error: 'Gagal mengambil data logbook' });
+        }
+        res.json(results);
+    });
+});
+
+// GET /api/logbook/:id
+app.get('/api/logbook/:id', requireLogin, (req, res) => {
+    const id = req.params.id;
+    const queryLogbook = `
+        SELECT l.id_logbook, l.id_kelas, DATE_FORMAT(l.tanggal, '%Y-%m-%d') AS tanggal,
+               l.created_by, l.created_at, k.nama_kelas, u.username AS created_by_name
+        FROM logbook l
+        JOIN kelas k ON l.id_kelas = k.id_kelas
+        LEFT JOIN users u ON l.created_by = u.id_user
+        WHERE l.id_logbook = ?
+    `;
+
+    db.query(queryLogbook, [id], (err, lbResults) => {
+        if (err) return res.status(500).json({ error: 'Gagal mengambil logbook' });
+        if (lbResults.length === 0) return res.status(404).json({ error: 'Logbook tidak ditemukan' });
+
+        const logbook = lbResults[0];
+
+        const queryKegiatan = `
+            SELECT * FROM kegiatan_logbook 
+            WHERE id_logbook = ? 
+            ORDER BY urutan ASC, id_kegiatan ASC
+        `;
+
+        const queryCatatan = `
+            SELECT ca.*, a.nama_lengkap AS nama_anak
+            FROM catatan_anak ca
+            JOIN anak a ON ca.id_anak = a.id_anak
+            WHERE ca.id_logbook = ?
+            ORDER BY a.nama_lengkap ASC
+        `;
+
+        const queryDokumentasi = `
+            SELECT * FROM dokumentasi 
+            WHERE id_logbook = ?
+        `;
+
+        db.query(queryKegiatan, [id], (errK, kegiatans) => {
+            if (errK) return res.status(500).json({ error: 'Gagal mengambil kegiatan' });
+
+            db.query(queryCatatan, [id], (errC, catatans) => {
+                if (errC) return res.status(500).json({ error: 'Gagal mengambil catatan anak' });
+
+                db.query(queryDokumentasi, [id], (errD, docs) => {
+                    if (errD) return res.status(500).json({ error: 'Gagal mengambil dokumentasi' });
+
+                    res.json({
+                        logbook,
+                        kegiatan: kegiatans || [],
+                        catatan: catatans || [],
+                        dokumentasi: docs || []
+                    });
+                });
+            });
+        });
+    });
+});
+
+// POST /api/logbook
+app.post('/api/logbook', requireRole('admin', 'guru'), (req, res) => {
+    const { id_kelas, tanggal, kegiatan } = req.body;
+    const created_by = req.session.user ? req.session.user.id : 1;
+
+    if (!id_kelas || !tanggal) {
+        return res.status(400).json({ error: 'Kelas dan Tanggal wajib diisi' });
+    }
+
+    const query = `INSERT INTO logbook (id_kelas, tanggal, created_by) VALUES (?, ?, ?)`;
+    db.query(query, [id_kelas, tanggal, created_by], (err, result) => {
+        if (err) {
+            if (err.code === 'ER_DUP_ENTRY') {
+                return res.status(400).json({ error: 'Logbook untuk kelas dan tanggal tersebut sudah ada' });
+            }
+            console.error('Error insert logbook:', err);
+            return res.status(500).json({ error: 'Gagal menambahkan logbook' });
+        }
+
+        const id_logbook = result.insertId;
+
+        if (Array.isArray(kegiatan) && kegiatan.length > 0) {
+            const values = kegiatan.map((k, idx) => [
+                id_logbook,
+                k.kategori || 'Umum',
+                k.judul || '-',
+                k.deskripsi || '',
+                k.urutan !== undefined ? k.urutan : idx
+            ]);
+
+            const queryKegiatan = `
+                INSERT INTO kegiatan_logbook (id_logbook, kategori, judul, deskripsi, urutan)
+                VALUES ?
+            `;
+            db.query(queryKegiatan, [values], (errK) => {
+                if (errK) console.error('Error insert kegiatan_logbook:', errK);
+                res.json({ success: true, id_logbook });
+            });
+        } else {
+            res.json({ success: true, id_logbook });
+        }
+    });
+});
+
+// PUT /api/logbook/:id
+app.put('/api/logbook/:id', requireRole('admin', 'guru'), (req, res) => {
+    const { id } = req.params;
+    const { id_kelas, tanggal, kegiatan } = req.body;
+
+    if (!id_kelas || !tanggal) {
+        return res.status(400).json({ error: 'Kelas dan Tanggal wajib diisi' });
+    }
+
+    const queryUpdate = `UPDATE logbook SET id_kelas = ?, tanggal = ? WHERE id_logbook = ?`;
+    db.query(queryUpdate, [id_kelas, tanggal, id], (err) => {
+        if (err) {
+            if (err.code === 'ER_DUP_ENTRY') {
+                return res.status(400).json({ error: 'Logbook untuk kelas dan tanggal tersebut sudah ada' });
+            }
+            console.error('Error update logbook:', err);
+            return res.status(500).json({ error: 'Gagal memperbarui logbook' });
+        }
+
+        if (Array.isArray(kegiatan)) {
+            db.query(`DELETE FROM kegiatan_logbook WHERE id_logbook = ?`, [id], (errDel) => {
+                if (errDel) console.error('Error delete old kegiatan:', errDel);
+
+                if (kegiatan.length > 0) {
+                    const values = kegiatan.map((k, idx) => [
+                        id,
+                        k.kategori || 'Umum',
+                        k.judul || '-',
+                        k.deskripsi || '',
+                        k.urutan !== undefined ? k.urutan : idx
+                    ]);
+
+                    const queryKegiatan = `
+                        INSERT INTO kegiatan_logbook (id_logbook, kategori, judul, deskripsi, urutan)
+                        VALUES ?
+                    `;
+                    db.query(queryKegiatan, [values], (errK) => {
+                        if (errK) console.error('Error re-insert kegiatan:', errK);
+                        res.json({ success: true });
+                    });
+                } else {
+                    res.json({ success: true });
+                }
+            });
+        } else {
+            res.json({ success: true });
+        }
+    });
+});
+
+// DELETE /api/logbook/:id
+app.delete('/api/logbook/:id', requireRole('admin', 'guru'), (req, res) => {
+    const { id } = req.params;
+    db.query(`DELETE FROM logbook WHERE id_logbook = ?`, [id], (err) => {
+        if (err) {
+            console.error('Error delete logbook:', err);
+            return res.status(500).json({ error: 'Gagal menghapus logbook' });
+        }
+        res.json({ success: true });
+    });
+});
+
+// ===================== API CATATAN ANAK =====================
+
+// POST /api/catatan-anak
+app.post('/api/catatan-anak', requireRole('admin', 'guru'), (req, res) => {
+    const { id_logbook, id_anak, catatan } = req.body;
+    if (!id_logbook || !id_anak || !catatan) {
+        return res.status(400).json({ error: 'Logbook, Anak, dan Catatan wajib diisi' });
+    }
+
+    const query = `
+        INSERT INTO catatan_anak (id_logbook, id_anak, catatan) 
+        VALUES (?, ?, ?)
+        ON DUPLICATE KEY UPDATE catatan = VALUES(catatan)
+    `;
+    db.query(query, [id_logbook, id_anak, catatan], (err, result) => {
+        if (err) {
+            console.error('Error insert catatan_anak:', err);
+            return res.status(500).json({ error: 'Gagal menambahkan catatan anak' });
+        }
+        res.json({ success: true, id_catatan: result.insertId });
+    });
+});
+
+// PUT /api/catatan-anak/:id
+app.put('/api/catatan-anak/:id', requireRole('admin', 'guru'), (req, res) => {
+    const { catatan } = req.body;
+    if (!catatan) {
+        return res.status(400).json({ error: 'Catatan wajib diisi' });
+    }
+
+    db.query(`UPDATE catatan_anak SET catatan = ? WHERE id_catatan = ?`, [catatan, req.params.id], (err) => {
+        if (err) {
+            console.error('Error update catatan_anak:', err);
+            return res.status(500).json({ error: 'Gagal memperbarui catatan anak' });
+        }
+        res.json({ success: true });
+    });
+});
+
+// DELETE /api/catatan-anak/:id
+app.delete('/api/catatan-anak/:id', requireRole('admin', 'guru'), (req, res) => {
+    db.query(`DELETE FROM catatan_anak WHERE id_catatan = ?`, [req.params.id], (err) => {
+        if (err) {
+            console.error('Error delete catatan_anak:', err);
+            return res.status(500).json({ error: 'Gagal menghapus catatan anak' });
+        }
+        res.json({ success: true });
+    });
+});
+
+// ===================== API DOKUMENTASI =====================
+
+// POST /api/dokumentasi
+app.post('/api/dokumentasi', requireRole('admin', 'guru'), (req, res) => {
+    const { id_logbook, id_anak, file_foto, keterangan } = req.body;
+    if (!id_logbook || !file_foto) {
+        return res.status(400).json({ error: 'Logbook dan File Foto wajib diisi' });
+    }
+
+    const query = `INSERT INTO dokumentasi (id_logbook, id_anak, file_foto, keterangan) VALUES (?, ?, ?, ?)`;
+    db.query(query, [id_logbook, id_anak || null, file_foto, keterangan || null], (err, result) => {
+        if (err) {
+            console.error('Error insert dokumentasi:', err);
+            return res.status(500).json({ error: 'Gagal menambahkan dokumentasi' });
+        }
+        res.json({ success: true, id_dokumentasi: result.insertId });
+    });
+});
+
+// DELETE /api/dokumentasi/:id
+app.delete('/api/dokumentasi/:id', requireRole('admin', 'guru'), (req, res) => {
+    db.query(`DELETE FROM dokumentasi WHERE id_dokumentasi = ?`, [req.params.id], (err) => {
+        if (err) {
+            console.error('Error delete dokumentasi:', err);
+            return res.status(500).json({ error: 'Gagal menghapus dokumentasi' });
+        }
+        res.json({ success: true });
+    });
+});
+
 // ===================== API USERS (ADMIN) =====================
 
 // GET /api/users
@@ -387,7 +767,7 @@ app.get('/api/dashboard-stats', requireLogin, (req, res) => {
     });
 });
 
-// ===================== AUTO SEED DEFAULT ACCOUNTS =====================
+// ===================== AUTO SEED DEFAULT ACCOUNTS & LOGBOOK =====================
 async function autoSeedUsers() {
     db.query(`SELECT COUNT(*) as count FROM users`, async (err, rows) => {
         if (!err && rows && rows[0].count === 0) {
@@ -408,8 +788,98 @@ async function autoSeedUsers() {
     });
 }
 
+function autoSeedLogbook() {
+    db.query(`SELECT COUNT(*) as count FROM logbook`, (err, rows) => {
+        if (!err && rows && rows[0].count === 0) {
+            // Cek apakah ada kelas dan guru
+            db.query(`SELECT id_kelas FROM kelas LIMIT 1`, (errK, kelasRows) => {
+                if (errK || !kelasRows || kelasRows.length === 0) return;
+                const id_kelas = kelasRows[0].id_kelas;
+
+                db.query(`SELECT id_user FROM users WHERE role IN ('guru', 'admin') LIMIT 1`, (errU, userRows) => {
+                    const id_user = (!errU && userRows && userRows.length > 0) ? userRows[0].id_user : 1;
+
+                    const samples = [
+                        {
+                            tanggal: '2026-10-09',
+                            kegiatans: [
+                                { kategori: 'Seni & Kreativitas', judul: 'Warna & bentuk melalui kolase daun', deskripsi: 'Mengenal tekstur dan menyusun kolase daun kering menjadi aneka bentuk hewan.' },
+                                { kategori: 'Motorik Halus', judul: 'Menggunting pola daun', deskripsi: 'Melatih kekuatan jari tangan dengan menggunting daun sesuai garis tepi.' },
+                                { kategori: 'Bahasa', judul: 'Bercerita tentang daun kering', deskripsi: 'Menceritakan hasil karya dan warna-warni daun di depan teman kelas.' },
+                                { kategori: 'Nilai Agama & Moral', judul: 'Mensyukuri ciptaan Tuhan', deskripsi: 'Mengagumi keanekaragaman tanaman dan daun di lingkungan sekolah.' }
+                            ],
+                            foto_count: 2,
+                            catatan_count: 2
+                        },
+                        {
+                            tanggal: '2026-10-08',
+                            kegiatans: [
+                                { kategori: 'Kognitif', judul: 'Menghitung benda di sekitar kelas', deskripsi: 'Belajar menghitung jumlah meja, kursi, dan pensil warna dari angka 1 sampai 10.' },
+                                { kategori: 'Sosial Emosional', judul: 'Bekerjasama menyusun balok', deskripsi: 'Bergantian dan saling membantu dalam merapikan mainan balok kayu.' },
+                                { kategori: 'Motorik Kasar', judul: 'Permainan estafet balok', deskripsi: 'Berlari kecil memindahkan balok ke keranjang yang sesuai warnanya.' },
+                                { kategori: 'Bahasa', judul: 'Menyebutkan angka dan warna', deskripsi: 'Mengeja nama angka dalam bahasa Indonesia dan bahasa Inggris.' }
+                            ],
+                            foto_count: 1,
+                            catatan_count: 1
+                        },
+                        {
+                            tanggal: '2026-10-07',
+                            kegiatans: [
+                                { kategori: 'Bahasa', judul: 'Mengenal bunyi dan huruf awal', deskripsi: 'Menebak huruf awalan nama hewan dan benda yang ada di gambar peraga.' },
+                                { kategori: 'Nilai Agama & Moral', judul: 'Berdoa sebelum belajar', deskripsi: 'Membaca doa pembuka dengan sikap yang tertib dan khidmat.' },
+                                { kategori: 'Kognitif', judul: 'Mencocokkan kartu huruf', deskripsi: 'Mencocokkan kartu huruf besar dan kecil secara berkelompok.' },
+                                { kategori: 'Seni', judul: 'Mewarnai huruf alfabet', deskripsi: 'Mewarnai cetakan huruf menggunakan krayon warna-warni.' }
+                            ],
+                            foto_count: 2,
+                            catatan_count: 2
+                        }
+                    ];
+
+                    samples.forEach(s => {
+                        db.query(
+                            `INSERT INTO logbook (id_kelas, tanggal, created_by) VALUES (?, ?, ?)`,
+                            [id_kelas, s.tanggal, id_user],
+                            (errLb, resLb) => {
+                                if (!errLb && resLb) {
+                                    const lbId = resLb.insertId;
+                                    const values = s.kegiatans.map((kg, i) => [lbId, kg.kategori, kg.judul, kg.deskripsi, i]);
+                                    db.query(
+                                        `INSERT INTO kegiatan_logbook (id_logbook, kategori, judul, deskripsi, urutan) VALUES ?`,
+                                        [values]
+                                    );
+
+                                    // Cek anak untuk sample catatan
+                                    db.query(`SELECT id_anak FROM anak WHERE id_kelas = ? LIMIT 2`, [id_kelas], (errAnak, anakRows) => {
+                                        if (!errAnak && anakRows && anakRows.length > 0) {
+                                            for (let i = 0; i < Math.min(s.catatan_count, anakRows.length); i++) {
+                                                db.query(
+                                                    `INSERT INTO catatan_anak (id_logbook, id_anak, catatan) VALUES (?, ?, ?)`,
+                                                    [lbId, anakRows[i].id_anak, 'Anak sangat antusias mengikuti kegiatan dan aktif bertanya.']
+                                                );
+                                            }
+                                        }
+                                    });
+
+                                    // Sample dokumentasi
+                                    for (let f = 0; f < s.foto_count; f++) {
+                                        db.query(
+                                            `INSERT INTO dokumentasi (id_logbook, file_foto, keterangan) VALUES (?, ?, ?)`,
+                                            [lbId, 'sample_foto.jpg', 'Dokumentasi kegiatan pembelajaran']
+                                        );
+                                    }
+                                }
+                            }
+                        );
+                    });
+                });
+            });
+        }
+    });
+}
+
 // ===================== START =====================
 app.listen(PORT, () => {
     autoSeedUsers();
+    autoSeedLogbook();
     console.log(`Server iTales berjalan di http://localhost:${PORT} 🚀`);
 });

@@ -1,0 +1,1477 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detail Logbook – iTales (TK SIBER)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --sidebar-bg: #405d4d;
+            --sidebar-active: #537a63;
+            --text-dark: #124b3c;
+            --text-muted: #5a7366;
+            --bg-color: #f6f8f7;
+            --card-bg: #ffffff;
+            --accent: #124b3c;
+            --accent-light: #edf5f0;
+            --accent-border: #d2e4d8;
+            --accent-hover: #1b6351;
+            --border-color: #e5e9e6;
+            --danger: #dc2626;
+            --danger-bg: #fef2f2;
+            --danger-border: #fecaca;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            display: flex;
+            background-color: var(--bg-color);
+            min-height: 100vh;
+            color: #1f2937;
+        }
+
+        /* ===== SIDEBAR ===== */
+        .sidebar {
+            width: 250px;
+            background-color: var(--sidebar-bg);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100vh;
+            z-index: 100;
+        }
+
+        .sidebar-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 24px 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+        }
+
+        .sidebar-brand img {
+            width: 38px;
+            height: 38px;
+            object-fit: contain;
+        }
+
+        .sidebar-brand h2 {
+            font-size: 15px;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+        }
+
+        .sidebar-brand p {
+            font-size: 11.5px;
+            font-weight: 400;
+            color: #d1d5db;
+        }
+
+        .sidebar-section-title {
+            padding: 20px 20px 8px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: #a4c4b5;
+        }
+
+        .sidebar-menu {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            padding: 0 10px;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 12px 16px;
+            color: #e2e8e4;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 13.5px;
+            border-radius: 10px;
+            transition: all 0.15s ease;
+        }
+
+        .menu-item:hover {
+            background-color: rgba(255,255,255,0.08);
+            color: white;
+        }
+
+        .menu-item.active {
+            background-color: var(--sidebar-active);
+            color: white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+        }
+
+        .menu-item i {
+            width: 18px;
+            text-align: center;
+            font-size: 15px;
+        }
+
+        /* Sidebar Info Card */
+        .sidebar-info-card {
+            margin: auto 12px 16px;
+            background: #344d3f;
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 12px;
+            padding: 14px 16px;
+        }
+
+        .sidebar-info-card h4 {
+            font-size: 13px;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 4px;
+        }
+
+        .sidebar-info-card p {
+            font-size: 11.5px;
+            color: #a3c2b4;
+            line-height: 1.4;
+        }
+
+        .sidebar-footer {
+            padding: 12px 14px 18px;
+            border-top: 1px solid rgba(255,255,255,0.08);
+        }
+
+        .sidebar-logout-btn {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            width: 100%;
+            padding: 11px 16px;
+            border-radius: 8px;
+            background: none;
+            border: none;
+            color: #e2e8e4;
+            font-size: 13.5px;
+            font-weight: 600;
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.15s;
+        }
+
+        .sidebar-logout-btn:hover {
+            background: rgba(239, 68, 68, 0.18);
+            color: #fca5a5;
+        }
+
+        /* ===== MAIN CONTENT ===== */
+        .main-content {
+            margin-left: 250px;
+            flex: 1;
+            padding: 24px 36px 40px;
+            max-width: 1320px;
+            min-height: 100vh;
+        }
+
+        /* Top Bar */
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 24px;
+        }
+
+        .top-bar-left h1 {
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--text-dark);
+        }
+
+        .top-bar-left p {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        .top-bar-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .badge-kelas-top {
+            background: #eef7f2;
+            color: #124b3c;
+            border: 1px solid #cce5d7;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .user-avatar-circle {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: #124b3c;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 15px;
+            font-weight: 700;
+            box-shadow: 0 2px 6px rgba(18,75,60,0.25);
+        }
+
+        /* Navigation Header */
+        .nav-back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-muted);
+            font-size: 13.5px;
+            font-weight: 600;
+            text-decoration: none;
+            margin-bottom: 14px;
+            transition: color 0.15s;
+        }
+
+        .nav-back-link:hover {
+            color: var(--text-dark);
+        }
+
+        .page-header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 24px;
+        }
+
+        .page-header-title h2 {
+            font-size: 28px;
+            font-weight: 800;
+            color: #111827;
+            letter-spacing: -0.5px;
+        }
+
+        .page-header-title p {
+            font-size: 14px;
+            color: #6b7280;
+            margin-top: 4px;
+        }
+
+        .page-header-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-header {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 9px 18px;
+            border-radius: 10px;
+            font-size: 13.5px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .btn-header-edit {
+            background: white;
+            border: 1px solid #d1d5db;
+            color: #374151;
+        }
+
+        .btn-header-edit:hover {
+            background: #f9fafb;
+            border-color: #9ca3af;
+        }
+
+        .btn-header-delete {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            color: #dc2626;
+        }
+
+        .btn-header-delete:hover {
+            background: #fee2e2;
+            border-color: #f87171;
+        }
+
+        /* ===== HERO / SUMMARY CARD ===== */
+        .hero-logbook-card {
+            background: var(--accent-light);
+            border: 1px solid var(--accent-border);
+            border-radius: 16px;
+            padding: 24px 28px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .hero-left-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #4b6b5d;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 4px;
+        }
+
+        .hero-left-date {
+            font-size: 26px;
+            font-weight: 800;
+            color: var(--text-dark);
+            margin-bottom: 4px;
+            letter-spacing: -0.5px;
+        }
+
+        .hero-left-theme {
+            font-size: 14.5px;
+            color: #2e5a4a;
+            font-weight: 500;
+        }
+
+        .hero-stats-row {
+            display: flex;
+            align-items: center;
+            gap: 32px;
+        }
+
+        .hero-stat-item {
+            text-align: right;
+        }
+
+        .hero-stat-number {
+            font-size: 22px;
+            font-weight: 800;
+            color: var(--text-dark);
+            line-height: 1.1;
+        }
+
+        .hero-stat-label {
+            font-size: 12px;
+            color: #5d7a6e;
+            font-weight: 500;
+            margin-top: 2px;
+        }
+
+        /* ===== DETAIL TWO-COLUMN LAYOUT ===== */
+        .detail-grid {
+            display: grid;
+            grid-template-columns: 1.55fr 1fr;
+            gap: 24px;
+            align-items: start;
+        }
+
+        /* Card styles */
+        .content-card {
+            background: white;
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            padding: 26px 28px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+            margin-bottom: 24px;
+        }
+
+        .content-card:last-child {
+            margin-bottom: 0;
+        }
+
+        .card-header-box {
+            margin-bottom: 20px;
+        }
+
+        .card-header-box h3 {
+            font-size: 18px;
+            font-weight: 800;
+            color: #111827;
+        }
+
+        .card-header-box p {
+            font-size: 13px;
+            color: #6b7280;
+            margin-top: 3px;
+        }
+
+        /* Activities List */
+        .activity-list {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        .activity-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+        }
+
+        .activity-icon-box {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .icon-pembelajaran {
+            background: #dcfce7;
+            color: #16a34a;
+        }
+
+        .icon-ibadah {
+            background: #ccfbf1;
+            color: #0f766e;
+        }
+
+        .icon-makan {
+            background: #fef3c7;
+            color: #d97706;
+        }
+
+        .icon-eskul {
+            background: #ede9fe;
+            color: #7c3aed;
+        }
+
+        .icon-umum {
+            background: #e0f2fe;
+            color: #0284c7;
+        }
+
+        .activity-content h4 {
+            font-size: 15px;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 4px;
+        }
+
+        .activity-content p {
+            font-size: 13.5px;
+            color: #4b5563;
+            line-height: 1.5;
+        }
+
+        /* Documentation Grid */
+        .doc-photos-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-top: 14px;
+        }
+
+        .doc-photo-card {
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            overflow: hidden;
+            background: white;
+            transition: all 0.2s ease;
+        }
+
+        .doc-photo-card:hover {
+            box-shadow: 0 4px 14px rgba(0,0,0,0.06);
+            border-color: #cbd5e1;
+        }
+
+        .doc-photo-img-wrap {
+            position: relative;
+            height: 145px;
+            overflow: hidden;
+            background: #f3f4f6;
+            cursor: pointer;
+        }
+
+        .doc-photo-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.25s ease;
+        }
+
+        .doc-photo-card:hover .doc-photo-img {
+            transform: scale(1.03);
+        }
+
+        .doc-photo-info {
+            padding: 12px 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .doc-filename {
+            font-size: 12.5px;
+            font-weight: 700;
+            color: #374151;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .btn-pratinjau {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: 8px;
+            border: 1px solid #d1d5db;
+            background: white;
+            font-size: 12px;
+            font-weight: 600;
+            color: #4b5563;
+            cursor: pointer;
+            transition: all 0.15s;
+            flex-shrink: 0;
+        }
+
+        .btn-pratinjau:hover {
+            background: #f3f4f6;
+            border-color: #9ca3af;
+            color: #111827;
+        }
+
+        .card-footer-note {
+            font-size: 12px;
+            color: #6b7280;
+            margin-top: 18px;
+            line-height: 1.4;
+        }
+
+        /* ===== RIGHT COLUMN: CATATAN ANAK ===== */
+        .btn-tambah-catatan {
+            width: 100%;
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 10px;
+            font-size: 13.5px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: background 0.15s ease, transform 0.1s ease;
+            box-shadow: 0 3px 10px rgba(18,75,60,0.25);
+            margin-bottom: 16px;
+        }
+
+        .btn-tambah-catatan:hover {
+            background: var(--accent-hover);
+            transform: translateY(-1px);
+        }
+
+        .child-notes-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .child-note-card {
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 16px;
+            background: white;
+            transition: all 0.15s ease;
+        }
+
+        .child-note-card:hover {
+            border-color: #cbd5e1;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+
+        .child-card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 10px;
+        }
+
+        .child-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: #e0e7ff;
+            color: #3730a3;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .child-header-info h4 {
+            font-size: 14px;
+            font-weight: 700;
+            color: #1f2937;
+        }
+
+        .child-header-info p {
+            font-size: 11.5px;
+            color: #6b7280;
+            margin-top: 1px;
+        }
+
+        .child-note-text {
+            font-size: 13px;
+            color: #374151;
+            line-height: 1.5;
+            margin-bottom: 12px;
+        }
+
+        .child-card-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-top: 1px solid #f3f4f6;
+            padding-top: 10px;
+        }
+
+        .btn-child-action {
+            padding: 5px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            border: 1px solid #e5e7eb;
+            background: white;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .btn-child-action:hover {
+            background: #f3f4f6;
+        }
+
+        .btn-child-action.btn-delete {
+            background: #fef2f2;
+            border-color: #fee2e2;
+            color: #dc2626;
+        }
+
+        .btn-child-action.btn-delete:hover {
+            background: #fee2e2;
+        }
+
+        .footer-disclaimer {
+            margin-top: 32px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            color: #6b7280;
+        }
+
+        /* ===== MODAL ===== */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(18, 75, 60, 0.45);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-box {
+            background: white;
+            border-radius: 18px;
+            width: 520px;
+            max-width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.25);
+            animation: modalFadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes modalFadeIn {
+            from { opacity: 0; transform: translateY(12px) scale(0.98); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .modal-header {
+            background: var(--accent-light);
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--accent-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h3 {
+            font-size: 17px;
+            font-weight: 800;
+            color: var(--text-dark);
+        }
+
+        .btn-close-modal {
+            background: none;
+            border: none;
+            font-size: 18px;
+            color: #5a7366;
+            cursor: pointer;
+            padding: 4px;
+        }
+
+        .btn-close-modal:hover {
+            color: #111;
+        }
+
+        .modal-body {
+            padding: 22px 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-group label {
+            font-size: 13px;
+            font-weight: 700;
+            color: #374151;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            padding: 10px 14px;
+            border: 1.5px solid #d1d5db;
+            border-radius: 10px;
+            font-size: 13.5px;
+            font-family: inherit;
+            outline: none;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(18,75,60,0.12);
+        }
+
+        .modal-footer {
+            padding: 16px 24px;
+            border-top: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            background: #fafafa;
+        }
+
+        .btn-batal {
+            background: white;
+            border: 1.5px solid #d1d5db;
+            padding: 10px 18px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 13.5px;
+            color: #4b5563;
+            cursor: pointer;
+        }
+
+        .btn-simpan {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 10px 22px;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 13.5px;
+            cursor: pointer;
+        }
+
+        .btn-simpan:hover {
+            background: var(--accent-hover);
+        }
+
+        /* Lightbox Image Preview Modal */
+        .lightbox-modal {
+            max-width: 800px;
+            width: 100%;
+            background: #111827;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 25px 60px rgba(0,0,0,0.4);
+        }
+
+        .lightbox-img {
+            width: 100%;
+            max-height: 75vh;
+            object-fit: contain;
+            display: block;
+            background: #000;
+        }
+
+        .lightbox-caption {
+            padding: 16px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: white;
+            background: #1f2937;
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            padding: 12px 20px;
+            border-radius: 10px;
+            font-size: 13.5px;
+            font-weight: 600;
+            color: white;
+            z-index: 2000;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+            transform: translateY(20px);
+            opacity: 0;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .toast-success { background: #059669; }
+        .toast-error { background: #dc2626; }
+
+        @media (max-width: 1024px) {
+            .detail-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== SIDEBAR ===== -->
+    <aside class="sidebar">
+        <div class="sidebar-brand">
+            <img src="/assets/Logo_uin.png" alt="Logo TK Siber" onerror="this.src='https://ui-avatars.com/api/?name=TK&background=fff&color=124b3c'">
+            <div>
+                <h2>TK SIBER</h2>
+                <p>iTales · Ruang wali kelas</p>
+            </div>
+        </div>
+
+        <div class="sidebar-section-title">RUANG KELAS</div>
+
+        <nav class="sidebar-menu">
+            <a href="/dashboard-guru" class="menu-item">
+                <i class="fa-solid fa-house"></i> Dashboard
+            </a>
+            <a href="/kelola-anak" class="menu-item">
+                <i class="fa-solid fa-user-group"></i> Kelola Anak
+            </a>
+            <a href="/kelola-jadwal" class="menu-item">
+                <i class="fa-solid fa-calendar-days"></i> Kelola Jadwal
+            </a>
+            <a href="/kelola-logbook" class="menu-item active">
+                <i class="fa-solid fa-book"></i> Kelola Logbook
+            </a>
+        </nav>
+
+        <div class="sidebar-info-card">
+            <h4 id="sidebar-role-title">Wali kelas · TK A</h4>
+            <p>Hanya data kelas yang ditugaskan. Tidak tersedia untuk tamu.</p>
+        </div>
+
+        <div class="sidebar-footer">
+            <button type="button" class="sidebar-logout-btn" onclick="keluarAplikasi(event)">
+                <i class="fa-solid fa-right-from-bracket"></i> Logout
+            </button>
+        </div>
+    </aside>
+
+    <!-- ===== MAIN CONTENT ===== -->
+    <main class="main-content">
+        <!-- Top Bar -->
+        <div class="top-bar">
+            <div class="top-bar-left">
+                <h1>iTales</h1>
+                <p id="top-bar-greeting">Halo, Wali Kelas. Mari catat cerita hari ini.</p>
+            </div>
+            <div class="top-bar-right">
+                <span class="badge-kelas-top" id="top-kelas-badge">Internal · TK A</span>
+                <div class="user-avatar-circle" id="user-avatar-initial">G</div>
+            </div>
+        </div>
+
+        <!-- Breadcrumb / Back Link -->
+        <a href="/kelola-logbook" class="nav-back-link">
+            <i class="fa-solid fa-arrow-left"></i> Kembali ke daftar logbook
+        </a>
+
+        <!-- Page Header -->
+        <div class="page-header-row">
+            <div class="page-header-title">
+                <h2>Detail Logbook</h2>
+                <p id="page-sub-title">Cerita kegiatan kelas dan catatan perkembangan per anak.</p>
+            </div>
+            <div class="page-header-actions">
+                <button class="btn-header btn-header-edit" onclick="editLogbookIni()">
+                    <i class="fa-solid fa-pen"></i> Edit
+                </button>
+                <button class="btn-header btn-header-delete" onclick="hapusLogbookIni()">
+                    <i class="fa-solid fa-trash"></i> Hapus
+                </button>
+            </div>
+        </div>
+
+        <!-- Hero / Summary Banner -->
+        <div class="hero-logbook-card">
+            <div class="hero-left">
+                <div class="hero-left-label" id="hero-kelas-label">Logbook kelas · TK A</div>
+                <div class="hero-left-date" id="hero-date">9 Oktober 2026</div>
+                <div class="hero-left-theme" id="hero-theme">Warna & bentuk melalui kolase daun</div>
+            </div>
+            <div class="hero-stats-row">
+                <div class="hero-stat-item">
+                    <div class="hero-stat-number" id="stat-foto-count">2 foto</div>
+                    <div class="hero-stat-label">Dokumentasi</div>
+                </div>
+                <div class="hero-stat-item">
+                    <div class="hero-stat-number" id="stat-catatan-count">2 anak</div>
+                    <div class="hero-stat-label">Memiliki catatan</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Two Column Grid -->
+        <div class="detail-grid">
+            <!-- Left Column: Kegiatan & Dokumentasi -->
+            <div class="detail-left-col">
+                <!-- Card 1: Kegiatan Hari Ini -->
+                <div class="content-card">
+                    <div class="card-header-box">
+                        <h3>Kegiatan Hari Ini</h3>
+                        <p id="kegiatan-sub-desc">Catatan harian bersama untuk kelas TK A.</p>
+                    </div>
+
+                    <div class="activity-list" id="activity-list-container">
+                        <!-- Dynamic activity items rendered here -->
+                    </div>
+                </div>
+
+                <!-- Card 2: Dokumentasi Kegiatan -->
+                <div class="content-card">
+                    <div class="card-header-box">
+                        <h3>Dokumentasi Kegiatan</h3>
+                        <p id="doc-sub-desc">2 foto contoh · Pilih Pratinjau untuk melihat dokumentasi.</p>
+                    </div>
+
+                    <div class="doc-photos-grid" id="doc-photos-container">
+                        <!-- Dynamic photos rendered here -->
+                    </div>
+
+                    <div class="card-footer-note">
+                        Ilustrasi kegiatan tanpa identitas anak. Untuk mengganti atau menghapus foto, buka Edit Logbook.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Catatan Anak -->
+            <div class="detail-right-col">
+                <div class="content-card">
+                    <div class="card-header-box">
+                        <h3>Catatan Anak</h3>
+                        <p>Catatan khusus per anak pada logbook ini. Hanya untuk pengelolaan internal.</p>
+                    </div>
+
+                    <button class="btn-tambah-catatan" onclick="bukaModalTambahCatatan()">
+                        <i class="fa-solid fa-plus"></i> Tambah Catatan
+                    </button>
+
+                    <div class="child-notes-list" id="child-notes-container">
+                        <!-- Dynamic child note cards rendered here -->
+                    </div>
+
+                    <div class="card-footer-note" style="margin-top: 20px;">
+                        Catatan terhubung dengan anak, tanggal, dan kelas pada logbook ini.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer Disclaimer -->
+        <div class="footer-disclaimer">
+            <i class="fa-solid fa-lock"></i>
+            <span id="footer-text">Internal wali kelas - TK A - Data contoh fiktif</span>
+        </div>
+    </main>
+
+    <!-- ===== MODAL TAMBAH / EDIT CATATAN ANAK ===== -->
+    <div class="modal-overlay" id="modal-catatan">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3 id="modal-catatan-title">Tambah Catatan Anak</h3>
+                <button class="btn-close-modal" onclick="tutupModalCatatan()">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="input-id-catatan">
+
+                <div class="form-group" id="group-select-anak">
+                    <label for="select-anak">Pilih Anak *</label>
+                    <select id="select-anak">
+                        <option value="">— Pilih Siswa —</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="input-isi-catatan">Catatan Observasi Perkembangan *</label>
+                    <textarea id="input-isi-catatan" rows="4" placeholder="Tuliskan catatan observasi, sikap, dan perkembangan anak pada kegiatan ini..."></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-batal" onclick="tutupModalCatatan()">Batal</button>
+                <button class="btn-simpan" onclick="simpanCatatanAnak()">Simpan Catatan</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== LIGHTBOX IMAGE PREVIEW MODAL ===== -->
+    <div class="modal-overlay" id="modal-lightbox">
+        <div class="lightbox-modal">
+            <img src="" alt="Pratinjau Foto" class="lightbox-img" id="lightbox-image">
+            <div class="lightbox-caption">
+                <span id="lightbox-title">Dokumentasi</span>
+                <button class="btn-close-modal" style="color: white;" onclick="tutupLightbox()">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast"></div>
+
+<script>
+// ===================== STATE =====================
+let currentLogbookId = null;
+let currentLogbookData = null;
+let daftarAnakKelas = [];
+
+// ===================== AUTH & SESSION =====================
+window.addEventListener('pageshow', async function(event) {
+    if (event.persisted) {
+        try {
+            const r = await fetch('/api/me', { cache: 'no-store' });
+            if (!r.ok) window.location.replace('/login');
+        } catch(e) {
+            window.location.replace('/login');
+        }
+        return;
+    }
+    if (sessionStorage.getItem('kpalya_logged_out') === 'true') {
+        window.location.replace('/login');
+    }
+});
+
+function keluarAplikasi(e) {
+    if (e) e.preventDefault();
+    try { fetch('/logout', { method: 'POST' }); } catch(err) {}
+    sessionStorage.clear();
+    sessionStorage.setItem('kpalya_logged_out', 'true');
+    localStorage.removeItem('kpalya_user');
+    window.location.replace('/login');
+}
+
+// ===================== INIT =====================
+async function inisialisasi() {
+    if (sessionStorage.getItem('kpalya_logged_out') === 'true') {
+        window.location.replace('/login');
+        return;
+    }
+
+    // 1. Ambil ID dari URL query param
+    const params = new URLSearchParams(window.location.search);
+    currentLogbookId = params.get('id') || '1'; // Default ke 1 jika tidak ada
+
+    // 2. Load User Info
+    try {
+        const resMe = await fetch('/api/me');
+        if (!resMe.ok) { window.location.replace('/login'); return; }
+        const me = await resMe.json();
+        const uname = me.username || 'Guru';
+        document.getElementById('user-avatar-initial').textContent = uname.charAt(0).toUpperCase();
+    } catch(e) {}
+
+    // 3. Load Detail Logbook
+    await muatDetailLogbook(currentLogbookId);
+}
+
+// ===================== LOAD DETAIL LOGBOOK =====================
+async function muatDetailLogbook(id) {
+    try {
+        const res = await fetch(`/api/logbook/${id}`);
+        if (!res.ok) {
+            showToast('Logbook tidak ditemukan', 'error');
+            setTimeout(() => window.location.href = '/kelola-logbook', 1500);
+            return;
+        }
+
+        currentLogbookData = await res.json();
+        renderSemuaData();
+        await muatDaftarAnak(currentLogbookData.logbook.id_kelas);
+    } catch(e) {
+        showToast('Gagal memuat detail logbook', 'error');
+    }
+}
+
+async function muatDaftarAnak(idKelas) {
+    try {
+        const res = await fetch('/api/anak');
+        const anakList = await res.json();
+        daftarAnakKelas = anakList.filter(a => a.id_kelas === idKelas);
+        
+        const sel = document.getElementById('select-anak');
+        sel.innerHTML = '<option value="">— Pilih Siswa —</option>';
+        daftarAnakKelas.forEach(a => {
+            sel.innerHTML += `<option value="${a.id_anak}">${escapeHtml(a.nama_lengkap)}</option>`;
+        });
+    } catch(e) {}
+}
+
+// ===================== RENDER SEMUA DATA =====================
+function renderSemuaData() {
+    if (!currentLogbookData) return;
+
+    const lb = currentLogbookData.logbook;
+    const kegiatans = currentLogbookData.kegiatan || [];
+    const catatans = currentLogbookData.catatan || [];
+    const docs = currentLogbookData.dokumentasi || [];
+
+    const namaKelas = lb.nama_kelas || 'TK A';
+    const tglFormatted = formatTanggalLengkap(lb.tanggal);
+
+    // Update Top bar & Header
+    document.getElementById('top-kelas-badge').textContent = `Internal · ${namaKelas}`;
+    document.getElementById('sidebar-role-title').textContent = `Wali kelas · ${namaKelas}`;
+    document.getElementById('page-sub-title').textContent = `Cerita kegiatan ${namaKelas} dan catatan perkembangan per anak.`;
+    document.getElementById('footer-text').textContent = `Internal wali kelas - ${namaKelas} - Data contoh fiktif`;
+
+    // Hero Card
+    document.getElementById('hero-kelas-label').textContent = `Logbook kelas · ${namaKelas}`;
+    document.getElementById('hero-date').textContent = tglFormatted;
+
+    // Theme: judul kegiatan pertama atau rangkuman
+    const temaKegiatan = kegiatans.length > 0 ? kegiatans[0].deskripsi || kegiatans[0].judul : 'Warna & bentuk melalui kolase daun';
+    document.getElementById('hero-theme').textContent = temaKegiatan;
+
+    document.getElementById('stat-foto-count').textContent = `${docs.length} foto`;
+    document.getElementById('stat-catatan-count').textContent = `${catatans.length} anak`;
+
+    // 1. Render Kegiatan Hari Ini
+    renderKegiatan(kegiatans, namaKelas);
+
+    // 2. Render Dokumentasi Foto
+    renderDokumentasi(docs);
+
+    // 3. Render Catatan Anak
+    renderCatatanAnak(catatans, namaKelas, tglFormatted);
+}
+
+function renderKegiatan(kegiatans, namaKelas) {
+    const container = document.getElementById('activity-list-container');
+    document.getElementById('kegiatan-sub-desc').textContent = `Catatan harian bersama untuk kelas ${namaKelas}.`;
+
+    if (!kegiatans || kegiatans.length === 0) {
+        container.innerHTML = `<p style="color:#9ca3af;font-size:13.5px;padding:12px 0;">Belum ada kegiatan yang dicatat.</p>`;
+        return;
+    }
+
+    container.innerHTML = kegiatans.map(kg => {
+        const cat = (kg.kategori || '').toLowerCase();
+        let iconClass = 'fa-shapes';
+        let iconWrapClass = 'icon-pembelajaran';
+
+        if (cat.includes('ibadah') || cat.includes('agama') || cat.includes('moral')) {
+            iconClass = 'fa-hands-praying';
+            iconWrapClass = 'icon-ibadah';
+        } else if (cat.includes('makan') || cat.includes('snack') || cat.includes('bekal')) {
+            iconClass = 'fa-utensils';
+            iconWrapClass = 'icon-makan';
+        } else if (cat.includes('eskul') || cat.includes('lagu') || cat.includes('musik') || cat.includes('seni')) {
+            iconClass = 'fa-music';
+            iconWrapClass = 'icon-eskul';
+        } else if (cat.includes('motorik') || cat.includes('kognitif')) {
+            iconClass = 'fa-cube';
+            iconWrapClass = 'icon-umum';
+        }
+
+        return `
+            <div class="activity-item">
+                <div class="activity-icon-box ${iconWrapClass}">
+                    <i class="fa-solid ${iconClass}"></i>
+                </div>
+                <div class="activity-content">
+                    <h4>${escapeHtml(kg.judul || kg.kategori || 'Kegiatan')}</h4>
+                    <p>${escapeHtml(kg.deskripsi || '-')}</p>
+                </div>
+            </div>`;
+    }).join('');
+}
+
+function renderDokumentasi(docs) {
+    const container = document.getElementById('doc-photos-container');
+    const desc = document.getElementById('doc-sub-desc');
+
+    if (!docs || docs.length === 0) {
+        desc.textContent = `0 foto · Belum ada dokumentasi untuk logbook ini.`;
+        container.innerHTML = `<p style="color:#9ca3af;font-size:13.5px;grid-column:1/-1;">Belum ada foto dokumentasi diunggah.</p>`;
+        return;
+    }
+
+    desc.textContent = `${docs.length} foto contoh · Pilih Pratinjau untuk melihat dokumentasi.`;
+
+    container.innerHTML = docs.map(d => {
+        let imgSrc = `/assets/${d.file_foto}`;
+        let filename = d.file_foto || 'foto-kegiatan.jpg';
+
+        return `
+            <div class="doc-photo-card">
+                <div class="doc-photo-img-wrap" onclick="bukaLightbox('${imgSrc}', '${escapeHtml(filename)}')">
+                    <img src="${imgSrc}" alt="${escapeHtml(filename)}" class="doc-photo-img" onerror="this.src='/assets/kolase-daun.jpg'">
+                </div>
+                <div class="doc-photo-info">
+                    <span class="doc-filename" title="${escapeHtml(filename)}">${escapeHtml(filename)}</span>
+                    <button type="button" class="btn-pratinjau" onclick="bukaLightbox('${imgSrc}', '${escapeHtml(filename)}')">
+                        <i class="fa-solid fa-up-right-and-down-left-from-center"></i> Pratinjau
+                    </button>
+                </div>
+            </div>`;
+    }).join('');
+}
+
+function renderCatatanAnak(catatans, namaKelas, tglFormatted) {
+    const container = document.getElementById('child-notes-container');
+
+    if (!catatans || catatans.length === 0) {
+        container.innerHTML = `<p style="color:#9ca3af;font-size:13px;padding:16px 0;text-align:center;">Belum ada catatan anak.<br>Klik "+ Tambah Catatan" untuk mulai mencatat.</p>`;
+        return;
+    }
+
+    container.innerHTML = catatans.map((c, index) => {
+        const initials = `A${index + 1}`;
+        const nama = c.nama_anak || `Anak 0${index + 1}`;
+
+        return `
+            <div class="child-note-card">
+                <div class="child-card-header">
+                    <div class="child-avatar">${initials}</div>
+                    <div class="child-header-info">
+                        <h4>${escapeHtml(nama)}</h4>
+                        <p>${escapeHtml(namaKelas)} · ${tglFormatted}</p>
+                    </div>
+                </div>
+                <div class="child-note-text">
+                    ${escapeHtml(c.catatan)}
+                </div>
+                <div class="child-card-actions">
+                    <button class="btn-child-action" onclick="lihatDetailCatatan('${escapeHtml(nama)}', '${escapeHtml(c.catatan)}')">Detail</button>
+                    <button class="btn-child-action" onclick="bukaModalEditCatatan(${c.id_catatan}, ${c.id_anak}, '${escapeHtml(c.catatan)}')">Edit</button>
+                    <button class="btn-child-action btn-delete" onclick="hapusCatatanAnak(${c.id_catatan})">Hapus</button>
+                </div>
+            </div>`;
+    }).join('');
+}
+
+// ===================== CRUD CATATAN ANAK =====================
+function bukaModalTambahCatatan() {
+    document.getElementById('modal-catatan-title').textContent = 'Tambah Catatan Anak';
+    document.getElementById('input-id-catatan').value = '';
+    document.getElementById('group-select-anak').style.display = 'flex';
+    document.getElementById('select-anak').value = '';
+    document.getElementById('input-isi-catatan').value = '';
+    document.getElementById('modal-catatan').classList.add('active');
+}
+
+function bukaModalEditCatatan(idCatatan, idAnak, catatan) {
+    document.getElementById('modal-catatan-title').textContent = 'Edit Catatan Anak';
+    document.getElementById('input-id-catatan').value = idCatatan;
+    document.getElementById('group-select-anak').style.display = 'none'; // Lock anak saat edit
+    document.getElementById('input-isi-catatan').value = catatan;
+    document.getElementById('modal-catatan').classList.add('active');
+}
+
+function tutupModalCatatan() {
+    document.getElementById('modal-catatan').classList.remove('active');
+}
+
+async function simpanCatatanAnak() {
+    const idCatatan = document.getElementById('input-id-catatan').value;
+    const idAnak = document.getElementById('select-anak').value;
+    const catatan = document.getElementById('input-isi-catatan').value.trim();
+
+    if (!catatan) {
+        showToast('Catatan observasi tidak boleh kosong', 'error');
+        return;
+    }
+
+    try {
+        if (!idCatatan) {
+            // INSERT
+            if (!idAnak) {
+                showToast('Pilih anak terlebih dahulu', 'error');
+                return;
+            }
+
+            const res = await fetch('/api/catatan-anak', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    id_logbook: currentLogbookId,
+                    id_anak: idAnak,
+                    catatan: catatan
+                })
+            });
+
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.error || 'Gagal menyimpan catatan');
+            showToast('Catatan anak berhasil ditambahkan', 'success');
+        } else {
+            // UPDATE
+            const res = await fetch(`/api/catatan-anak/${idCatatan}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ catatan })
+            });
+
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.error || 'Gagal update catatan');
+            showToast('Catatan anak berhasil diperbarui', 'success');
+        }
+
+        tutupModalCatatan();
+        await muatDetailLogbook(currentLogbookId);
+    } catch(err) {
+        showToast(err.message || 'Terjadi kesalahan', 'error');
+    }
+}
+
+async function hapusCatatanAnak(idCatatan) {
+    if (!confirm('Yakin ingin menghapus catatan anak ini?')) return;
+
+    try {
+        const res = await fetch(`/api/catatan-anak/${idCatatan}`, { method: 'DELETE' });
+        if (!res.ok) throw new Error('Gagal menghapus');
+        showToast('Catatan berhasil dihapus', 'success');
+        await muatDetailLogbook(currentLogbookId);
+    } catch(e) {
+        showToast('Gagal menghapus catatan', 'error');
+    }
+}
+
+function lihatDetailCatatan(nama, catatan) {
+    alert(`Catatan Khusus: ${nama}\n\n"${catatan}"`);
+}
+
+// ===================== AKSI LOGBOOK (EDIT & HAPUS) =====================
+function editLogbookIni() {
+    // Kembali ke kelola-logbook dengan membuka modal edit
+    window.location.href = `/kelola-logbook?edit=${currentLogbookId}`;
+}
+
+async function hapusLogbookIni() {
+    if (!confirm('Yakin ingin menghapus seluruh logbook ini beserta kegiatan dan catatannya?')) return;
+
+    try {
+        const res = await fetch(`/api/logbook/${currentLogbookId}`, { method: 'DELETE' });
+        if (!res.ok) throw new Error();
+        showToast('Logbook berhasil dihapus', 'success');
+        setTimeout(() => window.location.href = '/kelola-logbook', 1000);
+    } catch(e) {
+        showToast('Gagal menghapus logbook', 'error');
+    }
+}
+
+// ===================== LIGHTBOX PREVIEW =====================
+function bukaLightbox(src, title) {
+    document.getElementById('lightbox-image').src = src;
+    document.getElementById('lightbox-title').textContent = title;
+    document.getElementById('modal-lightbox').classList.add('active');
+}
+
+function tutupLightbox() {
+    document.getElementById('modal-lightbox').classList.remove('active');
+}
+
+// Close on backdrop click
+document.getElementById('modal-lightbox').addEventListener('click', function(e) {
+    if (e.target === this) tutupLightbox();
+});
+document.getElementById('modal-catatan').addEventListener('click', function(e) {
+    if (e.target === this) tutupModalCatatan();
+});
+
+// ===================== UTILITIES =====================
+function formatTanggalLengkap(dateStr) {
+    if (!dateStr) return '-';
+    const d = new Date(dateStr);
+    return d.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+}
+
+function escapeHtml(str) {
+    if (!str) return '';
+    return str.replace(/&/g, '&amp;')
+              .replace(/</g, '&lt;')
+              .replace(/>/g, '&gt;')
+              .replace(/"/g, '&quot;');
+}
+
+function showToast(message, type = 'success') {
+    const toast = document.getElementById('toast');
+    toast.className = `toast toast-${type}`;
+    toast.innerHTML = `<i class="fa-solid ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i> ${message}`;
+
+    setTimeout(() => toast.classList.add('show'), 10);
+    setTimeout(() => {
+        toast.classList.remove('show');
+    }, 3000);
+}
+
+// ===================== RUN =====================
+inisialisasi();
+</script>
+
+</body>
+</html>

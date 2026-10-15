@@ -1,0 +1,1669 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kelola Logbook – TK SIBER (iTales)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --sidebar-bg: #405d4d;
+            --sidebar-active: #537a63;
+            --text-dark: #124b3c;
+            --text-muted: #5a7366;
+            --bg-color: #f6f8f7;
+            --card-bg: #ffffff;
+            --accent: #124b3c;
+            --accent-light: #d6ead2;
+            --accent-hover: #1b6351;
+            --border-color: #e5e9e6;
+            --danger: #dc2626;
+            --danger-bg: #fef2f2;
+            --danger-border: #fecaca;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            display: flex;
+            background-color: var(--bg-color);
+            min-height: 100vh;
+            color: #1f2937;
+        }
+
+        /* ===== SIDEBAR ===== */
+        .sidebar {
+            width: 250px;
+            background-color: var(--sidebar-bg);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100vh;
+            z-index: 100;
+        }
+
+        .sidebar-brand {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 26px 22px;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+        }
+
+        .sidebar-brand img {
+            width: 42px;
+            height: 42px;
+            object-fit: contain;
+        }
+
+        .sidebar-brand h2 {
+            font-size: 16px;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+        }
+
+        .sidebar-brand p {
+            font-size: 12px;
+            font-weight: 400;
+            color: #d1d5db;
+        }
+
+        .sidebar-menu {
+            display: flex;
+            flex-direction: column;
+            margin-top: 15px;
+            flex: 1;
+            gap: 4px;
+            padding: 0 10px;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 13px 18px;
+            color: #e2e8e4;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+            border-radius: 10px;
+            transition: all 0.15s ease;
+        }
+
+        .menu-item:hover {
+            background-color: rgba(255,255,255,0.08);
+            color: white;
+        }
+
+        .menu-item.active {
+            background-color: var(--sidebar-active);
+            color: white;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        .menu-item i {
+            font-size: 17px;
+            width: 22px;
+            text-align: center;
+        }
+
+        .sidebar-footer {
+            padding: 15px 12px 20px;
+            border-top: 1px solid rgba(255,255,255,0.08);
+        }
+
+        .sidebar-logout-btn {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 18px;
+            color: #fca5a5;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 13.5px;
+            border-radius: 10px;
+            transition: all 0.15s ease;
+            background: rgba(239, 68, 68, 0.12);
+            cursor: pointer;
+            border: none;
+            width: 100%;
+        }
+
+        .sidebar-logout-btn:hover {
+            background: rgba(239, 68, 68, 0.25);
+            color: #fee2e2;
+            transform: translateX(3px);
+        }
+
+        /* ===== MAIN CONTENT ===== */
+        .main-content {
+            flex: 1;
+            margin-left: 250px;
+            padding: 30px 40px;
+            min-height: 100vh;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 28px;
+        }
+
+        .header-title h1 {
+            color: var(--text-dark);
+            font-size: 26px;
+            font-weight: 800;
+        }
+
+        .header-title p {
+            color: var(--text-muted);
+            font-size: 14px;
+            font-weight: 500;
+            margin-top: 3px;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .user-profile-card {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: white;
+            padding: 7px 16px 7px 8px;
+            border-radius: 50px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+            border: 1px solid var(--border-color);
+            transition: all 0.2s ease;
+        }
+
+        .profile-avatar {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #124b3c, #2a7560);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 15px;
+            font-weight: 700;
+            box-shadow: 0 2px 6px rgba(18,75,60,0.25);
+            position: relative;
+        }
+
+        .profile-avatar::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 10px;
+            height: 10px;
+            background: #22c55e;
+            border: 2px solid white;
+            border-radius: 50%;
+        }
+
+        .profile-details {
+            display: flex;
+            flex-direction: column;
+            line-height: 1.25;
+        }
+
+        .profile-name {
+            font-size: 13.5px;
+            font-weight: 700;
+            color: var(--text-dark);
+        }
+
+        .profile-role {
+            font-size: 11.5px;
+            font-weight: 500;
+            color: #6b7280;
+        }
+
+        .btn-logout-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: #fee2e2;
+            color: #dc2626;
+            border: 1px solid #fecaca;
+            padding: 9px 18px;
+            border-radius: 50px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.15s ease;
+        }
+
+        .btn-logout-header:hover {
+            background: #fca5a5;
+            color: #991b1b;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(220,38,38,0.2);
+        }
+
+        /* ===== INFO CARD (Kelas ditugaskan) ===== */
+        .info-card {
+            background: white;
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 24px 28px;
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.03);
+        }
+
+        .info-card-left .info-badge {
+            display: inline-block;
+            background: var(--accent-light);
+            color: #2d7a56;
+            font-size: 11.5px;
+            font-weight: 700;
+            padding: 4px 12px;
+            border-radius: 20px;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+        }
+
+        .info-card-left h2 {
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--text-dark);
+            margin-bottom: 4px;
+        }
+
+        .info-card-left p {
+            font-size: 13.5px;
+            color: var(--text-muted);
+        }
+
+        .info-card-stats {
+            display: flex;
+            gap: 24px;
+            align-items: center;
+        }
+
+        .info-stat {
+            text-align: center;
+        }
+
+        .info-stat .stat-number {
+            font-size: 28px;
+            font-weight: 800;
+            color: var(--text-dark);
+            line-height: 1;
+        }
+
+        .info-stat .stat-label {
+            font-size: 11.5px;
+            color: var(--text-muted);
+            font-weight: 600;
+            margin-top: 4px;
+        }
+
+        /* ===== FILTER SECTION ===== */
+        .filter-section {
+            background: white;
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 24px 28px;
+            margin-bottom: 24px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.03);
+        }
+
+        .filter-section h3 {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 6px;
+        }
+
+        .filter-section .filter-desc {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 18px;
+        }
+
+        .filter-row {
+            display: flex;
+            align-items: flex-end;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            min-width: 180px;
+        }
+
+        .filter-group label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .filter-group input,
+        .filter-group select {
+            padding: 10px 14px;
+            border: 1.5px solid #d1d5db;
+            border-radius: 10px;
+            font-size: 13.5px;
+            color: #111827;
+            outline: none;
+            background: white;
+            transition: border-color 0.15s, box-shadow 0.15s;
+        }
+
+        .filter-group input:focus,
+        .filter-group select:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(18,75,60,0.12);
+        }
+
+        .filter-buttons {
+            display: flex;
+            gap: 10px;
+            padding-bottom: 1px;
+        }
+
+        .btn-filter {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 22px;
+            border-radius: 10px;
+            font-size: 13.5px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: all 0.15s ease;
+        }
+
+        .btn-filter-primary {
+            background: var(--accent);
+            color: white;
+            box-shadow: 0 4px 12px rgba(18,75,60,0.25);
+        }
+
+        .btn-filter-primary:hover {
+            background: var(--accent-hover);
+            transform: translateY(-1px);
+        }
+
+        .btn-filter-reset {
+            background: #f3f4f6;
+            color: #4b5563;
+            border: 1px solid #d1d5db;
+        }
+
+        .btn-filter-reset:hover {
+            background: #e5e7eb;
+        }
+
+        /* ===== TOOLBAR ===== */
+        .toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .toolbar h3 {
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--text-dark);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .toolbar h3::before {
+            content: '';
+            width: 4px;
+            height: 22px;
+            background: var(--accent);
+            border-radius: 4px;
+            display: inline-block;
+        }
+
+        .toolbar .count-info {
+            font-size: 13px;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .btn-tambah {
+            background-color: var(--accent);
+            color: white;
+            border: none;
+            padding: 11px 24px;
+            border-radius: 10px;
+            font-size: 13.5px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 12px rgba(18,75,60,0.25);
+            transition: all 0.2s;
+        }
+
+        .btn-tambah:hover {
+            background-color: var(--accent-hover);
+            transform: translateY(-1px);
+        }
+
+        /* ===== CARD & TABLE ===== */
+        .card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+            margin-bottom: 24px;
+        }
+
+        .table-container {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background-color: #f7faf8;
+            color: #3d7a5c;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            font-size: 11.5px;
+            padding: 16px 24px;
+            text-align: left;
+            border-bottom: 1.5px solid #e8edea;
+        }
+
+        td {
+            padding: 16px 24px;
+            font-size: 13.5px;
+            color: #1f2937;
+            font-weight: 500;
+            border-bottom: 1px solid #f3f5f4;
+            vertical-align: middle;
+        }
+
+        tbody tr {
+            transition: background-color 0.15s ease;
+        }
+
+        tbody tr:hover {
+            background-color: #fbfdfc;
+        }
+
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .badge-kelas {
+            background: #dcfce7;
+            color: #15803d;
+            font-weight: 700;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            display: inline-block;
+        }
+
+        .badge-info {
+            background: #eef7f2;
+            color: #124b3c;
+            font-weight: 600;
+            padding: 3px 10px;
+            border-radius: 16px;
+            font-size: 11.5px;
+            display: inline-block;
+        }
+
+        .kegiatan-list {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .kegiatan-title {
+            font-weight: 700;
+            color: var(--text-dark);
+            font-size: 13.5px;
+        }
+
+        .kegiatan-sub {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        /* Action Buttons */
+        .action-btns {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-action {
+            padding: 6px 14px;
+            border-radius: 8px;
+            border: 1px solid #e5e7eb;
+            background: white;
+            cursor: pointer;
+            font-size: 12.5px;
+            font-weight: 600;
+            transition: all 0.15s;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .btn-action-detail {
+            color: #374151;
+        }
+
+        .btn-action-detail:hover {
+            background: #f3f4f6;
+            border-color: #d1d5db;
+        }
+
+        .btn-action-edit {
+            color: #059669;
+        }
+
+        .btn-action-edit:hover {
+            background: #ecfdf5;
+            border-color: #a7f3d0;
+        }
+
+        .btn-action-delete {
+            color: #dc2626;
+            border-color: var(--danger-border);
+            background: var(--danger-bg);
+        }
+
+        .btn-action-delete:hover {
+            background: #fecaca;
+            border-color: #f87171;
+        }
+
+        /* Table footer */
+        .table-footer {
+            padding: 14px 24px;
+            font-size: 12.5px;
+            color: var(--text-muted);
+            border-top: 1px solid #f0f2f1;
+            background: #fafbfa;
+        }
+
+        /* Empty state */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #9ca3af;
+        }
+
+        .empty-state i {
+            font-size: 48px;
+            margin-bottom: 16px;
+            color: #d1d5db;
+        }
+
+        .empty-state p {
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .empty-state .empty-sub {
+            font-size: 13px;
+            color: #b0b8c1;
+            margin-top: 4px;
+        }
+
+        /* ===== MODAL ===== */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(18, 75, 60, 0.4);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: white;
+            border-radius: 20px;
+            width: 600px;
+            max-width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 25px 60px rgba(0,0,0,0.2);
+            animation: modalPop 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .modal-wide {
+            width: 720px;
+        }
+
+        @keyframes modalPop {
+            from { opacity: 0; transform: translateY(15px) scale(0.97); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .modal-header {
+            background: var(--accent-light);
+            padding: 22px 28px;
+            border-bottom: 1px solid #c8e4d2;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .modal-header h2 {
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--text-dark);
+        }
+
+        .btn-close-modal {
+            background: none;
+            border: none;
+            font-size: 18px;
+            color: #5a7366;
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 6px;
+        }
+
+        .btn-close-modal:hover {
+            color: #111;
+        }
+
+        .modal-body {
+            padding: 26px 28px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+
+        .form-group label {
+            font-size: 13.5px;
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            padding: 11px 14px;
+            border: 1.5px solid #d1d5db;
+            border-radius: 10px;
+            font-size: 14px;
+            color: #111827;
+            outline: none;
+            font-family: 'Inter', sans-serif;
+            transition: border-color 0.15s, box-shadow 0.15s;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(18,75,60,0.12);
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            padding: 0 28px 24px;
+        }
+
+        .btn-batal {
+            padding: 10px 22px;
+            border-radius: 50px;
+            border: 1px solid #d1d5db;
+            background: #f9fafb;
+            color: #374151;
+            font-size: 13.5px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+
+        .btn-batal:hover {
+            background: #e5e7eb;
+        }
+
+        .btn-simpan {
+            padding: 10px 26px;
+            border-radius: 50px;
+            border: none;
+            background: var(--accent);
+            color: white;
+            font-size: 13.5px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 14px rgba(18,75,60,0.3);
+            transition: background 0.15s;
+        }
+
+        .btn-simpan:hover {
+            background: var(--accent-hover);
+        }
+
+        /* Kegiatan dynamic rows */
+        .kegiatan-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .kegiatan-row {
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 16px;
+            position: relative;
+        }
+
+        .kegiatan-row-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .kegiatan-row-header span {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text-dark);
+        }
+
+        .btn-remove-kegiatan {
+            background: var(--danger-bg);
+            color: var(--danger);
+            border: 1px solid var(--danger-border);
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .btn-remove-kegiatan:hover {
+            background: #fecaca;
+        }
+
+        .btn-add-kegiatan {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: #f3f4f6;
+            border: 1.5px dashed #d1d5db;
+            padding: 12px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #6b7280;
+            cursor: pointer;
+            justify-content: center;
+            transition: all 0.15s;
+        }
+
+        .btn-add-kegiatan:hover {
+            background: #e5e7eb;
+            border-color: #9ca3af;
+            color: #374151;
+        }
+
+        /* Alert notifications */
+        .alert {
+            display: none;
+            padding: 11px 15px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+
+        .alert-error {
+            background: var(--danger-bg);
+            color: var(--danger);
+            border: 1px solid var(--danger-border);
+        }
+
+        .alert-success {
+            background: #f0fdf4;
+            color: #16a34a;
+            border: 1px solid #bbf7d0;
+        }
+
+        /* ===== DETAIL MODAL ===== */
+        .detail-section {
+            margin-bottom: 20px;
+        }
+
+        .detail-section h4 {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .detail-section h4 i {
+            font-size: 14px;
+            color: var(--accent);
+        }
+
+        .detail-meta {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .detail-meta-item {
+            background: #f9fafb;
+            padding: 12px 16px;
+            border-radius: 10px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .detail-meta-item .meta-label {
+            font-size: 11.5px;
+            font-weight: 600;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            margin-bottom: 4px;
+        }
+
+        .detail-meta-item .meta-value {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-dark);
+        }
+
+        .detail-kegiatan-card {
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            padding: 14px 16px;
+            margin-bottom: 8px;
+        }
+
+        .detail-kegiatan-card .dk-kategori {
+            font-size: 11px;
+            font-weight: 600;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        .detail-kegiatan-card .dk-judul {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-top: 2px;
+        }
+
+        .detail-kegiatan-card .dk-deskripsi {
+            font-size: 13px;
+            color: #4b5563;
+            margin-top: 6px;
+            line-height: 1.5;
+        }
+
+        .detail-catatan-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .detail-catatan-item {
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+            background: #f9fafb;
+            padding: 12px 16px;
+            border-radius: 10px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .detail-catatan-item .catatan-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #124b3c, #2a7560);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .detail-catatan-item .catatan-body {
+            flex: 1;
+        }
+
+        .detail-catatan-item .catatan-nama {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text-dark);
+        }
+
+        .detail-catatan-item .catatan-text {
+            font-size: 13px;
+            color: #4b5563;
+            margin-top: 2px;
+            line-height: 1.5;
+        }
+
+        /* Toast notification */
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            padding: 14px 22px;
+            border-radius: 12px;
+            font-size: 13.5px;
+            font-weight: 600;
+            color: white;
+            z-index: 2000;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+            transform: translateY(20px);
+            opacity: 0;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .toast-success {
+            background: #059669;
+        }
+
+        .toast-error {
+            background: #dc2626;
+        }
+
+        /* Separator */
+        .separator {
+            height: 1px;
+            background: #e5e7eb;
+            margin: 8px 0;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== SIDEBAR ===== -->
+    <aside class="sidebar">
+        <div class="sidebar-brand">
+            <img src="/assets/Logo_uin.png" alt="Logo" onerror="this.src='https://ui-avatars.com/api/?name=TK&background=fff&color=124b3c'">
+            <div>
+                <h2>TK SIBER</h2>
+                <p>Logbook & Kegiatan</p>
+            </div>
+        </div>
+        
+        <nav class="sidebar-menu">
+            <a href="/dashboard-guru" class="menu-item">
+                <i class="fa-solid fa-house"></i> Dashboard
+            </a>
+            <a href="/kelola-anak" class="menu-item">
+                <i class="fa-solid fa-user-group"></i> Kelola Anak
+            </a>
+            <a href="/kelola-jadwal" class="menu-item">
+                <i class="fa-solid fa-calendar-days"></i> Kelola Jadwal
+            </a>
+            <a href="/kelola-logbook" class="menu-item active">
+                <i class="fa-solid fa-book"></i> Kelola Logbook
+            </a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <button type="button" class="sidebar-logout-btn" onclick="keluarAplikasi(event)">
+                <i class="fa-solid fa-right-from-bracket"></i> Keluar
+            </button>
+        </div>
+    </aside>
+
+    <!-- ===== MAIN CONTENT ===== -->
+    <main class="main-content">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-title">
+                <h1>Kelola Logbook</h1>
+                <p>Catatan kegiatan harian dan perkembangan anak di kelas Anda</p>
+            </div>
+            <div class="header-actions">
+                <div class="user-profile-card">
+                    <div class="profile-avatar" id="avatar-initial">G</div>
+                    <div class="profile-details">
+                        <span class="profile-name" id="user-display-name">Guru Kelas</span>
+                        <span class="profile-role">Pendidik · Online</span>
+                    </div>
+                </div>
+                <a href="/logout" class="btn-logout-header" title="Keluar dari akun" onclick="keluarAplikasi(event)">
+                    <i class="fa-solid fa-right-from-bracket"></i> Keluar
+                </a>
+            </div>
+        </header>
+
+        <!-- Info Card -->
+        <div class="info-card" id="info-card">
+            <div class="info-card-left">
+                <span class="info-badge">Kelas ditugaskan</span>
+                <h2 id="info-kelas-name">Semua Kelas</h2>
+                <p>Catat kegiatan kelas, lalu tambahkan catatan per anak dari detail logbook.</p>
+            </div>
+            <div class="info-card-stats">
+                <div class="info-stat">
+                    <div class="stat-number" id="stat-total-logbook">–</div>
+                    <div class="stat-label">Logbook</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filter Section -->
+        <div class="filter-section">
+            <h3>Cari logbook</h3>
+            <p class="filter-desc">Filter hanya berlaku pada logbook kelas yang ditugaskan.</p>
+            <div class="filter-row">
+                <div class="filter-group">
+                    <label for="filter-tanggal">Tanggal</label>
+                    <input type="date" id="filter-tanggal" placeholder="Semua tanggal">
+                </div>
+                <div class="filter-group">
+                    <label for="filter-kelas">Kelas</label>
+                    <select id="filter-kelas">
+                        <option value="">Semua Kelas</option>
+                    </select>
+                </div>
+                <div class="filter-buttons">
+                    <button class="btn-filter btn-filter-primary" onclick="terapkanFilter()">
+                        <i class="fa-solid fa-magnifying-glass"></i> Terapkan
+                    </button>
+                    <button class="btn-filter btn-filter-reset" onclick="resetFilter()">
+                        <i class="fa-solid fa-rotate-left"></i> Reset
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Toolbar -->
+        <div class="toolbar">
+            <div>
+                <h3>Daftar Logbook</h3>
+                <span class="count-info" id="count-logbook">Memuat data...</span>
+            </div>
+            <button class="btn-tambah" onclick="bukaModalTambah()">
+                <i class="fa-solid fa-plus"></i> Tambah Logbook
+            </button>
+        </div>
+
+        <!-- Table Card -->
+        <div class="card">
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width: 160px;">Tanggal</th>
+                            <th style="width: 90px;">Kelas</th>
+                            <th>Pembelajaran</th>
+                            <th style="width: 110px;">Dokumentasi</th>
+                            <th style="width: 110px;">Catatan anak</th>
+                            <th style="width: 220px; text-align: center;">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbody-logbook">
+                        <tr>
+                            <td colspan="6">
+                                <div class="empty-state">
+                                    <i class="fa-solid fa-spinner fa-spin"></i>
+                                    <p>Memuat data logbook...</p>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="table-footer" id="table-footer">
+                Memuat data...
+            </div>
+        </div>
+    </main>
+
+    <!-- ===== MODAL TAMBAH / EDIT LOGBOOK ===== -->
+    <div class="modal-overlay" id="modal-logbook">
+        <div class="modal modal-wide">
+            <div class="modal-header">
+                <h2 id="modal-title">Tambah Logbook Baru</h2>
+                <button class="btn-close-modal" onclick="tutupModal()">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <div class="alert alert-error" id="modal-alert-error"></div>
+                <div class="alert alert-success" id="modal-alert-success"></div>
+
+                <input type="hidden" id="input-id-logbook">
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="input-tanggal">Tanggal *</label>
+                        <input type="date" id="input-tanggal">
+                    </div>
+                    <div class="form-group">
+                        <label for="input-kelas">Kelas *</label>
+                        <select id="input-kelas">
+                            <option value="">— Pilih Kelas —</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="separator"></div>
+
+                <div class="form-group">
+                    <label>Kegiatan Pembelajaran *</label>
+                    <div class="kegiatan-container" id="kegiatan-container">
+                        <!-- Dynamic kegiatan rows -->
+                    </div>
+                    <button type="button" class="btn-add-kegiatan" onclick="tambahKegiatanRow()">
+                        <i class="fa-solid fa-plus"></i> Tambah Kegiatan
+                    </button>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn-batal" onclick="tutupModal()">Batal</button>
+                <button class="btn-simpan" id="btn-simpan" onclick="simpanLogbook()">Simpan</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== MODAL DETAIL LOGBOOK ===== -->
+    <div class="modal-overlay" id="modal-detail">
+        <div class="modal modal-wide">
+            <div class="modal-header">
+                <h2 id="detail-title">Detail Logbook</h2>
+                <button class="btn-close-modal" onclick="tutupModalDetail()">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="modal-body" id="detail-body">
+                <!-- Dynamic content -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast"></div>
+
+<script>
+// ===================== GLOBAL STATE =====================
+let semuaLogbook = [];
+let daftarKelas = [];
+let filterState = { tanggal: '', kelas: '' };
+
+// ===================== AUTH & SESSION =====================
+window.addEventListener('pageshow', async function(event) {
+    if (event.persisted) {
+        try {
+            const r = await fetch('/api/me', { cache: 'no-store' });
+            if (!r.ok) window.location.replace('/login');
+        } catch(e) {
+            window.location.replace('/login');
+        }
+        return;
+    }
+    if (sessionStorage.getItem('kpalya_logged_out') === 'true') {
+        window.location.replace('/login');
+    }
+});
+
+function keluarAplikasi(e) {
+    if (e) e.preventDefault();
+    try { fetch('/logout', { method: 'POST' }); } catch(err) {}
+    sessionStorage.clear();
+    sessionStorage.setItem('kpalya_logged_out', 'true');
+    localStorage.removeItem('kpalya_user');
+    let target = '/login';
+    if (window.location.protocol === 'file:') target = '../login/index.html';
+    else if (window.location.pathname.includes('/public/')) target = window.location.origin + '/public/login/index.html';
+    window.location.replace(target);
+}
+
+// ===================== INIT =====================
+async function inisialisasi() {
+    if (sessionStorage.getItem('kpalya_logged_out') === 'true') {
+        window.location.replace('/login');
+        return;
+    }
+
+    // Load user info
+    try {
+        const res = await fetch('/api/me');
+        if (!res.ok) { window.location.replace('/login'); return; }
+        const user = await res.json();
+        const uname = user.username || 'Guru';
+        document.getElementById('user-display-name').textContent = uname;
+        document.getElementById('avatar-initial').textContent = uname.charAt(0).toUpperCase();
+    } catch(e) {}
+
+    // Load kelas
+    try {
+        const res = await fetch('/api/kelas');
+        daftarKelas = await res.json();
+        isiDropdownKelas();
+    } catch(e) {}
+
+    // Load logbook
+    await muatLogbook();
+
+    // Check if redirect from detail with ?edit=ID
+    const urlParams = new URLSearchParams(window.location.search);
+    const editId = urlParams.get('edit');
+    if (editId) {
+        bukaModalEdit(editId);
+    }
+}
+
+function isiDropdownKelas() {
+    const filterKelas = document.getElementById('filter-kelas');
+    const inputKelas = document.getElementById('input-kelas');
+
+    // Filter dropdown
+    filterKelas.innerHTML = '<option value="">Semua Kelas</option>';
+    daftarKelas.forEach(k => {
+        filterKelas.innerHTML += `<option value="${k.id_kelas}">${k.nama_kelas}</option>`;
+    });
+
+    // Input dropdown
+    inputKelas.innerHTML = '<option value="">— Pilih Kelas —</option>';
+    daftarKelas.forEach(k => {
+        inputKelas.innerHTML += `<option value="${k.id_kelas}">${k.nama_kelas}</option>`;
+    });
+}
+
+// ===================== LOAD LOGBOOK =====================
+async function muatLogbook() {
+    try {
+        let url = '/api/logbook?';
+        if (filterState.tanggal) url += `tanggal=${filterState.tanggal}&`;
+        if (filterState.kelas) url += `kelas=${filterState.kelas}&`;
+
+        const res = await fetch(url);
+        semuaLogbook = await res.json();
+        renderLogbook();
+    } catch(e) {
+        document.getElementById('tbody-logbook').innerHTML = `
+            <tr><td colspan="6">
+                <div class="empty-state">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                    <p>Gagal memuat data logbook</p>
+                    <p class="empty-sub">Pastikan koneksi ke server berjalan dengan baik</p>
+                </div>
+            </td></tr>`;
+    }
+}
+
+function renderLogbook() {
+    const tbody = document.getElementById('tbody-logbook');
+    const countEl = document.getElementById('count-logbook');
+    const footerEl = document.getElementById('table-footer');
+    const statTotal = document.getElementById('stat-total-logbook');
+
+    statTotal.textContent = semuaLogbook.length;
+
+    if (semuaLogbook.length === 0) {
+        tbody.innerHTML = `
+            <tr><td colspan="6">
+                <div class="empty-state">
+                    <i class="fa-regular fa-folder-open"></i>
+                    <p>Belum ada logbook</p>
+                    <p class="empty-sub">Klik "Tambah Logbook" untuk mencatat kegiatan harian</p>
+                </div>
+            </td></tr>`;
+        countEl.textContent = '0 logbook';
+        footerEl.textContent = 'Tidak ada data logbook';
+        return;
+    }
+
+    countEl.textContent = `${semuaLogbook.length} logbook`;
+
+    tbody.innerHTML = semuaLogbook.map(lb => {
+        const tgl = formatTanggal(lb.tanggal);
+        const kegiatanCount = lb.jumlah_kegiatan || 0;
+        const docCount = lb.jumlah_dokumentasi || 0;
+        const catatanCount = lb.jumlah_catatan || 0;
+
+        // Get first kegiatan title if available
+        const kegiatanTitle = lb.kegiatan_pertama || 'Belum ada kegiatan';
+
+        return `
+            <tr>
+                <td style="font-weight: 600;">${tgl}</td>
+                <td><span class="badge-kelas">${lb.nama_kelas || '-'}</span></td>
+                <td>
+                    <div class="kegiatan-list">
+                        <span class="kegiatan-title">${escapeHtml(kegiatanTitle)}</span>
+                        <span class="kegiatan-sub">${kegiatanCount} bidang kegiatan</span>
+                    </div>
+                </td>
+                <td>${docCount > 0 ? docCount + ' foto' : '—'}</td>
+                <td>${catatanCount > 0 ? catatanCount + ' catatan' : '—'}</td>
+                <td>
+                    <div class="action-btns">
+                        <button class="btn-action btn-action-detail" onclick="lihatDetail(${lb.id_logbook})">
+                            <i class="fa-solid fa-eye"></i> Detail
+                        </button>
+                        <button class="btn-action btn-action-edit" onclick="bukaModalEdit(${lb.id_logbook})">
+                            <i class="fa-solid fa-pen"></i> Edit
+                        </button>
+                        <button class="btn-action btn-action-delete" onclick="hapusLogbook(${lb.id_logbook})">
+                            <i class="fa-solid fa-trash"></i> Hapus
+                        </button>
+                    </div>
+                </td>
+            </tr>`;
+    }).join('');
+
+    footerEl.textContent = `Menampilkan ${semuaLogbook.length} dari ${semuaLogbook.length} logbook · Diurutkan dari tanggal terbaru`;
+}
+
+// ===================== FILTER =====================
+function terapkanFilter() {
+    filterState.tanggal = document.getElementById('filter-tanggal').value;
+    filterState.kelas = document.getElementById('filter-kelas').value;
+    muatLogbook();
+}
+
+function resetFilter() {
+    document.getElementById('filter-tanggal').value = '';
+    document.getElementById('filter-kelas').value = '';
+    filterState = { tanggal: '', kelas: '' };
+    muatLogbook();
+}
+
+// ===================== MODAL TAMBAH / EDIT =====================
+let kegiatanCounter = 0;
+
+function bukaModalTambah() {
+    document.getElementById('modal-title').textContent = 'Tambah Logbook Baru';
+    document.getElementById('btn-simpan').textContent = 'Simpan';
+    document.getElementById('input-id-logbook').value = '';
+    document.getElementById('input-tanggal').value = new Date().toISOString().split('T')[0];
+    document.getElementById('input-kelas').value = '';
+    hideAlerts();
+
+    // Reset kegiatan rows
+    kegiatanCounter = 0;
+    document.getElementById('kegiatan-container').innerHTML = '';
+    tambahKegiatanRow();
+
+    document.getElementById('modal-logbook').classList.add('active');
+}
+
+async function bukaModalEdit(id) {
+    document.getElementById('modal-title').textContent = 'Edit Logbook';
+    document.getElementById('btn-simpan').textContent = 'Perbarui';
+    hideAlerts();
+
+    try {
+        const res = await fetch(`/api/logbook/${id}`);
+        if (!res.ok) throw new Error('Gagal mengambil data logbook');
+        const data = await res.json();
+
+        document.getElementById('input-id-logbook').value = data.logbook.id_logbook;
+        document.getElementById('input-tanggal').value = data.logbook.tanggal.split('T')[0];
+        document.getElementById('input-kelas').value = data.logbook.id_kelas;
+
+        // Populate kegiatan
+        kegiatanCounter = 0;
+        document.getElementById('kegiatan-container').innerHTML = '';
+
+        if (data.kegiatan && data.kegiatan.length > 0) {
+            data.kegiatan.forEach(kg => {
+                tambahKegiatanRow(kg.kategori, kg.judul, kg.deskripsi);
+            });
+        } else {
+            tambahKegiatanRow();
+        }
+
+        document.getElementById('modal-logbook').classList.add('active');
+    } catch(e) {
+        showToast('Gagal memuat data logbook', 'error');
+    }
+}
+
+function tambahKegiatanRow(kategori = '', judul = '', deskripsi = '') {
+    kegiatanCounter++;
+    const container = document.getElementById('kegiatan-container');
+    const rowHTML = `
+        <div class="kegiatan-row" id="kegiatan-row-${kegiatanCounter}">
+            <div class="kegiatan-row-header">
+                <span>Kegiatan #${kegiatanCounter}</span>
+                <button type="button" class="btn-remove-kegiatan" onclick="hapusKegiatanRow(${kegiatanCounter})">
+                    <i class="fa-solid fa-xmark"></i> Hapus
+                </button>
+            </div>
+            <div class="form-group" style="margin-bottom: 10px;">
+                <label>Kategori / Bidang</label>
+                <input type="text" class="kegiatan-kategori" placeholder="Contoh: Nilai Agama & Moral" value="${escapeHtml(kategori)}">
+            </div>
+            <div class="form-group" style="margin-bottom: 10px;">
+                <label>Judul Kegiatan</label>
+                <input type="text" class="kegiatan-judul" placeholder="Contoh: Mengenal huruf hijaiyah" value="${escapeHtml(judul)}">
+            </div>
+            <div class="form-group">
+                <label>Deskripsi</label>
+                <textarea class="kegiatan-deskripsi" placeholder="Deskripsi kegiatan pembelajaran...">${escapeHtml(deskripsi)}</textarea>
+            </div>
+        </div>`;
+    container.insertAdjacentHTML('beforeend', rowHTML);
+}
+
+function hapusKegiatanRow(num) {
+    const row = document.getElementById(`kegiatan-row-${num}`);
+    if (row) row.remove();
+}
+
+function tutupModal() {
+    document.getElementById('modal-logbook').classList.remove('active');
+}
+
+function hideAlerts() {
+    document.getElementById('modal-alert-error').style.display = 'none';
+    document.getElementById('modal-alert-success').style.display = 'none';
+}
+
+function showModalError(msg) {
+    const el = document.getElementById('modal-alert-error');
+    el.textContent = msg;
+    el.style.display = 'block';
+}
+
+async function simpanLogbook() {
+    hideAlerts();
+
+    const id = document.getElementById('input-id-logbook').value;
+    const tanggal = document.getElementById('input-tanggal').value;
+    const id_kelas = document.getElementById('input-kelas').value;
+
+    if (!tanggal || !id_kelas) {
+        showModalError('Tanggal dan Kelas wajib diisi!');
+        return;
+    }
+
+    // Collect kegiatan
+    const rows = document.querySelectorAll('.kegiatan-row');
+    const kegiatan = [];
+
+    rows.forEach((row, index) => {
+        const kategori = row.querySelector('.kegiatan-kategori').value.trim();
+        const judul = row.querySelector('.kegiatan-judul').value.trim();
+        const deskripsi = row.querySelector('.kegiatan-deskripsi').value.trim();
+
+        if (judul) {
+            kegiatan.push({ kategori, judul, deskripsi, urutan: index });
+        }
+    });
+
+    if (kegiatan.length === 0) {
+        showModalError('Tambahkan minimal 1 kegiatan dengan judul!');
+        return;
+    }
+
+    const payload = { tanggal, id_kelas, kegiatan };
+
+    try {
+        const isEdit = !!id;
+        const url = isEdit ? `/api/logbook/${id}` : '/api/logbook';
+        const method = isEdit ? 'PUT' : 'POST';
+
+        const res = await fetch(url, {
+            method,
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+            showModalError(data.error || 'Gagal menyimpan logbook');
+            return;
+        }
+
+        showToast(isEdit ? 'Logbook berhasil diperbarui' : 'Logbook berhasil ditambahkan', 'success');
+        tutupModal();
+        await muatLogbook();
+    } catch(e) {
+        showModalError('Terjadi kesalahan server');
+    }
+}
+
+// ===================== DETAIL =====================
+function lihatDetail(id) {
+    window.location.href = `/detail-logbook?id=${id}`;
+}
+
+// ===================== HAPUS =====================
+async function hapusLogbook(id) {
+    if (!confirm('Yakin ingin menghapus logbook ini?\nSemua kegiatan dan catatan di dalamnya akan ikut terhapus.')) return;
+
+    try {
+        const res = await fetch(`/api/logbook/${id}`, { method: 'DELETE' });
+        const data = await res.json();
+
+        if (!res.ok) {
+            showToast(data.error || 'Gagal menghapus logbook', 'error');
+            return;
+        }
+
+        showToast('Logbook berhasil dihapus', 'success');
+        await muatLogbook();
+    } catch(e) {
+        showToast('Terjadi kesalahan saat menghapus', 'error');
+    }
+}
+
+// ===================== UTILITIES =====================
+function formatTanggal(dateStr) {
+    if (!dateStr) return '-';
+    const d = new Date(dateStr);
+    return d.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+}
+
+function escapeHtml(str) {
+    if (!str) return '';
+    return str.replace(/&/g, '&amp;')
+              .replace(/</g, '&lt;')
+              .replace(/>/g, '&gt;')
+              .replace(/"/g, '&quot;');
+}
+
+function showToast(message, type = 'success') {
+    const toast = document.getElementById('toast');
+    toast.className = `toast toast-${type}`;
+    toast.innerHTML = `<i class="fa-solid ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i> ${message}`;
+
+    setTimeout(() => toast.classList.add('show'), 10);
+    setTimeout(() => {
+        toast.classList.remove('show');
+    }, 3000);
+}
+
+// ===================== START =====================
+inisialisasi();
+</script>
+
+</body>
+</html>

@@ -3,50 +3,80 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Admin – iTales</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <title>Dashboard Admin – TK SIBER (iTales)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
             --sidebar-bg: #18302b;
             --sidebar-active: #2a5a50;
-            --text-dark: #1a3a35;
-            --bg-color: #f2f4f0;
+            --text-dark: #124b3c;
+            --text-muted: #5a7366;
+            --bg-color: #f4f6f5;
             --card-bg: #ffffff;
-            --accent: #1d5c45;
-            --accent-light: #d6ead2;
+            --accent: #124b3c;
+            --accent-light: #edf5f0;
+            --accent-border: #d2e4d8;
+            --border-color: #e5e9e6;
+            --danger: #dc2626;
+            --danger-bg: #fef2f2;
+            --danger-border: #fecaca;
         }
 
-        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-        body { display: flex; background-color: var(--bg-color); min-height: 100vh; }
+        body {
+            display: flex;
+            background-color: var(--bg-color);
+            min-height: 100vh;
+            color: #1f2937;
+            font-family: 'Inter', sans-serif;
+        }
 
         /* ===== SIDEBAR ===== */
         .sidebar {
-            width: 250px;
+            width: 255px;
             background-color: var(--sidebar-bg);
             color: white;
             display: flex;
             flex-direction: column;
             position: fixed;
             height: 100vh;
+            z-index: 100;
         }
 
         .sidebar-brand {
             display: flex;
             align-items: center;
             gap: 12px;
-            padding: 28px 22px;
+            padding: 24px 22px;
             border-bottom: 1px solid rgba(255,255,255,0.08);
         }
 
-        .sidebar-brand img { width: 38px; height: 38px; }
+        .sidebar-brand img {
+            width: 40px;
+            height: 40px;
+            object-fit: contain;
+        }
 
-        .sidebar-brand .brand-text h2 { font-size: 16px; font-weight: 700; }
-        .sidebar-brand .brand-text p { font-size: 11px; color: #8aaba3; margin-top: 2px; }
+        .sidebar-brand .brand-text h2 {
+            font-size: 16px;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+        }
+
+        .sidebar-brand .brand-text p {
+            font-size: 11.5px;
+            color: #8aaba3;
+            margin-top: 2px;
+        }
 
         .sidebar-section {
-            padding: 18px 22px 8px;
+            padding: 16px 20px 6px;
             font-size: 10.5px;
             font-weight: 700;
             letter-spacing: 0.08em;
@@ -54,129 +84,300 @@
             text-transform: uppercase;
         }
 
-        .sidebar-menu { display: flex; flex-direction: column; flex: 1; padding-top: 8px; }
+        .sidebar-menu {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            padding: 0 10px;
+            gap: 3px;
+            overflow-y: auto;
+        }
 
         .menu-item {
             display: flex;
             align-items: center;
             gap: 12px;
-            padding: 13px 22px;
+            padding: 11px 16px;
             color: #c4c4d4;
             text-decoration: none;
-            font-weight: 500;
+            font-weight: 600;
             font-size: 13.5px;
-            transition: background 0.15s, color 0.15s;
-            margin: 1px 10px;
+            transition: all 0.15s ease;
             border-radius: 8px;
         }
 
-        .menu-item:hover { background: rgba(255,255,255,0.06); color: white; }
-        .menu-item.active { background: rgba(29, 92, 69, 0.4); color: #d6ead2; }
-        .menu-item i { font-size: 16px; width: 18px; text-align: center; }
+        .menu-item:hover {
+            background: rgba(255,255,255,0.08);
+            color: white;
+        }
+
+        .menu-item.active {
+            background: rgba(42, 90, 80, 0.7);
+            color: #e6f7ec;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+        }
+
+        .menu-item i {
+            font-size: 15px;
+            width: 18px;
+            text-align: center;
+        }
 
         /* Sidebar logout */
-        .sidebar-footer { padding: 15px 12px 20px; border-top: 1px solid rgba(255,255,255,0.08); }
-        .sidebar-logout-btn {
-            display: flex; align-items: center; gap: 12px;
-            padding: 12px 18px; color: #fca5a5;
-            font-weight: 600; font-size: 13.5px;
-            border-radius: 10px; transition: all 0.15s ease;
-            background: rgba(239, 68, 68, 0.12);
-            cursor: pointer; border: none; width: 100%;
+        .sidebar-footer {
+            padding: 14px 12px 18px;
+            border-top: 1px solid rgba(255,255,255,0.08);
         }
-        .sidebar-logout-btn:hover { background: rgba(239, 68, 68, 0.25); color: #fee2e2; transform: translateX(3px); }
 
-        /* ===== MAIN ===== */
-        .main-content { flex: 1; margin-left: 250px; padding: 32px 40px; }
+        .sidebar-logout-btn {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            color: #fca5a5;
+            font-weight: 700;
+            font-size: 13.5px;
+            border-radius: 10px;
+            transition: all 0.15s ease;
+            background: rgba(239, 68, 68, 0.12);
+            cursor: pointer;
+            border: 1px solid rgba(239, 68, 68, 0.25);
+            width: 100%;
+            text-align: left;
+        }
+
+        .sidebar-logout-btn:hover {
+            background: rgba(239, 68, 68, 0.25);
+            color: #fee2e2;
+            transform: translateX(3px);
+        }
+
+        /* ===== MAIN CONTENT ===== */
+        .main-content {
+            flex: 1;
+            margin-left: 255px;
+            padding: 28px 36px 40px;
+            min-height: 100vh;
+            max-width: 1360px;
+        }
 
         .page-header {
-            display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 26px;
+            padding-bottom: 18px;
+            border-bottom: 1px solid #e2e7e4;
         }
-        .page-header h1 { font-size: 24px; font-weight: 700; color: var(--text-dark); }
-        .page-header p { font-size: 14px; color: #5a8a7e; margin-top: 4px; }
 
-        .header-right { display: flex; align-items: center; gap: 12px; }
+        .page-header h1 {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--text-dark);
+        }
 
-        /* Profile card pill */
+        .page-header p {
+            font-size: 13.5px;
+            color: #5a8a7e;
+            margin-top: 3px;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
         .user-profile-card {
-            display: flex; align-items: center; gap: 12px;
-            background: white; padding: 7px 16px 7px 8px;
-            border-radius: 50px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-            border: 1px solid #e5e9e6;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: white;
+            padding: 6px 16px 6px 8px;
+            border-radius: 50px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            border: 1px solid var(--border-color);
         }
+
         .profile-avatar {
-            width: 38px; height: 38px; border-radius: 50%;
-            background: linear-gradient(135deg, #1d5c45, #2a7560);
-            color: white; display: flex; align-items: center;
-            justify-content: center; font-size: 15px; font-weight: 700;
-            box-shadow: 0 2px 6px rgba(29,92,69,0.25); position: relative;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #18302b, #2a5a50);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 700;
+            position: relative;
         }
+
         .profile-avatar::after {
-            content: ''; position: absolute; bottom: 0; right: 0;
-            width: 10px; height: 10px; background: #22c55e;
-            border: 2px solid white; border-radius: 50%;
+            content: '';
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 9px;
+            height: 9px;
+            background: #22c55e;
+            border: 2px solid white;
+            border-radius: 50%;
         }
-        .profile-details { display: flex; flex-direction: column; line-height: 1.25; }
-        .profile-name { font-size: 13.5px; font-weight: 700; color: var(--text-dark); }
-        .profile-role { font-size: 11.5px; font-weight: 500; color: #6b7280; }
 
-        /* Logout button header */
+        .profile-details {
+            display: flex;
+            flex-direction: column;
+            line-height: 1.25;
+        }
+
+        .profile-name {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text-dark);
+        }
+
+        .profile-role {
+            font-size: 11px;
+            font-weight: 600;
+            color: #6b7280;
+        }
+
         .btn-logout-header {
-            display: flex; align-items: center; gap: 8px;
-            background: #fee2e2; color: #dc2626;
-            border: 1px solid #fecaca; padding: 9px 18px;
-            border-radius: 50px; font-size: 13px; font-weight: 700;
-            cursor: pointer; text-decoration: none; transition: all 0.15s ease;
-        }
-        .btn-logout-header:hover {
-            background: #fca5a5; color: #991b1b;
-            transform: translateY(-1px); box-shadow: 0 2px 8px rgba(220,38,38,0.2);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: #fee2e2;
+            color: #dc2626;
+            border: 1px solid #fecaca;
+            padding: 9px 18px;
+            border-radius: 50px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.15s ease;
         }
 
-        /* ===== STATS ===== */
+        .btn-logout-header:hover {
+            background: #fca5a5;
+            color: #991b1b;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(220,38,38,0.2);
+        }
+
+        /* ===== QUICK ACTION BAR ===== */
+        .quick-actions-bar {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+        }
+
+        .btn-action-quick {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 18px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 700;
+            text-decoration: none;
+            transition: all 0.15s ease;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+        }
+
+        .btn-quick-primary {
+            background: var(--accent);
+            color: white;
+            border: 1px solid var(--accent);
+        }
+
+        .btn-quick-primary:hover {
+            background: #19614e;
+            transform: translateY(-1px);
+        }
+
+        .btn-quick-secondary {
+            background: white;
+            color: #374151;
+            border: 1px solid #d1d5db;
+        }
+
+        .btn-quick-secondary:hover {
+            background: #f9fafb;
+            border-color: #9ca3af;
+            color: #111;
+        }
+
+        /* ===== STATS GRID ===== */
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 18px;
-            margin-bottom: 30px;
+            grid-template-columns: 1fr;
+            gap: 16px;
+            margin-bottom: 26px;
+            max-width: 360px;
         }
 
         .stat-card {
             background: white;
             border-radius: 14px;
-            padding: 22px 20px;
+            padding: 20px;
             display: flex;
             align-items: center;
             gap: 16px;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.05);
-            border: 1px solid #f3f4f6;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+            border: 1px solid #e8ece9;
+            transition: transform 0.15s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
         }
 
         .stat-icon {
-            width: 52px;
-            height: 52px;
+            width: 50px;
+            height: 50px;
             border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 22px;
+            font-size: 20px;
+            flex-shrink: 0;
         }
 
-        .icon-green  { background: #e8f5e9; color: #1d5c45; }
-        .icon-amber  { background: #fffbeb; color: #d97706; }
         .icon-blue   { background: #e0f2fe; color: #0284c7; }
+        .icon-green  { background: #dcfce7; color: #16a34a; }
+        .icon-purple { background: #ede9fe; color: #7c3aed; }
+        .icon-amber  { background: #fef3c7; color: #d97706; }
 
-        .stat-info h2 { font-size: 28px; color: #111827; font-weight: 700; line-height: 1; margin-bottom: 5px; }
-        .stat-info p  { font-size: 13px; color: #6b7280; font-weight: 500; }
+        .stat-info h2 {
+            font-size: 24px;
+            color: #111827;
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 4px;
+        }
 
-        /* ===== CARDS ===== */
-        .cards-row { display: grid; grid-template-columns: 1.4fr 1fr; gap: 22px; }
+        .stat-info p {
+            font-size: 12px;
+            color: #6b7280;
+            font-weight: 600;
+        }
+
+        /* ===== CARDS ROW ===== */
+        .cards-row {
+            display: grid;
+            grid-template-columns: 1.5fr 1fr;
+            gap: 22px;
+        }
 
         .card {
             background: white;
             border-radius: 16px;
             overflow: hidden;
-            box-shadow: 0 2px 16px rgba(0,0,0,0.06);
+            box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+            border: 1px solid var(--border-color);
         }
 
         .card-head {
@@ -184,104 +385,220 @@
             justify-content: space-between;
             align-items: center;
             padding: 18px 24px;
-            border-bottom: 1px solid #f3f4f6;
+            border-bottom: 1px solid #f3f5f4;
+            background: #fafbfa;
         }
 
-        .card-head h3 { font-size: 15px; font-weight: 700; color: #111; }
+        .card-head h3 {
+            font-size: 15px;
+            font-weight: 800;
+            color: #111827;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
 
-        .btn-sm {
+        .card-head h3 i {
+            color: var(--accent);
+            font-size: 16px;
+        }
+
+        .btn-sm-link {
             font-size: 12.5px;
-            font-weight: 600;
+            font-weight: 700;
             color: var(--accent);
             text-decoration: none;
             background: var(--accent-light);
-            padding: 6px 12px;
-            border-radius: 6px;
-            transition: background 0.15s;
+            border: 1px solid var(--accent-border);
+            padding: 6px 14px;
+            border-radius: 8px;
+            transition: all 0.15s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
         }
-        .btn-sm:hover { background: #b0c8c1; }
 
-        table { width: 100%; border-collapse: collapse; }
+        .btn-sm-link:hover {
+            background: #dbeee2;
+        }
 
-        th, td { padding: 14px 24px; text-align: left; font-size: 13.5px; }
-        th { background: #f9fafb; color: #6b7280; font-weight: 700; font-size: 11px; letter-spacing: 0.05em; text-transform: uppercase; }
-        td { color: #1f2937; font-weight: 500; border-bottom: 1px solid #f3f4f6; }
-        tr:last-child td { border-bottom: none; }
-        tbody tr:hover { background: #fafafa; }
+        /* Table */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background: #f8faf9;
+            color: #6b7280;
+            font-weight: 700;
+            font-size: 11px;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            padding: 14px 20px;
+            border-bottom: 1px solid #e8ece9;
+            text-align: left;
+        }
+
+        td {
+            padding: 14px 20px;
+            color: #1f2937;
+            font-weight: 500;
+            font-size: 13.5px;
+            border-bottom: 1px solid #f3f4f6;
+            vertical-align: middle;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tbody tr:hover {
+            background: #f9fbf9;
+        }
+
+        .user-table-cell {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .table-user-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #e2ece7;
+            color: var(--text-dark);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 700;
+        }
 
         .badge {
-            padding: 3px 9px;
+            padding: 4px 10px;
             border-radius: 20px;
             font-size: 11.5px;
-            font-weight: 600;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
         }
 
-        .badge-admin  { background: #e0f2fe; color: #0284c7; }
-        .badge-guru   { background: #e8f5e9; color: #16a34a; }
-        .badge-ortu   { background: #fff7ed; color: #ea580c; }
+        .badge-admin {
+            background: #e0f2fe;
+            color: #0369a1;
+            border: 1px solid #bae6fd;
+        }
 
-        /* Activity list */
-        .activity-list { padding: 8px 0; }
+        .badge-guru {
+            background: #dcfce7;
+            color: #15803d;
+            border: 1px solid #bbf7d0;
+        }
 
-        .activity-item {
+        .badge-ortu {
+            background: #fff7ed;
+            color: #c2410c;
+            border: 1px solid #fed7aa;
+        }
+
+        /* Activity / Info List */
+        .info-list {
+            padding: 12px 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .info-item {
             display: flex;
             align-items: flex-start;
-            gap: 12px;
-            padding: 14px 24px;
-            border-bottom: 1px solid #f3f4f6;
+            gap: 14px;
+            padding: 12px 14px;
+            border-radius: 10px;
+            background: #f9faf9;
+            border: 1px solid #edf1ee;
         }
-        .activity-item:last-child { border-bottom: none; }
 
-        .act-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            margin-top: 5px;
+        .info-item-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 15px;
             flex-shrink: 0;
         }
-        .dot-green  { background: #1d5c45; }
-        .dot-amber  { background: #d97706; }
-        .dot-blue   { background: #0284c7; }
 
-        .act-text { font-size: 13.5px; color: #374151; line-height: 1.5; }
+        .info-icon-blue   { background: #e0f2fe; color: #0284c7; }
+        .info-icon-green  { background: #dcfce7; color: #16a34a; }
+        .info-icon-amber  { background: #fef3c7; color: #d97706; }
+        .info-icon-purple { background: #ede9fe; color: #7c3aed; }
+
+        .info-item-body h4 {
+            font-size: 13px;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 2px;
+        }
+
+        .info-item-body p {
+            font-size: 12px;
+            color: #6b7280;
+            line-height: 1.45;
+        }
+
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            .cards-row {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
 </head>
 <body>
 
     <!-- ===== SIDEBAR ===== -->
-    <div class="sidebar">
+    <aside class="sidebar">
         <div class="sidebar-brand">
-            <img src="/assets/Logo_uin.png" alt="Logo" onerror="this.src='https://ui-avatars.com/api/?name=IT&background=1d5c45&color=fff'">
+            <img src="/assets/Logo_uin.png" alt="Logo TK Siber" onerror="this.src='https://ui-avatars.com/api/?name=TK&background=18302b&color=fff'">
             <div class="brand-text">
-                <h2>iTales</h2>
+                <h2>TK SIBER</h2>
                 <p>Panel Administrator</p>
             </div>
         </div>
 
-        <div class="sidebar-menu">
-            <span class="sidebar-section">Menu Utama</span>
+        <nav class="sidebar-menu">
+            <span class="sidebar-section">Administrasi</span>
             <a href="/dashboard-admin" class="menu-item active">
                 <i class="fa-solid fa-gauge-high"></i> Dashboard
             </a>
             <a href="/kelola-akun" class="menu-item">
                 <i class="fa-solid fa-users-gear"></i> Kelola Akun
             </a>
-        </div>
+
+        </nav>
 
         <div class="sidebar-footer">
             <button type="button" class="sidebar-logout-btn" onclick="keluarAplikasi(event)">
-                <i class="fa-solid fa-right-from-bracket"></i> Keluar
+                <i class="fa-solid fa-arrow-right-from-bracket"></i> Keluar
             </button>
         </div>
-    </div>
+    </aside>
 
-    <!-- ===== MAIN ===== -->
-    <div class="main-content">
+    <!-- ===== MAIN CONTENT ===== -->
+    <main class="main-content">
 
-        <div class="page-header">
+        <!-- Page Header -->
+        <header class="page-header">
             <div>
-                <h1>Dashboard Admin</h1>
-                <p id="header-sub">Selamat datang kembali!</p>
+                <h1>Dashboard Administrator</h1>
+                <p id="header-sub">Selamat datang kembali di panel kendali iTales!</p>
             </div>
             <div class="header-right">
                 <div class="user-profile-card">
@@ -291,92 +608,98 @@
                         <span class="profile-role">Administrator · Online</span>
                     </div>
                 </div>
-                <button class="btn-logout-header" onclick="keluarAplikasi(event)">
-                    <i class="fa-solid fa-right-from-bracket"></i> Keluar
+                <!-- Tombol Logout Header -->
+                <button type="button" class="btn-logout-header" onclick="keluarAplikasi(event)" title="Keluar dari akun">
+                    <i class="fa-solid fa-arrow-right-from-bracket"></i> Keluar
                 </button>
             </div>
-        </div>
+        </header>
 
         <!-- Stats -->
         <div class="stats-grid">
             <div class="stat-card">
-                <div class="stat-icon icon-blue"><i class="fa-solid fa-users"></i></div>
+                <div class="stat-icon icon-blue">
+                    <i class="fa-solid fa-users"></i>
+                </div>
                 <div class="stat-info">
                     <h2 id="stat-users">–</h2>
-                    <p>Total Akun</p>
-                </div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon icon-green"><i class="fa-solid fa-child"></i></div>
-                <div class="stat-info">
-                    <h2 id="stat-anak">–</h2>
-                    <p>Total Siswa</p>
-                </div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon icon-amber"><i class="fa-solid fa-school"></i></div>
-                <div class="stat-info">
-                    <h2 id="stat-kelas">–</h2>
-                    <p>Total Kelas</p>
+                    <p>Total Akun Pengguna</p>
                 </div>
             </div>
         </div>
 
-        <!-- Cards row -->
+        <!-- Cards Row -->
         <div class="cards-row">
 
-            <!-- Tabel akun terbaru -->
+            <!-- Card 1: Tabel Akun Terbaru -->
             <div class="card">
                 <div class="card-head">
-                    <h3>Akun Terdaftar</h3>
-                    <a href="/kelola-akun" class="btn-sm">Kelola semua →</a>
+                    <h3><i class="fa-solid fa-users-gear"></i> Daftar Akun Pengguna</h3>
+                    <a href="/kelola-akun" class="btn-sm-link">
+                        Kelola Akun <i class="fa-solid fa-arrow-right"></i>
+                    </a>
                 </div>
                 <table>
                     <thead>
                         <tr>
-                            <th>Username</th>
-                            <th>Role</th>
-                            <th>Dibuat</th>
+                            <th><i class="fa-solid fa-user"></i> Pengguna</th>
+                            <th><i class="fa-solid fa-shield-halved"></i> Peran</th>
+                            <th><i class="fa-regular fa-clock"></i> Terdaftar</th>
                         </tr>
                     </thead>
                     <tbody id="tbody-users">
-                        <tr><td colspan="3" style="text-align:center;color:#9ca3af;padding:30px;">Memuat data...</td></tr>
+                        <tr><td colspan="3" style="text-align:center;color:#9ca3af;padding:30px;">
+                            <i class="fa-solid fa-spinner fa-spin"></i> Memuat data akun...
+                        </td></tr>
                     </tbody>
                 </table>
             </div>
 
-            <!-- Aktivitas / info cepat -->
+            <!-- Card 2: Panduan & Info Keamanan Sistem -->
             <div class="card">
                 <div class="card-head">
-                    <h3>Info Sistem</h3>
+                    <h3><i class="fa-solid fa-shield-halved"></i> Info & Keamanan Sistem</h3>
                 </div>
-                <div class="activity-list">
-                    <div class="activity-item">
-                        <div class="act-dot dot-blue"></div>
-                        <div>
-                            <div class="act-text">Akun orang tua dibuat menggunakan NIS anak sebagai username.</div>
+                <div class="info-list">
+                    <div class="info-item">
+                        <div class="info-item-icon info-icon-blue">
+                            <i class="fa-solid fa-id-card"></i>
+                        </div>
+                        <div class="info-item-body">
+                            <h4>Akun Orang Tua & NISN</h4>
+                            <p>Akun orang tua ditautkan dengan NISN siswa agar orang tua hanya dapat melihat portofolio anaknya.</p>
                         </div>
                     </div>
-                    <div class="activity-item">
-                        <div class="act-dot dot-green"></div>
-                        <div>
-                            <div class="act-text">Admin set password awal untuk setiap akun. Orang tua dapat mengubah password setelah login.</div>
+
+
+                    <div class="info-item">
+                        <div class="info-item-icon info-icon-amber">
+                            <i class="fa-solid fa-key"></i>
+                        </div>
+                        <div class="info-item-body">
+                            <h4>Manajemen Password</h4>
+                            <p>Semua password tersimpan terenkripsi (bcrypt hash). Admin dapat mereset password pengguna kapan saja.</p>
                         </div>
                     </div>
-                    <div class="activity-item">
-                        <div class="act-dot dot-amber"></div>
-                        <div>
-                            <div class="act-text">Jadwal yang ditambahkan guru otomatis tampil di halaman tamu (<strong>iTales</strong>).</div>
+
+                    <div class="info-item">
+                        <div class="info-item-icon info-icon-purple">
+                            <i class="fa-solid fa-user-shield"></i>
+                        </div>
+                        <div class="info-item-body">
+                            <h4>Peran Pengguna</h4>
+                            <p>Sistem mendukung 3 peran: Admin, Guru, dan Orang Tua — masing-masing dengan hak akses berbeda.</p>
                         </div>
                     </div>
                 </div>
             </div>
 
         </div>
-    </div>
+
+    </main>
 
     <script>
-        // Cegah akses lewat tombol Back setelah logout (bfcache fix)
+        // Cegah akses lewat tombol Back setelah logout
         window.addEventListener('pageshow', async function(event) {
             if (event.persisted) {
                 try {
@@ -392,12 +715,14 @@
             }
         });
 
+        // FUNGSI LOGOUT LANGSUNG (Pastikan benar-benar langsung keluar dan session dihancurkan)
         function keluarAplikasi(e) {
             if (e) e.preventDefault();
-            try { fetch('/logout', { method: 'POST' }); } catch(err) {}
             sessionStorage.clear();
+            localStorage.clear();
             sessionStorage.setItem('kpalya_logged_out', 'true');
-            window.location.replace('/login');
+            // Langsung arahkan browser ke /logout untuk menghancurkan session server & menghapus cookie connect.sid
+            window.location.href = '/logout';
         }
 
         async function muatAdmin() {
@@ -407,18 +732,12 @@
                 if (!res.ok) { window.location.replace('/login'); return; }
                 const user = await res.json();
                 const uname = user.username || 'Admin';
-                document.getElementById('header-sub').textContent = `Selamat datang, ${uname}!`;
+                document.getElementById('header-sub').textContent = `Selamat datang kembali, ${uname}! Kelola sistem TK SIBER dengan mudah.`;
                 document.getElementById('user-display-name').textContent = uname;
                 document.getElementById('avatar-initial').textContent = uname.charAt(0).toUpperCase();
             } catch(e) {}
 
-            // Stats
-            try {
-                const res = await fetch('/api/dashboard-stats');
-                const data = await res.json();
-                document.getElementById('stat-anak').textContent = data.total_anak ?? '0';
-                document.getElementById('stat-kelas').textContent = data.total_kelas ?? '0';
-            } catch(e) {}
+            // Stats (hanya total akun pengguna, dimuat dari /api/users di bawah)
 
             // Users list
             try {
@@ -433,19 +752,42 @@
                     return;
                 }
 
+                const roleIcons = {
+                    admin: 'fa-shield',
+                    guru: 'fa-chalkboard-user',
+                    orang_tua: 'fa-hands-holding-child'
+                };
                 const badgeClass = { admin: 'badge-admin', guru: 'badge-guru', orang_tua: 'badge-ortu' };
                 const roleLabel = { admin: 'Admin', guru: 'Guru', orang_tua: 'Orang Tua' };
 
-                tbody.innerHTML = users.slice(0, 8).map(u => `
-                    <tr>
-                        <td>${u.username}</td>
-                        <td><span class="badge ${badgeClass[u.role] || ''}">${roleLabel[u.role] || u.role}</span></td>
-                        <td>${new Date(u.created_at).toLocaleDateString('id-ID')}</td>
-                    </tr>
-                `).join('');
+                tbody.innerHTML = users.slice(0, 8).map(u => {
+                    const initial = (u.username || 'U').charAt(0).toUpperCase();
+                    const icon = roleIcons[u.role] || 'fa-user';
+                    return `
+                        <tr>
+                            <td>
+                                <div class="user-table-cell">
+                                    <div class="table-user-avatar">${initial}</div>
+                                    <strong>${escapeHtml(u.username)}</strong>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="badge ${badgeClass[u.role] || ''}">
+                                    <i class="fa-solid ${icon}"></i> ${roleLabel[u.role] || u.role}
+                                </span>
+                            </td>
+                            <td>${new Date(u.created_at).toLocaleDateString('id-ID')}</td>
+                        </tr>
+                    `;
+                }).join('');
             } catch(e) {
                 document.getElementById('tbody-users').innerHTML = `<tr><td colspan="3" style="text-align:center;color:#ef4444;padding:30px;">Gagal memuat data</td></tr>`;
             }
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
         }
 
         muatAdmin();

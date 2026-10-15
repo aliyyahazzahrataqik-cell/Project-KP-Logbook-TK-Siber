@@ -17,8 +17,8 @@
             --accent-light: #d6ead2;
         }
 
-        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
-        body { display: flex; background: var(--bg-color); min-height: 100vh; }
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        body { display: flex; background: var(--bg-color); min-height: 100vh; font-family: 'Inter', sans-serif; }
 
         /* SIDEBAR */
         .sidebar {
@@ -349,10 +349,10 @@
 
         function keluarAplikasi(e) {
             if (e) e.preventDefault();
-            try { fetch('/logout', { method: 'POST' }); } catch(err) {}
             sessionStorage.clear();
+            localStorage.clear();
             sessionStorage.setItem('kpalya_logged_out', 'true');
-            window.location.replace('/login');
+            window.location.href = '/logout';
         }
 
         // Muat info user
