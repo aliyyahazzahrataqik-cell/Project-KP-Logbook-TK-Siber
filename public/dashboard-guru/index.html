@@ -361,6 +361,170 @@
             object-fit: cover;
             border-radius: 8px;
         }
+
+        /* Button Kelola Menu */
+        .btn-kelola-menu {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #d6ead2;
+            color: #124b3c;
+            border: 1px solid #b7ddb0;
+            padding: 6px 14px;
+            border-radius: 8px;
+            font-size: 12.5px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-kelola-menu:hover {
+            background: #124b3c;
+            color: white;
+            border-color: #124b3c;
+        }
+
+        /* Modal Overlay & Card */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(18, 75, 60, 0.45);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: white;
+            border-radius: 18px;
+            width: 540px;
+            max-width: 100%;
+            max-height: 90vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 25px 60px rgba(0,0,0,0.2);
+            overflow: hidden;
+            animation: modalPop 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes modalPop {
+            from { opacity: 0; transform: translateY(12px) scale(0.98); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .modal-header {
+            background: #eef6f1;
+            padding: 18px 24px;
+            border-bottom: 1px solid #d2e7da;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h2 {
+            font-size: 17px;
+            font-weight: 700;
+            color: #124b3c;
+        }
+
+        .btn-close-modal {
+            background: none;
+            border: none;
+            color: #6b7280;
+            font-size: 18px;
+            cursor: pointer;
+            padding: 4px;
+        }
+
+        .btn-close-modal:hover {
+            color: #111;
+        }
+
+        .modal-body {
+            padding: 20px 24px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .menu-row-input {
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            padding: 12px 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .menu-row-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 13.5px;
+            font-weight: 700;
+            color: #124b3c;
+        }
+
+        .menu-row-input input {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 7px;
+            font-size: 13.5px;
+            outline: none;
+            box-sizing: border-box;
+            transition: border 0.15s;
+        }
+
+        .menu-row-input input:focus {
+            border-color: #124b3c;
+        }
+
+        .modal-footer {
+            padding: 14px 24px;
+            background: #f9fafb;
+            border-top: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .btn-batal {
+            background: white;
+            border: 1px solid #d1d5db;
+            color: #374151;
+            padding: 8px 18px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 13.5px;
+            cursor: pointer;
+        }
+
+        .btn-simpan {
+            background: #124b3c;
+            border: none;
+            color: white;
+            padding: 8px 22px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 13.5px;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+
+        .btn-simpan:hover {
+            background: #0d382c;
+        }
     </style>
 </head>
 <body>
@@ -476,36 +640,23 @@
 
                 <!-- Menu Makan Minggu ini -->
                 <div class="card">
-                    <h3>Menu Makan Minggu ini</h3>
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 18px 24px 12px; border-bottom: 1px solid #f3f4f6;">
+                        <h3 style="margin: 0; font-size: 16px; color: var(--text-dark);">Menu Makan Minggu ini</h3>
+                        <button type="button" class="btn-kelola-menu" onclick="bukaModalEditMenu()">
+                            <i class="fa-solid fa-pen-to-square"></i> Kelola Menu
+                        </button>
+                    </div>
                     <div class="table-container">
                         <table>
                             <thead>
                                 <tr>
-                                    <th>Hari</th>
+                                    <th style="width: 100px;">Hari</th>
                                     <th>Menu</th>
+                                    <th>Keterangan</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                <tr>
-                                    <td>Senin</td>
-                                    <td>Chicken Katsu</td>
-                                </tr>
-                                <tr>
-                                    <td>Selasa</td>
-                                    <td>Oreg Tempe</td>
-                                </tr>
-                                <tr>
-                                    <td>Rabu</td>
-                                    <td>Sop Bening</td>
-                                </tr>
-                                <tr>
-                                    <td>Kamis</td>
-                                    <td>Jamur Krispi</td>
-                                </tr>
-                                <tr>
-                                    <td>Jumat</td>
-                                    <td>Tempe Karage</td>
-                                </tr>
+                            <tbody id="tbody-menu-makan">
+                                <tr><td colspan="3" style="text-align:center;color:#9ca3af;padding:25px;">Memuat data menu...</td></tr>
                             </tbody>
                         </table>
                     </div>
@@ -515,18 +666,37 @@
             <!-- Right Column -->
             <div class="right-col">
                 <div class="card">
-                    <h3 style="padding: 20px 24px 16px;">Dokumentasi Hari ini</h3>
-                    <div class="doc-grid" style="padding: 0 24px 24px;">
-                        <img src="https://images.unsplash.com/photo-1577896851231-70ef18881754?q=80&w=300&auto=format&fit=crop" class="doc-img" alt="Dok">
-                        <img src="https://images.unsplash.com/photo-1503676260728-1c00da094a0b?q=80&w=300&auto=format&fit=crop" class="doc-img" alt="Dok">
-                        <img src="https://images.unsplash.com/photo-1509062522246-3755977927d7?q=80&w=300&auto=format&fit=crop" class="doc-img" alt="Dok">
-                        <img src="https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?q=80&w=300&auto=format&fit=crop" class="doc-img" alt="Dok">
-                        <img src="https://images.unsplash.com/photo-1497633762265-9d179a990aa6?q=80&w=300&auto=format&fit=crop" class="doc-img" alt="Dok">
-                        <img src="https://images.unsplash.com/photo-1588075592446-265fd1e6e76f?q=80&w=300&auto=format&fit=crop" class="doc-img" alt="Dok">
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 20px 24px 14px;">
+                        <h3 style="margin: 0;" id="title-doc-dashboard">Dokumentasi Hari ini</h3>
+                        <a href="/kelola-logbook" style="font-size: 12px; font-weight: 600; color: #124b3c; text-decoration: none;">
+                            Buka Logbook <i class="fa-solid fa-arrow-right"></i>
+                        </a>
+                    </div>
+                    <div class="doc-grid" id="grid-doc-dashboard" style="padding: 0 24px 24px;">
+                        <p style="grid-column: 1/-1; text-align: center; color: #9ca3af; font-size: 13px; padding: 20px 0;">Memuat dokumentasi...</p>
                     </div>
                 </div>
             </div>
 
+        </div>
+    </div>
+
+    <!-- Modal Edit Menu Makan -->
+    <div class="modal-overlay" id="modal-menu-makan">
+        <div class="modal">
+            <div class="modal-header">
+                <h2><i class="fa-solid fa-utensils" style="margin-right: 8px; color: #124b3c;"></i> Kelola Menu Makan Mingguan</h2>
+                <button type="button" class="btn-close-modal" onclick="tutupModalMenu()">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="modal-body" id="modal-menu-body">
+                <!-- Dynamic rows for Senin - Jumat -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-batal" onclick="tutupModalMenu()">Batal</button>
+                <button type="button" class="btn-simpan" id="btn-simpan-menu" onclick="simpanMenuMakan()">Simpan Perubahan</button>
+            </div>
         </div>
     </div>
 
@@ -616,18 +786,172 @@ async function muatDashboard() {
 
         if (!data.jadwal || data.jadwal.length === 0) {
             tbody.innerHTML = `<tr><td colspan="3" style="text-align:center;color:#9ca3af;padding:30px;">Tidak ada kegiatan hari ini</td></tr>`;
+        } else {
+            tbody.innerHTML = data.jadwal.map(j => `
+                <tr>
+                    <td>${j.jam_mulai.substring(0,5)} - ${j.jam_selesai.substring(0,5)}</td>
+                    <td>${j.kegiatan}</td>
+                    <td>${j.keterangan || '-'}</td>
+                </tr>
+            `).join('');
+        }
+    } catch(e) {
+        document.getElementById('tbody-jadwal').innerHTML = `<tr><td colspan="3" style="text-align:center;color:#ef4444;padding:30px;">Gagal memuat data</td></tr>`;
+    }
+
+    // Panggil muat menu makan & dokumentasi
+    await muatMenuMakan();
+    await muatDokumentasiDashboard();
+}
+
+async function muatDokumentasiDashboard() {
+    const grid = document.getElementById('grid-doc-dashboard');
+    const title = document.getElementById('title-doc-dashboard');
+    if (!grid) return;
+
+    try {
+        const res = await fetch('/api/dokumentasi-hari-ini');
+        const data = await res.json();
+        const docs = data.dokumentasi || [];
+
+        if (title) {
+            title.textContent = data.tipe === 'hari_ini' ? 'Dokumentasi Hari ini' : 'Dokumentasi Terbaru';
+        }
+
+        if (docs.length === 0) {
+            grid.innerHTML = `
+                <div style="grid-column: 1/-1; text-align: center; color: #9ca3af; font-size: 13px; padding: 30px 10px;">
+                    <i class="fa-regular fa-images" style="font-size: 28px; margin-bottom: 8px; display: block; color: #cbd5e1;"></i>
+                    Belum ada foto dokumentasi diunggah.<br>
+                    <a href="/kelola-logbook" style="color: #124b3c; font-weight: 600; text-decoration: underline; margin-top: 6px; display: inline-block;">Tambah di Logbook</a>
+                </div>
+            `;
             return;
         }
 
-        tbody.innerHTML = data.jadwal.map(j => `
-            <tr>
-                <td>${j.jam_mulai.substring(0,5)} - ${j.jam_selesai.substring(0,5)}</td>
-                <td>${j.kegiatan}</td>
-                <td>${j.keterangan || '-'}</td>
-            </tr>
-        `).join('');
+        grid.innerHTML = docs.map(d => {
+            let imgSrc;
+            if (d.file_foto.startsWith('http://') || d.file_foto.startsWith('https://')) {
+                imgSrc = d.file_foto;
+            } else if (d.file_foto.startsWith('doc-')) {
+                imgSrc = `/uploads/${d.file_foto}`;
+            } else {
+                imgSrc = `/assets/${d.file_foto}`;
+            }
+
+            const label = d.keterangan || d.nama_kelas || 'Dokumentasi';
+            return `
+                <a href="/detail-logbook?id=${d.id_logbook}" title="${label} (${d.nama_kelas})" style="display:block; overflow:hidden; border-radius:8px; position:relative;">
+                    <img src="${imgSrc}" class="doc-img" alt="${label}" onerror="this.src='https://images.unsplash.com/photo-1577896851231-70ef18881754?q=80&w=300&auto=format&fit=crop'">
+                </a>
+            `;
+        }).join('');
     } catch(e) {
-        document.getElementById('tbody-jadwal').innerHTML = `<tr><td colspan="3" style="text-align:center;color:#ef4444;padding:30px;">Gagal memuat data</td></tr>`;
+        grid.innerHTML = `<p style="grid-column: 1/-1; text-align: center; color: #ef4444; font-size: 13px; padding: 20px 0;">Gagal memuat dokumentasi</p>`;
+    }
+}
+
+let dataMenuMakan = [];
+
+async function muatMenuMakan() {
+    const tbody = document.getElementById('tbody-menu-makan');
+    if (!tbody) return;
+
+    try {
+        const res = await fetch('/api/menu-makan');
+        const data = await res.json();
+        dataMenuMakan = data.menu_mingguan || [];
+
+        if (dataMenuMakan.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="3" style="text-align:center;color:#9ca3af;padding:25px;">Belum ada menu makan yang diinput</td></tr>`;
+            return;
+        }
+
+        const hariIni = (data.hari_ini || '').toLowerCase();
+        tbody.innerHTML = dataMenuMakan.map(m => {
+            const isToday = m.hari.toLowerCase() === hariIni;
+            return `
+                <tr style="${isToday ? 'background: #f0fdf4; font-weight: 600;' : ''}">
+                    <td>
+                        <span style="display:inline-flex;align-items:center;gap:6px;">
+                            ${m.hari}
+                            ${isToday ? '<span style="background:#22c55e;color:white;font-size:9.5px;padding:2px 7px;border-radius:10px;font-weight:700;">HARI INI</span>' : ''}
+                        </span>
+                    </td>
+                    <td style="color:#124b3c;font-weight:600;">${m.menu}</td>
+                    <td style="color:#6b7280;font-size:13px;">${m.keterangan || '-'}</td>
+                </tr>
+            `;
+        }).join('');
+    } catch (e) {
+        tbody.innerHTML = `<tr><td colspan="3" style="text-align:center;color:#ef4444;padding:25px;">Gagal memuat data menu</td></tr>`;
+    }
+}
+
+function bukaModalEditMenu() {
+    const body = document.getElementById('modal-menu-body');
+    const hariList = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat'];
+
+    body.innerHTML = hariList.map(h => {
+        const item = dataMenuMakan.find(m => m.hari === h) || { hari: h, menu: '', keterangan: '' };
+        return `
+            <div class="menu-row-input" data-hari="${h}">
+                <div class="menu-row-header">
+                    <span><i class="fa-regular fa-calendar" style="margin-right: 5px; color:#124b3c;"></i> Hari ${h}</span>
+                </div>
+                <input type="text" class="input-nama-menu" placeholder="Nama Menu (cth: Chicken Katsu)" value="${item.menu || ''}" required>
+                <input type="text" class="input-ket-menu" placeholder="Keterangan Lauk / Buah (cth: Nasi + Sop + Buah)" value="${item.keterangan || ''}">
+            </div>
+        `;
+    }).join('');
+
+    document.getElementById('modal-menu-makan').classList.add('active');
+}
+
+function tutupModalMenu() {
+    document.getElementById('modal-menu-makan').classList.remove('active');
+}
+
+async function simpanMenuMakan() {
+    const btn = document.getElementById('btn-simpan-menu');
+    const rows = document.querySelectorAll('#modal-menu-body .menu-row-input');
+    const items = [];
+
+    rows.forEach(r => {
+        const hari = r.getAttribute('data-hari');
+        const menu = r.querySelector('.input-nama-menu').value.trim();
+        const keterangan = r.querySelector('.input-ket-menu').value.trim();
+        if (hari && menu) {
+            items.push({ hari, menu, keterangan });
+        }
+    });
+
+    if (items.length === 0) {
+        alert('Mohon isi minimal satu menu makanan.');
+        return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = 'Menyimpan...';
+
+    try {
+        const res = await fetch('/api/menu-makan/bulk', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ items })
+        });
+
+        const result = await res.json();
+        if (!res.ok) throw new Error(result.error || 'Gagal menyimpan');
+
+        tutupModalMenu();
+        await muatMenuMakan();
+        alert('Menu makan berhasil diperbarui!');
+    } catch (e) {
+        alert('Terjadi kesalahan: ' + e.message);
+    } finally {
+        btn.disabled = false;
+        btn.textContent = 'Simpan Perubahan';
     }
 }
 

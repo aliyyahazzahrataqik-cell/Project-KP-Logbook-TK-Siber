@@ -550,6 +550,28 @@
             color: #111827;
         }
 
+        .btn-hapus-doc {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 30px;
+            height: 30px;
+            border-radius: 8px;
+            border: 1px solid #fecaca;
+            background: #fee2e2;
+            font-size: 12px;
+            color: #dc2626;
+            cursor: pointer;
+            transition: all 0.15s;
+            flex-shrink: 0;
+        }
+
+        .btn-hapus-doc:hover {
+            background: #dc2626;
+            color: white;
+            border-color: #dc2626;
+        }
+
         .card-footer-note {
             font-size: 12px;
             color: #6b7280;
@@ -992,9 +1014,14 @@
 
                 <!-- Card 2: Dokumentasi Kegiatan -->
                 <div class="content-card">
-                    <div class="card-header-box">
-                        <h3>Dokumentasi Kegiatan</h3>
-                        <p id="doc-sub-desc">2 foto contoh · Pilih Pratinjau untuk melihat dokumentasi.</p>
+                    <div class="card-header-box" style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px;">
+                        <div>
+                            <h3>Dokumentasi Kegiatan</h3>
+                            <p id="doc-sub-desc">0 foto · Pilih Pratinjau untuk melihat dokumentasi.</p>
+                        </div>
+                        <button type="button" class="btn-tambah-catatan" style="margin-top: 0; padding: 8px 16px; font-size: 13px; width: auto; white-space: nowrap;" onclick="bukaModalUploadDoc()">
+                            <i class="fa-solid fa-cloud-arrow-up"></i> Tambah Foto
+                        </button>
                     </div>
 
                     <div class="doc-photos-grid" id="doc-photos-container">
@@ -1002,7 +1029,7 @@
                     </div>
 
                     <div class="card-footer-note">
-                        Ilustrasi kegiatan tanpa identitas anak. Untuk mengganti atau menghapus foto, buka Edit Logbook.
+                        Foto dokumentasi kegiatan anak. Anda dapat menambah atau menghapus foto dokumentasi di sini.
                     </div>
                 </div>
             </div>
@@ -1064,6 +1091,43 @@
             <div class="modal-footer">
                 <button class="btn-batal" onclick="tutupModalCatatan()">Batal</button>
                 <button class="btn-simpan" onclick="simpanCatatanAnak()">Simpan Catatan</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== MODAL UNGGAH FOTO DOKUMENTASI ===== -->
+    <div class="modal-overlay" id="modal-upload-doc">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-camera" style="margin-right: 8px; color: var(--text-dark);"></i> Tambah Foto Dokumentasi</h3>
+                <button class="btn-close-modal" onclick="tutupModalUploadDoc()">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="form-upload-doc" onsubmit="unggahFotoDokumentasi(event)">
+                    <div class="form-group">
+                        <label for="input-foto-file">Pilih File Foto *</label>
+                        <input type="file" id="input-foto-file" accept="image/*" required onchange="pratinjauFileDipilih(event)" style="padding: 8px; border: 1.5px dashed #cbd5e1; border-radius: 8px; width: 100%; cursor: pointer;">
+                        <p style="font-size: 11.5px; color: #6b7280; margin-top: 5px;">Mendukung format JPG, PNG, WEBP, GIF (Maks. 10MB)</p>
+                    </div>
+
+                    <div id="preview-foto-wrap" style="display: none; margin-bottom: 16px; text-align: center;">
+                        <img id="preview-foto-img" src="" alt="Pratinjau" style="max-height: 180px; max-width: 100%; border-radius: 10px; border: 1px solid #e2e8f0; object-fit: contain;">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="input-keterangan-foto">Keterangan Foto (Opsional)</label>
+                        <input type="text" id="input-keterangan-foto" placeholder="Contoh: Senam pagi bersama atau mewarnai gambar">
+                    </div>
+
+                    <div class="modal-footer" style="padding: 16px 0 0; margin-top: 16px; border-top: 1px solid #e5e7eb; display: flex; justify-content: flex-end; gap: 10px;">
+                        <button type="button" class="btn-batal" onclick="tutupModalUploadDoc()">Batal</button>
+                        <button type="submit" class="btn-simpan" id="btn-submit-upload">
+                            <i class="fa-solid fa-arrow-up-from-bracket"></i> Unggah Sekarang
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
@@ -1257,29 +1321,133 @@ function renderDokumentasi(docs) {
 
     if (!docs || docs.length === 0) {
         desc.textContent = `0 foto · Belum ada dokumentasi untuk logbook ini.`;
-        container.innerHTML = `<p style="color:#9ca3af;font-size:13.5px;grid-column:1/-1;">Belum ada foto dokumentasi diunggah.</p>`;
+        container.innerHTML = `<p style="color:#9ca3af;font-size:13.5px;grid-column:1/-1;">Belum ada foto dokumentasi diunggah. Klik tombol <strong>"+ Tambah Foto"</strong> untuk menambahkan.</p>`;
         return;
     }
 
-    desc.textContent = `${docs.length} foto contoh · Pilih Pratinjau untuk melihat dokumentasi.`;
+    desc.textContent = `${docs.length} foto dokumentasi · Pilih Pratinjau untuk memperbesar.`;
 
     container.innerHTML = docs.map(d => {
-        let imgSrc = `/assets/${d.file_foto}`;
-        let filename = d.file_foto || 'foto-kegiatan.jpg';
+        let imgSrc;
+        if (d.file_foto.startsWith('http://') || d.file_foto.startsWith('https://')) {
+            imgSrc = d.file_foto;
+        } else if (d.file_foto.startsWith('doc-')) {
+            imgSrc = `/uploads/${d.file_foto}`;
+        } else {
+            imgSrc = `/assets/${d.file_foto}`;
+        }
+
+        let labelText = d.keterangan || d.file_foto || 'foto-kegiatan.jpg';
 
         return `
-            <div class="doc-photo-card">
-                <div class="doc-photo-img-wrap" onclick="bukaLightbox('${imgSrc}', '${escapeHtml(filename)}')">
-                    <img src="${imgSrc}" alt="${escapeHtml(filename)}" class="doc-photo-img" onerror="this.src='/assets/kolase-daun.jpg'">
+            <div class="doc-photo-card" style="position: relative;">
+                <div class="doc-photo-img-wrap" onclick="bukaLightbox('${imgSrc}', '${escapeHtml(labelText)}')">
+                    <img src="${imgSrc}" alt="${escapeHtml(labelText)}" class="doc-photo-img" onerror="this.src='https://images.unsplash.com/photo-1577896851231-70ef18881754?q=80&w=300&auto=format&fit=crop'">
                 </div>
                 <div class="doc-photo-info">
-                    <span class="doc-filename" title="${escapeHtml(filename)}">${escapeHtml(filename)}</span>
-                    <button type="button" class="btn-pratinjau" onclick="bukaLightbox('${imgSrc}', '${escapeHtml(filename)}')">
-                        <i class="fa-solid fa-up-right-and-down-left-from-center"></i> Pratinjau
-                    </button>
+                    <span class="doc-filename" title="${escapeHtml(labelText)}">${escapeHtml(labelText)}</span>
+                    <div style="display: flex; gap: 6px; align-items: center;">
+                        <button type="button" class="btn-pratinjau" onclick="bukaLightbox('${imgSrc}', '${escapeHtml(labelText)}')">
+                            <i class="fa-solid fa-up-right-and-down-left-from-center"></i> Pratinjau
+                        </button>
+                        <button type="button" class="btn-hapus-doc" title="Hapus Foto" onclick="hapusDokumentasi(${d.id_dokumentasi})">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
+                    </div>
                 </div>
             </div>`;
     }).join('');
+}
+
+// ===================== UPLOAD & KELOLA DOKUMENTASI =====================
+function bukaModalUploadDoc() {
+    document.getElementById('form-upload-doc').reset();
+    document.getElementById('preview-foto-wrap').style.display = 'none';
+    document.getElementById('preview-foto-img').src = '';
+    document.getElementById('modal-upload-doc').classList.add('active');
+}
+
+function tutupModalUploadDoc() {
+    document.getElementById('modal-upload-doc').classList.remove('active');
+}
+
+function pratinjauFileDipilih(event) {
+    const file = event.target.files[0];
+    const wrap = document.getElementById('preview-foto-wrap');
+    const img = document.getElementById('preview-foto-img');
+
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            img.src = e.target.result;
+            wrap.style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+    } else {
+        wrap.style.display = 'none';
+        img.src = '';
+    }
+}
+
+async function unggahFotoDokumentasi(e) {
+    e.preventDefault();
+    if (!currentLogbookId) {
+        alert('ID Logbook tidak ditemukan.');
+        return;
+    }
+
+    const fileInput = document.getElementById('input-foto-file');
+    const ketInput = document.getElementById('input-keterangan-foto');
+    const btn = document.getElementById('btn-submit-upload');
+
+    if (!fileInput.files || fileInput.files.length === 0) {
+        alert('Silakan pilih file foto terlebih dahulu.');
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append('foto', fileInput.files[0]);
+    formData.append('id_logbook', currentLogbookId);
+    formData.append('keterangan', ketInput.value.trim());
+
+    btn.disabled = true;
+    btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Mengunggah...`;
+
+    try {
+        const res = await fetch('/api/dokumentasi/upload', {
+            method: 'POST',
+            body: formData
+        });
+
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Gagal mengunggah foto');
+
+        tutupModalUploadDoc();
+        // Muat ulang data logbook agar foto langsung tampil
+        await muatDetailLogbook();
+        alert('Foto dokumentasi berhasil diunggah!');
+    } catch(err) {
+        alert('Error: ' + err.message);
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = `<i class="fa-solid fa-arrow-up-from-bracket"></i> Unggah Sekarang`;
+    }
+}
+
+async function hapusDokumentasi(idDoc) {
+    if (!confirm('Apakah Anda yakin ingin menghapus foto dokumentasi ini?')) return;
+
+    try {
+        const res = await fetch(`/api/dokumentasi/${idDoc}`, {
+            method: 'DELETE'
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Gagal menghapus');
+
+        await muatDetailLogbook();
+    } catch(err) {
+        alert('Error: ' + err.message);
+    }
 }
 
 function renderCatatanAnak(catatans, namaKelas, tglFormatted) {

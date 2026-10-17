@@ -1,3 +1,6 @@
+const path = require('path');
+const fs = require('fs');
+const multer = require('multer');
 const express = require('express');
 const session = require('express-session');
 const bcrypt = require('bcryptjs');
@@ -5,6 +8,37 @@ const db = require('./config/database');
 
 const app = express();
 const PORT = 3000;
+
+// ===================== KONFIGURASI UPLOAD DOKUMENTASI =====================
+const uploadDir = path.join(__dirname, 'public', 'uploads');
+if (!fs.existsSync(uploadDir)) {
+    fs.mkdirSync(uploadDir, { recursive: true });
+}
+
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, uploadDir);
+    },
+    filename: function (req, file, cb) {
+        const ext = path.extname(file.originalname).toLowerCase();
+        const cleanName = path.basename(file.originalname, ext).replace(/[^a-zA-Z0-9_-]/g, '_');
+        const uniqueName = `doc-${Date.now()}-${cleanName.substring(0, 20)}${ext}`;
+        cb(null, uniqueName);
+    }
+});
+
+const upload = multer({
+    storage: storage,
+    limits: { fileSize: 10 * 1024 * 1024 }, // 10MB
+    fileFilter: function (req, file, cb) {
+        const allowedMime = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+        if (allowedMime.includes(file.mimetype)) {
+            cb(null, true);
+        } else {
+            cb(new Error('Hanya file gambar (JPG, PNG, WEBP, GIF) yang diperbolehkan!'));
+        }
+    }
+});
 
 // ===================== MIDDLEWARE =====================
 app.use(express.static('public', { extensions: ['html'] }));
@@ -268,6 +302,78 @@ app.get('/api/jadwal-hari-ini', (req, res) => {
         if (err) return res.status(500).json({ error: 'Gagal mengambil jadwal' });
         res.json({ hari: hariSekarang, jadwal: results });
     });
+});
+
+// ===================== API MENU MAKAN =====================
+
+// GET /api/menu-makan (publik untuk landing page & dashboard)
+app.get('/api/menu-makan', (req, res) => {
+    const hariSekarang = new Date().toLocaleDateString('id-ID', { weekday: 'long' });
+    const query = `
+        SELECT id_menu, hari, menu, keterangan 
+        FROM menu_makan 
+        ORDER BY FIELD(hari, 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat')
+    `;
+
+    db.query(query, (err, results) => {
+        if (err) {
+            console.error('Error fetching menu makan:', err);
+            return res.status(500).json({ error: 'Gagal mengambil menu makan' });
+        }
+        const menuHariIni = (results || []).find(m => m.hari.toLowerCase() === hariSekarang.toLowerCase()) || null;
+        res.json({
+            hari_ini: hariSekarang,
+            menu_hari_ini: menuHariIni,
+            menu_mingguan: results || []
+        });
+    });
+});
+
+// PUT /api/menu-makan/:id (khusus guru & admin update 1 item menu)
+app.put('/api/menu-makan/:id', requireRole('admin', 'guru'), (req, res) => {
+    const { menu, keterangan } = req.body;
+    if (!menu) {
+        return res.status(400).json({ error: 'Nama menu wajib diisi' });
+    }
+
+    const query = `UPDATE menu_makan SET menu = ?, keterangan = ? WHERE id_menu = ?`;
+    db.query(query, [menu, keterangan || null, req.params.id], (err, result) => {
+        if (err) {
+            console.error('Error update menu makan:', err);
+            return res.status(500).json({ error: 'Gagal memperbarui menu makan' });
+        }
+        res.json({ success: true, message: 'Menu makan berhasil diperbarui' });
+    });
+});
+
+// POST /api/menu-makan/bulk (khusus guru & admin simpan / update semua menu mingguan)
+app.post('/api/menu-makan/bulk', requireRole('admin', 'guru'), async (req, res) => {
+    const { items } = req.body;
+    if (!Array.isArray(items) || items.length === 0) {
+        return res.status(400).json({ error: 'Data items tidak valid' });
+    }
+
+    try {
+        for (const item of items) {
+            if (item.hari && item.menu) {
+                await new Promise((resolve, reject) => {
+                    const sql = `
+                        INSERT INTO menu_makan (hari, menu, keterangan) 
+                        VALUES (?, ?, ?) 
+                        ON DUPLICATE KEY UPDATE menu = VALUES(menu), keterangan = VALUES(keterangan)
+                    `;
+                    db.query(sql, [item.hari, item.menu, item.keterangan || null], (err, r) => {
+                        if (err) reject(err);
+                        else resolve(r);
+                    });
+                });
+            }
+        }
+        res.json({ success: true, message: 'Semua menu makan berhasil diperbarui' });
+    } catch (err) {
+        console.error('Error bulk update menu makan:', err);
+        res.status(500).json({ error: 'Gagal memperbarui menu makan' });
+    }
 });
 
 // GET /api/jadwal?hari=Senin&kelas=1
@@ -657,7 +763,44 @@ app.delete('/api/catatan-anak/:id', requireRole('admin', 'guru'), (req, res) => 
 
 // ===================== API DOKUMENTASI =====================
 
-// POST /api/dokumentasi
+// POST /api/dokumentasi/upload (Upload foto fisik via multipart/form-data)
+app.post('/api/dokumentasi/upload', requireRole('admin', 'guru'), (req, res) => {
+    upload.single('foto')(req, res, (err) => {
+        if (err) {
+            return res.status(400).json({ error: err.message || 'Gagal memproses upload file' });
+        }
+
+        if (!req.file) {
+            return res.status(400).json({ error: 'File foto wajib dipilih' });
+        }
+
+        const { id_logbook, id_anak, keterangan } = req.body;
+        if (!id_logbook) {
+            try { fs.unlinkSync(req.file.path); } catch(e) {}
+            return res.status(400).json({ error: 'ID Logbook wajib diisi' });
+        }
+
+        const fileName = req.file.filename;
+        const query = `INSERT INTO dokumentasi (id_logbook, id_anak, file_foto, keterangan) VALUES (?, ?, ?, ?)`;
+        db.query(query, [id_logbook, id_anak || null, fileName, keterangan || null], (dbErr, result) => {
+            if (dbErr) {
+                console.error('Error insert dokumentasi:', dbErr);
+                try { fs.unlinkSync(req.file.path); } catch(e) {}
+                return res.status(500).json({ error: 'Gagal menyimpan dokumentasi ke database' });
+            }
+
+            res.json({
+                success: true,
+                message: 'Foto dokumentasi berhasil diunggah',
+                id_dokumentasi: result.insertId,
+                file_foto: fileName,
+                keterangan: keterangan || ''
+            });
+        });
+    });
+});
+
+// POST /api/dokumentasi (Fallback json text)
 app.post('/api/dokumentasi', requireRole('admin', 'guru'), (req, res) => {
     const { id_logbook, id_anak, file_foto, keterangan } = req.body;
     if (!id_logbook || !file_foto) {
@@ -676,12 +819,60 @@ app.post('/api/dokumentasi', requireRole('admin', 'guru'), (req, res) => {
 
 // DELETE /api/dokumentasi/:id
 app.delete('/api/dokumentasi/:id', requireRole('admin', 'guru'), (req, res) => {
-    db.query(`DELETE FROM dokumentasi WHERE id_dokumentasi = ?`, [req.params.id], (err) => {
-        if (err) {
-            console.error('Error delete dokumentasi:', err);
-            return res.status(500).json({ error: 'Gagal menghapus dokumentasi' });
+    db.query(`SELECT file_foto FROM dokumentasi WHERE id_dokumentasi = ?`, [req.params.id], (err, rows) => {
+        if (!err && rows.length > 0) {
+            const fileName = rows[0].file_foto;
+            const filePath = path.join(uploadDir, fileName);
+            if (fs.existsSync(filePath)) {
+                try { fs.unlinkSync(filePath); } catch(e) {}
+            }
         }
-        res.json({ success: true });
+
+        db.query(`DELETE FROM dokumentasi WHERE id_dokumentasi = ?`, [req.params.id], (errD) => {
+            if (errD) {
+                console.error('Error delete dokumentasi:', errD);
+                return res.status(500).json({ error: 'Gagal menghapus dokumentasi' });
+            }
+            res.json({ success: true, message: 'Dokumentasi berhasil dihapus' });
+        });
+    });
+});
+
+// GET /api/dokumentasi-hari-ini (Untuk Dashboard Guru & Ortu)
+app.get('/api/dokumentasi-hari-ini', (req, res) => {
+    const queryHariIni = `
+        SELECT d.id_dokumentasi, d.id_logbook, d.file_foto, d.keterangan, l.tanggal, k.nama_kelas 
+        FROM dokumentasi d
+        JOIN logbook l ON d.id_logbook = l.id_logbook
+        JOIN kelas k ON l.id_kelas = k.id_kelas
+        WHERE l.tanggal = CURRENT_DATE()
+        ORDER BY d.id_dokumentasi DESC
+        LIMIT 6
+    `;
+
+    db.query(queryHariIni, (err, results) => {
+        if (err) {
+            console.error('Error get dokumentasi hari ini:', err);
+            return res.status(500).json({ error: 'Gagal mengambil dokumentasi' });
+        }
+
+        if (results && results.length > 0) {
+            return res.json({ tipe: 'hari_ini', dokumentasi: results });
+        }
+
+        // Jika hari ini belum ada, tampilkan 6 foto dokumentasi terbaru
+        const queryTerbaru = `
+            SELECT d.id_dokumentasi, d.id_logbook, d.file_foto, d.keterangan, l.tanggal, k.nama_kelas 
+            FROM dokumentasi d
+            JOIN logbook l ON d.id_logbook = l.id_logbook
+            JOIN kelas k ON l.id_kelas = k.id_kelas
+            ORDER BY l.tanggal DESC, d.id_dokumentasi DESC
+            LIMIT 6
+        `;
+        db.query(queryTerbaru, (err2, results2) => {
+            if (err2) return res.status(500).json({ error: 'Gagal mengambil dokumentasi terbaru' });
+            res.json({ tipe: 'terbaru', dokumentasi: results2 || [] });
+        });
     });
 });
 

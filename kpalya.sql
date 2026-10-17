@@ -187,3 +187,23 @@ INSERT INTO users (username, password, role)
 VALUES
 ('admin', '$2b$10$VyTtYTzkFLKUFUjN5GvUXOJDDmwPPwOF9BZk15P6eU4yF45TH9Xpu', 'admin'),
 ('guru', '$2b$10$VyTtYTzkFLKUFUjN5GvUXOJDDmwPPwOF9BZk15P6eU4yF45TH9Xpu', 'guru');
+
+-- =========================================
+-- TABEL MENU MAKAN
+-- =========================================
+CREATE TABLE IF NOT EXISTS menu_makan (
+    id_menu INT AUTO_INCREMENT PRIMARY KEY,
+    hari ENUM('Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat') NOT NULL UNIQUE,
+    menu VARCHAR(150) NOT NULL,
+    keterangan VARCHAR(255) NULL
+);
+
+-- =========================================
+-- DATA AWAL MENU MAKAN
+-- =========================================
+INSERT INTO menu_makan (hari, menu, keterangan) VALUES
+('Senin', 'Chicken Katsu', 'Nasi + Chicken Katsu + Sop Sayur'),
+('Selasa', 'Oreg Tempe Manis', 'Nasi + Oreg Tempe + Sayur Bayam'),
+('Rabu', 'Sop Bening Bakso', 'Nasi + Sop Sayur Bakso Telur'),
+('Kamis', 'Jamur Krispi Gurih', 'Nasi + Jamur Krispi + Sayur Asem'),
+('Jumat', 'Tempe & Telur Karage', 'Nasi + Tempe Telur Karage + Buah');
