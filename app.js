@@ -927,6 +927,200 @@ app.delete('/api/users/:id', requireRole('admin'), (req, res) => {
     });
 });
 
+// ===================== API ORANG TUA (READ-ONLY) =====================
+
+function requireApiOrtu(req, res, next) {
+    setNoCache(res);
+    if (!req.session || !req.session.user) {
+        return res.status(401).json({ error: 'Unauthorized' });
+    }
+    if (!['admin', 'orang_tua'].includes(req.session.user.role)) {
+        return res.status(403).json({ error: 'Forbidden' });
+    }
+    next();
+}
+
+function resolveIdAnak(req, callback) {
+    if (!req.session || !req.session.user) return callback(null);
+    if (req.session.user.id_anak) return callback(req.session.user.id_anak);
+
+    // Ambil fresh dari database jika id_anak di session belum tersimpan
+    db.query('SELECT id_anak FROM users WHERE id_user = ?', [req.session.user.id], (err, rows) => {
+        if (!err && rows && rows.length > 0 && rows[0].id_anak) {
+            req.session.user.id_anak = rows[0].id_anak; // sync session
+            return callback(rows[0].id_anak);
+        }
+        return callback(null);
+    });
+}
+
+// GET /api/ortu/profil-anak — info anak yang terhubung ke akun orang tua
+app.get('/api/ortu/profil-anak', requireApiOrtu, (req, res) => {
+    resolveIdAnak(req, (id_anak) => {
+        if (!id_anak) return res.status(400).json({ error: 'Akun Anda belum ditautkan ke data anak' });
+
+        const query = `
+            SELECT a.id_anak, a.nama_lengkap, a.nisn, a.jenis_kelamin, 
+                   k.id_kelas, k.nama_kelas, k.tahun_ajaran
+            FROM anak a
+            JOIN kelas k ON a.id_kelas = k.id_kelas
+            WHERE a.id_anak = ?
+        `;
+        db.query(query, [id_anak], (err, results) => {
+            if (err) return res.status(500).json({ error: 'Gagal mengambil data anak' });
+            if (results.length === 0) return res.status(404).json({ error: 'Data anak tidak ditemukan' });
+            res.json(results[0]);
+        });
+    });
+});
+
+// GET /api/ortu/jadwal — jadwal hari ini untuk kelas anak
+app.get('/api/ortu/jadwal', requireApiOrtu, (req, res) => {
+    resolveIdAnak(req, (id_anak) => {
+        if (!id_anak) return res.status(400).json({ error: 'Akun belum ditautkan ke data anak' });
+
+        const hariSekarang = new Date().toLocaleDateString('id-ID', { weekday: 'long' });
+
+        const query = `
+            SELECT j.id_jadwal, j.jam_mulai, j.jam_selesai, j.kegiatan, j.keterangan, k.nama_kelas
+            FROM jadwal j
+            JOIN kelas k ON j.id_kelas = k.id_kelas
+            JOIN anak a ON a.id_kelas = k.id_kelas
+            WHERE a.id_anak = ? AND j.hari = ?
+            ORDER BY j.jam_mulai
+        `;
+        db.query(query, [id_anak, hariSekarang], (err, results) => {
+            if (err) return res.status(500).json({ error: 'Gagal mengambil jadwal' });
+            res.json({ hari: hariSekarang, jadwal: results });
+        });
+    });
+});
+
+// GET /api/ortu/logbook — logbook kelas anak (terbaru, max 10)
+app.get('/api/ortu/logbook', requireApiOrtu, (req, res) => {
+    resolveIdAnak(req, (id_anak) => {
+        if (!id_anak) return res.status(400).json({ error: 'Akun belum ditautkan ke data anak' });
+
+        const query = `
+            SELECT 
+                l.id_logbook,
+                DATE_FORMAT(l.tanggal, '%Y-%m-%d') AS tanggal,
+                k.nama_kelas,
+                (SELECT COUNT(*) FROM kegiatan_logbook kl WHERE kl.id_logbook = l.id_logbook) AS jumlah_kegiatan,
+                (SELECT kl2.judul FROM kegiatan_logbook kl2 WHERE kl2.id_logbook = l.id_logbook ORDER BY kl2.urutan ASC LIMIT 1) AS kegiatan_pertama
+            FROM logbook l
+            JOIN kelas k ON l.id_kelas = k.id_kelas
+            JOIN anak a ON a.id_kelas = k.id_kelas
+            WHERE a.id_anak = ?
+            ORDER BY l.tanggal DESC
+            LIMIT 10
+        `;
+        db.query(query, [id_anak], (err, results) => {
+            if (err) return res.status(500).json({ error: 'Gagal mengambil logbook' });
+            res.json(results);
+        });
+    });
+});
+
+// GET /api/ortu/catatan — catatan khusus untuk anak mereka
+app.get('/api/ortu/catatan', requireApiOrtu, (req, res) => {
+    resolveIdAnak(req, (id_anak) => {
+        if (!id_anak) return res.status(400).json({ error: 'Akun belum ditautkan ke data anak' });
+
+        const query = `
+            SELECT ca.id_catatan, ca.catatan, ca.created_at,
+                   DATE_FORMAT(l.tanggal, '%Y-%m-%d') AS tanggal_logbook,
+                   k.nama_kelas
+            FROM catatan_anak ca
+            JOIN logbook l ON ca.id_logbook = l.id_logbook
+            JOIN kelas k ON l.id_kelas = k.id_kelas
+            WHERE ca.id_anak = ?
+            ORDER BY l.tanggal DESC
+            LIMIT 15
+        `;
+        db.query(query, [id_anak], (err, results) => {
+            if (err) return res.status(500).json({ error: 'Gagal mengambil catatan anak' });
+            res.json(results);
+        });
+    });
+});
+
+// GET /api/ortu/dokumentasi — dokumentasi dari kelas anak
+app.get('/api/ortu/dokumentasi', requireApiOrtu, (req, res) => {
+    resolveIdAnak(req, (id_anak) => {
+        if (!id_anak) return res.status(400).json({ error: 'Akun belum ditautkan ke data anak' });
+
+        const query = `
+            SELECT d.id_dokumentasi, d.file_foto, d.keterangan, 
+                   DATE_FORMAT(l.tanggal, '%Y-%m-%d') AS tanggal, k.nama_kelas
+            FROM dokumentasi d
+            JOIN logbook l ON d.id_logbook = l.id_logbook
+            JOIN kelas k ON l.id_kelas = k.id_kelas
+            JOIN anak a ON a.id_kelas = k.id_kelas
+            WHERE a.id_anak = ?
+            ORDER BY l.tanggal DESC, d.id_dokumentasi DESC
+            LIMIT 8
+        `;
+        db.query(query, [id_anak], (err, results) => {
+            if (err) return res.status(500).json({ error: 'Gagal mengambil dokumentasi' });
+            res.json(results);
+        });
+    });
+});
+
+// GET /api/ortu/logbook/:id — detail logbook (read-only, filtered to anak's class)
+app.get('/api/ortu/logbook/:id', requireApiOrtu, (req, res) => {
+    resolveIdAnak(req, (id_anak) => {
+        if (!id_anak) return res.status(400).json({ error: 'Akun belum ditautkan ke data anak' });
+
+        const id = req.params.id;
+
+        // Verify this logbook belongs to the child's class
+        const verifyQuery = `
+            SELECT l.id_logbook FROM logbook l
+            JOIN anak a ON a.id_kelas = l.id_kelas
+            WHERE l.id_logbook = ? AND a.id_anak = ?
+        `;
+        db.query(verifyQuery, [id, id_anak], (errV, vRows) => {
+            if (errV) return res.status(500).json({ error: 'Gagal verifikasi akses' });
+            if (vRows.length === 0) return res.status(403).json({ error: 'Anda tidak memiliki akses ke logbook ini' });
+
+            // Fetch full detail
+            const queryLogbook = `
+                SELECT l.id_logbook, l.id_kelas, DATE_FORMAT(l.tanggal, '%Y-%m-%d') AS tanggal,
+                       k.nama_kelas
+                FROM logbook l
+                JOIN kelas k ON l.id_kelas = k.id_kelas
+                WHERE l.id_logbook = ?
+            `;
+            db.query(queryLogbook, [id], (err, lbResults) => {
+                if (err) return res.status(500).json({ error: 'Gagal mengambil logbook' });
+                if (lbResults.length === 0) return res.status(404).json({ error: 'Logbook tidak ditemukan' });
+
+                const logbook = lbResults[0];
+
+                db.query(`SELECT * FROM kegiatan_logbook WHERE id_logbook = ? ORDER BY urutan ASC`, [id], (errK, kegiatans) => {
+                    // Only show catatan for their own child
+                    db.query(
+                        `SELECT ca.*, a.nama_lengkap AS nama_anak FROM catatan_anak ca JOIN anak a ON ca.id_anak = a.id_anak WHERE ca.id_logbook = ? AND ca.id_anak = ?`,
+                        [id, id_anak],
+                        (errC, catatans) => {
+                            db.query(`SELECT * FROM dokumentasi WHERE id_logbook = ?`, [id], (errD, docs) => {
+                                res.json({
+                                    logbook,
+                                    kegiatan: kegiatans || [],
+                                    catatan: catatans || [],
+                                    dokumentasi: docs || []
+                                });
+                            });
+                        }
+                    );
+                });
+            });
+        });
+    });
+});
+
 // ===================== API DASHBOARD STATS =====================
 
 app.get('/api/dashboard-stats', requireLogin, (req, res) => {

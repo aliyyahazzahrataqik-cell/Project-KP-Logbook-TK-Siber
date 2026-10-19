@@ -1,0 +1,1308 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Dashboard Orang Tua – iTales TK SIBER. Pantau kegiatan dan perkembangan anak Anda.">
+    <title>Dashboard Orang Tua – iTales</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --sidebar-bg: #405d4d;
+            --sidebar-active: #537a63;
+            --text-dark: #124b3c;
+            --text-muted: #5a7366;
+            --bg-color: #f6f6f6;
+            --card-bg: #ffffff;
+            --accent: #124b3c;
+            --accent-light: #edf5f0;
+            --accent-border: #d2e4d8;
+            --border-color: #e5e9e6;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            display: flex;
+            background-color: var(--bg-color);
+            min-height: 100vh;
+        }
+
+        /* ===== SIDEBAR ===== */
+        .sidebar {
+            width: 250px;
+            background-color: var(--sidebar-bg);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100vh;
+            z-index: 100;
+        }
+
+        .sidebar-brand {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 30px 25px;
+        }
+
+        .sidebar-brand img {
+            width: 40px;
+            height: 40px;
+        }
+
+        .sidebar-brand div h2 {
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        .sidebar-brand div p {
+            font-size: 12px;
+            font-weight: 400;
+            color: #d1d5db;
+        }
+
+        .sidebar-menu {
+            display: flex;
+            flex-direction: column;
+            margin-top: 10px;
+            flex: 1;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px 25px;
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+            transition: background 0.15s;
+        }
+
+        .menu-item:hover {
+            background-color: rgba(255,255,255,0.08);
+        }
+
+        .menu-item.active {
+            background-color: var(--sidebar-active);
+        }
+
+        .menu-item i {
+            font-size: 18px;
+            width: 20px;
+            text-align: center;
+        }
+
+        .sidebar-logout-btn {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 18px;
+            color: #fca5a5;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 13.5px;
+            border-radius: 10px;
+            transition: all 0.15s ease;
+            background: rgba(239, 68, 68, 0.1);
+        }
+
+        .sidebar-logout-btn:hover {
+            background: rgba(239, 68, 68, 0.22);
+            color: #fee2e2;
+            transform: translateX(3px);
+        }
+
+        /* ===== MAIN CONTENT ===== */
+        .main-content {
+            flex: 1;
+            margin-left: 250px;
+            padding: 30px 40px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .header-title h1 {
+            color: var(--text-dark);
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .header-title p {
+            color: var(--text-dark);
+            font-size: 15px;
+            font-weight: 600;
+            margin-top: 5px;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .user-profile-card {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: white;
+            padding: 7px 16px 7px 8px;
+            border-radius: 50px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+            border: 1px solid #e5e9e6;
+        }
+
+        .profile-avatar {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #124b3c, #2a7560);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 15px;
+            font-weight: 700;
+            box-shadow: 0 2px 6px rgba(18,75,60,0.25);
+            position: relative;
+        }
+
+        .profile-avatar::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 10px;
+            height: 10px;
+            background: #22c55e;
+            border: 2px solid white;
+            border-radius: 50%;
+        }
+
+        .profile-details {
+            display: flex;
+            flex-direction: column;
+            line-height: 1.25;
+        }
+
+        .profile-name {
+            font-size: 13.5px;
+            font-weight: 700;
+            color: var(--text-dark);
+        }
+
+        .profile-role {
+            font-size: 11.5px;
+            font-weight: 500;
+            color: #6b7280;
+        }
+
+        /* ===== PROFIL ANAK CARD ===== */
+        .child-profile-card {
+            background: linear-gradient(135deg, #124b3c 0%, #1f6b54 50%, #2a8b6a 100%);
+            border-radius: 16px;
+            padding: 28px 30px;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 24px;
+            color: white;
+            box-shadow: 0 8px 30px rgba(18,75,60,0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .child-profile-card::before {
+            content: '';
+            position: absolute;
+            top: -30px;
+            right: -30px;
+            width: 150px;
+            height: 150px;
+            background: rgba(255,255,255,0.06);
+            border-radius: 50%;
+        }
+
+        .child-profile-card::after {
+            content: '';
+            position: absolute;
+            bottom: -50px;
+            right: 80px;
+            width: 120px;
+            height: 120px;
+            background: rgba(255,255,255,0.04);
+            border-radius: 50%;
+        }
+
+        .child-avatar {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+            font-weight: 800;
+            flex-shrink: 0;
+            border: 3px solid rgba(255,255,255,0.3);
+        }
+
+        .child-info {
+            flex: 1;
+            z-index: 1;
+        }
+
+        .child-info h2 {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .child-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            margin-top: 8px;
+        }
+
+        .child-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            font-weight: 500;
+            color: rgba(255,255,255,0.85);
+        }
+
+        .child-meta-item i {
+            font-size: 12px;
+            color: rgba(255,255,255,0.6);
+        }
+
+        .badge-kelas {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(255,255,255,0.2);
+            padding: 5px 14px;
+            border-radius: 20px;
+            font-size: 12.5px;
+            font-weight: 700;
+            backdrop-filter: blur(4px);
+        }
+
+        /* ===== GRID LAYOUT ===== */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1.8fr 1fr;
+            gap: 25px;
+        }
+
+        /* ===== CARD ===== */
+        .card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 0;
+            box-shadow: 0 2px 16px rgba(0,0,0,0.06);
+            margin-bottom: 25px;
+            border: none;
+            overflow: hidden;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 18px 24px 14px;
+            border-bottom: 1px solid #f3f4f6;
+        }
+
+        .card h3 {
+            font-size: 15px;
+            color: #111;
+            font-weight: 700;
+            padding: 20px 24px 16px 24px;
+        }
+
+        .card-header h3 {
+            padding: 0;
+            margin: 0;
+            font-size: 15px;
+        }
+
+        /* ===== TABLE ===== */
+        .table-container {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 14px 24px;
+            text-align: left;
+            font-size: 13.5px;
+        }
+
+        th {
+            background-color: #eef7f2;
+            color: #3d7a5c;
+            font-weight: 700;
+            letter-spacing: 0.03em;
+            text-transform: uppercase;
+            font-size: 11.5px;
+            border: none;
+        }
+
+        td {
+            color: #1f2937;
+            font-weight: 500;
+            border-bottom: 1px solid #f3f4f6;
+        }
+
+        tbody tr {
+            transition: background-color 0.15s ease;
+        }
+
+        tbody tr:hover {
+            background-color: #f8faf9;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* ===== CATATAN LIST ===== */
+        .catatan-list {
+            padding: 0 24px 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .catatan-item {
+            background: #f8faf9;
+            border-left: 3px solid #22c55e;
+            border-radius: 0 10px 10px 0;
+            padding: 14px 16px;
+            transition: all 0.15s;
+        }
+
+        .catatan-item:hover {
+            background: #eef7f2;
+            transform: translateX(2px);
+        }
+
+        .catatan-date {
+            font-size: 11px;
+            font-weight: 600;
+            color: #9ca3af;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .catatan-text {
+            font-size: 13.5px;
+            color: #1f2937;
+            font-weight: 500;
+            line-height: 1.5;
+        }
+
+        /* ===== LOGBOOK LIST ===== */
+        .logbook-list {
+            padding: 0 24px 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .logbook-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 14px 16px;
+            background: #f9fafb;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.15s;
+            text-decoration: none;
+            color: inherit;
+            border: 1px solid transparent;
+        }
+
+        .logbook-item:hover {
+            background: #eef7f2;
+            border-color: var(--accent-border);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+        }
+
+        .logbook-date-badge {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #124b3c, #1f6b54);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .logbook-date-badge .day {
+            font-size: 18px;
+            font-weight: 800;
+            line-height: 1;
+        }
+
+        .logbook-date-badge .month {
+            font-size: 9px;
+            font-weight: 600;
+            text-transform: uppercase;
+            opacity: 0.8;
+        }
+
+        .logbook-detail {
+            flex: 1;
+        }
+
+        .logbook-detail .lb-title {
+            font-size: 13.5px;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .logbook-detail .lb-sub {
+            font-size: 12px;
+            color: #9ca3af;
+            margin-top: 3px;
+        }
+
+        .logbook-detail .lb-count {
+            font-size: 11px;
+            color: #6b7280;
+            background: #f0f0f0;
+            padding: 2px 8px;
+            border-radius: 10px;
+            display: inline-block;
+            margin-top: 4px;
+        }
+
+        /* ===== DOKUMENTASI GRID ===== */
+        .doc-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            padding: 0 24px 24px;
+        }
+
+        .doc-item {
+            position: relative;
+            border-radius: 10px;
+            overflow: hidden;
+            aspect-ratio: 4/3;
+        }
+
+        .doc-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .doc-item:hover img {
+            transform: scale(1.05);
+        }
+
+        .doc-item .doc-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 8px 10px;
+            background: linear-gradient(transparent, rgba(0,0,0,0.6));
+            color: white;
+            font-size: 10.5px;
+            font-weight: 600;
+        }
+
+        /* ===== EMPTY STATE ===== */
+        .empty-state {
+            text-align: center;
+            padding: 30px 20px;
+            color: #9ca3af;
+            font-size: 13px;
+        }
+
+        .empty-state i {
+            font-size: 28px;
+            margin-bottom: 8px;
+            display: block;
+            color: #cbd5e1;
+        }
+
+        /* ===== ALERT BANNER ===== */
+        .alert-banner {
+            display: none;
+            background: #fef3c7;
+            border: 1px solid #fcd34d;
+            border-radius: 12px;
+            padding: 16px 20px;
+            margin-bottom: 25px;
+            align-items: center;
+            gap: 12px;
+            color: #92400e;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .alert-banner.show {
+            display: flex;
+        }
+
+        .alert-banner i {
+            font-size: 20px;
+            color: #d97706;
+            flex-shrink: 0;
+        }
+
+        /* ===== MODAL DETAIL LOGBOOK ===== */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(18, 75, 60, 0.45);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: white;
+            border-radius: 18px;
+            width: 700px;
+            max-width: 100%;
+            max-height: 90vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 25px 60px rgba(0,0,0,0.2);
+            overflow: hidden;
+            animation: modalPop 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes modalPop {
+            from { opacity: 0; transform: translateY(12px) scale(0.98); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .modal-header {
+            background: #eef6f1;
+            padding: 18px 24px;
+            border-bottom: 1px solid #d2e7da;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h2 {
+            font-size: 17px;
+            font-weight: 700;
+            color: #124b3c;
+        }
+
+        .btn-close-modal {
+            background: none;
+            border: none;
+            color: #6b7280;
+            font-size: 18px;
+            cursor: pointer;
+            padding: 4px;
+        }
+
+        .btn-close-modal:hover {
+            color: #111;
+        }
+
+        .modal-body {
+            padding: 20px 24px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        .modal-section-title {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text-dark);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .modal-section-title i {
+            color: #22c55e;
+        }
+
+        .kegiatan-card {
+            background: #f8faf9;
+            border-radius: 10px;
+            padding: 14px 16px;
+            border-left: 3px solid var(--accent);
+        }
+
+        .kegiatan-card .kg-kategori {
+            font-size: 10.5px;
+            font-weight: 700;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+            margin-bottom: 4px;
+        }
+
+        .kegiatan-card .kg-judul {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1f2937;
+        }
+
+        .kegiatan-card .kg-desk {
+            font-size: 12.5px;
+            color: #6b7280;
+            margin-top: 4px;
+            line-height: 1.5;
+        }
+
+        .modal-doc-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+
+        .modal-doc-grid img {
+            width: 100%;
+            aspect-ratio: 4/3;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+
+        .modal-catatan-box {
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            border-radius: 10px;
+            padding: 14px 16px;
+        }
+
+        .modal-catatan-box .mc-label {
+            font-size: 11px;
+            font-weight: 700;
+            color: #16a34a;
+            text-transform: uppercase;
+            margin-bottom: 6px;
+        }
+
+        .modal-catatan-box .mc-text {
+            font-size: 13.5px;
+            color: #1f2937;
+            line-height: 1.5;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 1024px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                display: none;
+            }
+            .main-content {
+                margin-left: 0;
+                padding: 20px 16px;
+            }
+            .child-profile-card {
+                flex-direction: column;
+                text-align: center;
+                padding: 24px 20px;
+            }
+            .child-meta {
+                justify-content: center;
+            }
+            .header {
+                flex-direction: column;
+                gap: 12px;
+                align-items: flex-start;
+            }
+            .doc-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+            .modal-doc-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== SIDEBAR ===== -->
+    <div class="sidebar">
+        <div class="sidebar-brand">
+            <img src="/assets/Logo_uin.png" alt="Logo" onerror="this.src='https://ui-avatars.com/api/?name=TK&background=fff&color=124b3c'">
+            <div>
+                <h2>TK SIBER</h2>
+                <p>Logbook</p>
+            </div>
+        </div>
+
+        <div class="sidebar-menu">
+            <a href="/dashboard-ortu" class="menu-item active">
+                <i class="fa-solid fa-house"></i> Dashboard
+            </a>
+        </div>
+
+        <div style="margin-top: auto; padding: 15px 16px 20px; border-top: 1px solid rgba(255,255,255,0.08);">
+            <a href="/logout" class="sidebar-logout-btn" onclick="keluarAplikasi(event)">
+                <i class="fa-solid fa-right-from-bracket"></i> Keluar
+            </a>
+        </div>
+    </div>
+
+    <!-- ===== MAIN CONTENT ===== -->
+    <div class="main-content">
+
+        <!-- Header -->
+        <div class="header">
+            <div class="header-title">
+                <h1>Dashboard Orang Tua</h1>
+                <p id="header-greeting">Selamat datang!</p>
+            </div>
+            <div class="header-actions">
+                <div class="user-profile-card">
+                    <div class="profile-avatar" id="avatar-initial">O</div>
+                    <div class="profile-details">
+                        <span class="profile-name" id="user-display-name">Orang Tua</span>
+                        <span class="profile-role">Orang Tua · Online</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Alert jika akun belum ditautkan ke anak -->
+        <div class="alert-banner" id="alert-no-anak">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+            <div>
+                <strong>Akun belum ditautkan ke data anak.</strong><br>
+                Silakan hubungi admin/guru untuk menautkan akun Anda ke data anak.
+            </div>
+        </div>
+
+        <!-- Profil Anak -->
+        <div class="child-profile-card" id="child-profile-card" style="display:none;">
+            <div class="child-avatar" id="child-avatar">?</div>
+            <div class="child-info">
+                <div class="badge-kelas" id="child-kelas-badge">
+                    <i class="fa-solid fa-graduation-cap"></i>
+                    <span id="child-kelas">–</span>
+                </div>
+                <h2 id="child-name">Memuat data anak...</h2>
+                <div class="child-meta">
+                    <div class="child-meta-item">
+                        <i class="fa-solid fa-id-card"></i>
+                        <span>NISN: <strong id="child-nisn">–</strong></span>
+                    </div>
+                    <div class="child-meta-item">
+                        <i class="fa-solid fa-venus-mars"></i>
+                        <span id="child-jk">–</span>
+                    </div>
+                    <div class="child-meta-item">
+                        <i class="fa-solid fa-calendar"></i>
+                        <span id="child-ta">–</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dashboard Grid -->
+        <div class="dashboard-grid">
+
+            <!-- LEFT COLUMN -->
+            <div class="left-col">
+                <!-- Jadwal Hari Ini -->
+                <div class="card">
+                    <h3><i class="fa-solid fa-clock" style="margin-right:8px;color:var(--accent);"></i>Jadwal Kegiatan Hari Ini</h3>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Waktu</th>
+                                    <th>Kegiatan</th>
+                                    <th>Keterangan</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tbody-jadwal">
+                                <tr><td colspan="3" class="empty-state"><i class="fa-solid fa-spinner fa-spin"></i>Memuat jadwal...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Menu Makan Minggu ini -->
+                <div class="card">
+                    <h3><i class="fa-solid fa-utensils" style="margin-right:8px;color:var(--accent);"></i>Menu Makan Minggu Ini</h3>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th style="width:100px;">Hari</th>
+                                    <th>Menu</th>
+                                    <th>Keterangan</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tbody-menu-makan">
+                                <tr><td colspan="3" class="empty-state"><i class="fa-solid fa-spinner fa-spin"></i>Memuat menu...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Logbook Terbaru -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fa-solid fa-book-open" style="margin-right:8px;color:var(--accent);"></i>Logbook Kegiatan Terbaru</h3>
+                    </div>
+                    <div class="logbook-list" id="logbook-list">
+                        <div class="empty-state"><i class="fa-solid fa-spinner fa-spin"></i>Memuat logbook...</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RIGHT COLUMN -->
+            <div class="right-col">
+                <!-- Catatan dari Guru -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fa-solid fa-message" style="margin-right:8px;color:#22c55e;"></i>Catatan dari Guru</h3>
+                    </div>
+                    <div class="catatan-list" id="catatan-list">
+                        <div class="empty-state"><i class="fa-solid fa-spinner fa-spin"></i>Memuat catatan...</div>
+                    </div>
+                </div>
+
+                <!-- Dokumentasi Foto -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fa-solid fa-images" style="margin-right:8px;color:#8b5cf6;"></i>Dokumentasi Kegiatan</h3>
+                    </div>
+                    <div class="doc-grid" id="doc-grid">
+                        <div class="empty-state" style="grid-column:1/-1;"><i class="fa-solid fa-spinner fa-spin"></i>Memuat foto...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== MODAL DETAIL LOGBOOK ===== -->
+    <div class="modal-overlay" id="modal-detail-logbook">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 id="modal-title"><i class="fa-solid fa-book-open" style="margin-right:8px;"></i>Detail Logbook</h2>
+                <button type="button" class="btn-close-modal" onclick="tutupModal()">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="modal-body" id="modal-body">
+                <div class="empty-state"><i class="fa-solid fa-spinner fa-spin"></i>Memuat detail...</div>
+            </div>
+        </div>
+    </div>
+
+<script>
+// ===== AUTH GUARD =====
+window.addEventListener('pageshow', async function(event) {
+    if (event.persisted) {
+        try {
+            const r = await fetch('/api/me', { cache: 'no-store' });
+            if (!r.ok) window.location.replace('/login');
+        } catch(e) {
+            window.location.replace('/login');
+        }
+        return;
+    }
+    if (sessionStorage.getItem('kpalya_logged_out') === 'true') {
+        window.location.replace('/login');
+    }
+});
+
+function keluarAplikasi(e) {
+    if (e) e.preventDefault();
+    try { fetch('/logout', { method: 'POST' }); } catch(err) {}
+    sessionStorage.clear();
+    sessionStorage.setItem('kpalya_logged_out', 'true');
+    localStorage.removeItem('kpalya_user');
+    window.location.replace('/login');
+}
+
+// ===== HELPER FORMAT TANGGAL =====
+const bulanPendek = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
+
+function formatTanggalPendek(dateStr) {
+    if (!dateStr) return '-';
+    const d = new Date(dateStr);
+    return `${d.getDate()} ${bulanPendek[d.getMonth()]} ${d.getFullYear()}`;
+}
+
+function formatTanggalPanjang(dateStr) {
+    if (!dateStr) return '-';
+    const hariNama = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
+    const bulanNama = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+    const d = new Date(dateStr);
+    return `${hariNama[d.getDay()]}, ${d.getDate()} ${bulanNama[d.getMonth()]} ${d.getFullYear()}`;
+}
+
+// ===== MAIN LOAD =====
+let profilAnak = null;
+
+async function muatDashboard() {
+    if (sessionStorage.getItem('kpalya_logged_out') === 'true') {
+        window.location.replace('/login');
+        return;
+    }
+
+    // 1. Info user
+    try {
+        const res = await fetch('/api/me');
+        if (!res.ok) { window.location.replace('/login'); return; }
+        const user = await res.json();
+        const uname = user.username || 'Orang Tua';
+        document.getElementById('header-greeting').textContent = `Selamat datang, ${uname}!`;
+        document.getElementById('user-display-name').textContent = uname;
+        document.getElementById('avatar-initial').textContent = uname.charAt(0).toUpperCase();
+    } catch(e) {
+        window.location.replace('/login');
+        return;
+    }
+
+    // 2. Profil anak
+    try {
+        const res = await fetch('/api/ortu/profil-anak');
+        if (!res.ok) {
+            if (res.status === 401) {
+                window.location.replace('/login');
+                return;
+            }
+            if (res.status === 400) {
+                document.getElementById('alert-no-anak').classList.add('show');
+                showEmptyStates();
+                return;
+            }
+            const err = await res.json().catch(() => ({}));
+            throw new Error(err.error || 'Gagal memuat profil anak');
+        }
+        profilAnak = await res.json();
+
+        // Tampilkan profil anak
+        const card = document.getElementById('child-profile-card');
+        card.style.display = 'flex';
+        document.getElementById('child-avatar').textContent = (profilAnak.nama_lengkap || '?').charAt(0).toUpperCase();
+        document.getElementById('child-name').textContent = profilAnak.nama_lengkap;
+        document.getElementById('child-nisn').textContent = profilAnak.nisn;
+        document.getElementById('child-kelas').textContent = profilAnak.nama_kelas;
+        document.getElementById('child-jk').textContent = profilAnak.jenis_kelamin === 'L' ? 'Laki-laki' : 'Perempuan';
+        document.getElementById('child-ta').textContent = 'TA ' + (profilAnak.tahun_ajaran || '-');
+    } catch(e) {
+        console.error('Error muat profil anak:', e);
+        document.getElementById('alert-no-anak').classList.add('show');
+        showEmptyStates();
+        return;
+    }
+
+    // 3. Load semua data paralel
+    await Promise.allSettled([
+        muatJadwal(),
+        muatMenuMakan(),
+        muatLogbook(),
+        muatCatatan(),
+        muatDokumentasi()
+    ]);
+}
+
+function showEmptyStates() {
+    document.getElementById('tbody-jadwal').innerHTML = `<tr><td colspan="3" class="empty-state"><i class="fa-regular fa-circle-xmark"></i>Akun belum ditautkan ke data anak</td></tr>`;
+    document.getElementById('tbody-menu-makan').innerHTML = '';
+    document.getElementById('logbook-list').innerHTML = '<div class="empty-state"><i class="fa-regular fa-circle-xmark"></i>Tidak tersedia</div>';
+    document.getElementById('catatan-list').innerHTML = '<div class="empty-state"><i class="fa-regular fa-circle-xmark"></i>Tidak tersedia</div>';
+    document.getElementById('doc-grid').innerHTML = '<div class="empty-state" style="grid-column:1/-1;"><i class="fa-regular fa-circle-xmark"></i>Tidak tersedia</div>';
+    muatMenuMakan(); // Menu makan tetap bisa dimuat (publik)
+}
+
+// ===== JADWAL HARI INI =====
+async function muatJadwal() {
+    const tbody = document.getElementById('tbody-jadwal');
+    try {
+        const res = await fetch('/api/ortu/jadwal');
+        const data = await res.json();
+
+        if (!data.jadwal || data.jadwal.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="3" class="empty-state"><i class="fa-regular fa-calendar-xmark"></i>Tidak ada kegiatan hari ini (${data.hari || ''})</td></tr>`;
+            return;
+        }
+
+        tbody.innerHTML = data.jadwal.map(j => `
+            <tr>
+                <td><span style="font-weight:600;color:var(--accent);">${j.jam_mulai.substring(0,5)}</span> <span style="color:#9ca3af;">–</span> ${j.jam_selesai.substring(0,5)}</td>
+                <td style="font-weight:600;">${j.kegiatan}</td>
+                <td style="color:#6b7280;">${j.keterangan || '-'}</td>
+            </tr>
+        `).join('');
+    } catch(e) {
+        tbody.innerHTML = `<tr><td colspan="3" class="empty-state" style="color:#ef4444;"><i class="fa-solid fa-circle-exclamation"></i>Gagal memuat jadwal</td></tr>`;
+    }
+}
+
+// ===== MENU MAKAN =====
+async function muatMenuMakan() {
+    const tbody = document.getElementById('tbody-menu-makan');
+    try {
+        const res = await fetch('/api/menu-makan');
+        const data = await res.json();
+        const menuList = data.menu_mingguan || [];
+
+        if (menuList.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="3" class="empty-state"><i class="fa-regular fa-face-meh"></i>Belum ada menu makan</td></tr>`;
+            return;
+        }
+
+        const hariIni = (data.hari_ini || '').toLowerCase();
+        tbody.innerHTML = menuList.map(m => {
+            const isToday = m.hari.toLowerCase() === hariIni;
+            return `
+                <tr style="${isToday ? 'background:#f0fdf4;font-weight:600;' : ''}">
+                    <td>
+                        <span style="display:inline-flex;align-items:center;gap:6px;">
+                            ${m.hari}
+                            ${isToday ? '<span style="background:#22c55e;color:white;font-size:9.5px;padding:2px 7px;border-radius:10px;font-weight:700;">HARI INI</span>' : ''}
+                        </span>
+                    </td>
+                    <td style="color:#124b3c;font-weight:600;">${m.menu}</td>
+                    <td style="color:#6b7280;font-size:13px;">${m.keterangan || '-'}</td>
+                </tr>
+            `;
+        }).join('');
+    } catch(e) {
+        tbody.innerHTML = `<tr><td colspan="3" class="empty-state" style="color:#ef4444;">Gagal memuat menu</td></tr>`;
+    }
+}
+
+// ===== LOGBOOK =====
+async function muatLogbook() {
+    const container = document.getElementById('logbook-list');
+    try {
+        const res = await fetch('/api/ortu/logbook');
+        const data = await res.json();
+
+        if (!data || data.length === 0) {
+            container.innerHTML = '<div class="empty-state"><i class="fa-regular fa-folder-open"></i>Belum ada logbook kegiatan</div>';
+            return;
+        }
+
+        container.innerHTML = data.map(lb => {
+            const d = new Date(lb.tanggal);
+            return `
+                <a class="logbook-item" onclick="bukaDetailLogbook(${lb.id_logbook})" title="Lihat detail">
+                    <div class="logbook-date-badge">
+                        <span class="day">${d.getDate()}</span>
+                        <span class="month">${bulanPendek[d.getMonth()]}</span>
+                    </div>
+                    <div class="logbook-detail">
+                        <div class="lb-title">${lb.kegiatan_pertama || 'Logbook'}</div>
+                        <div class="lb-sub">${formatTanggalPendek(lb.tanggal)} · ${lb.nama_kelas}</div>
+                        <span class="lb-count"><i class="fa-solid fa-list" style="margin-right:4px;font-size:10px;"></i>${lb.jumlah_kegiatan} kegiatan</span>
+                    </div>
+                </a>
+            `;
+        }).join('');
+    } catch(e) {
+        container.innerHTML = '<div class="empty-state" style="color:#ef4444;"><i class="fa-solid fa-circle-exclamation"></i>Gagal memuat logbook</div>';
+    }
+}
+
+// ===== CATATAN =====
+async function muatCatatan() {
+    const container = document.getElementById('catatan-list');
+    try {
+        const res = await fetch('/api/ortu/catatan');
+        const data = await res.json();
+
+        if (!data || data.length === 0) {
+            container.innerHTML = '<div class="empty-state"><i class="fa-regular fa-comment-dots"></i>Belum ada catatan dari guru</div>';
+            return;
+        }
+
+        container.innerHTML = data.map(c => `
+            <div class="catatan-item">
+                <div class="catatan-date">
+                    <i class="fa-regular fa-calendar"></i>
+                    ${formatTanggalPendek(c.tanggal_logbook)}
+                </div>
+                <div class="catatan-text">${c.catatan}</div>
+            </div>
+        `).join('');
+    } catch(e) {
+        container.innerHTML = '<div class="empty-state" style="color:#ef4444;"><i class="fa-solid fa-circle-exclamation"></i>Gagal memuat catatan</div>';
+    }
+}
+
+// ===== DOKUMENTASI =====
+async function muatDokumentasi() {
+    const grid = document.getElementById('doc-grid');
+    try {
+        const res = await fetch('/api/ortu/dokumentasi');
+        const data = await res.json();
+
+        if (!data || data.length === 0) {
+            grid.innerHTML = '<div class="empty-state" style="grid-column:1/-1;"><i class="fa-regular fa-images"></i>Belum ada foto dokumentasi</div>';
+            return;
+        }
+
+        grid.innerHTML = data.map(d => {
+            let imgSrc;
+            if (d.file_foto.startsWith('http')) {
+                imgSrc = d.file_foto;
+            } else if (d.file_foto.startsWith('doc-')) {
+                imgSrc = `/uploads/${d.file_foto}`;
+            } else {
+                imgSrc = `/assets/${d.file_foto}`;
+            }
+            return `
+                <div class="doc-item">
+                    <img src="${imgSrc}" alt="${d.keterangan || 'Dokumentasi'}" loading="lazy"
+                         onerror="this.src='https://images.unsplash.com/photo-1577896851231-70ef18881754?q=80&w=300&auto=format&fit=crop'">
+                    <div class="doc-overlay">${formatTanggalPendek(d.tanggal)}</div>
+                </div>
+            `;
+        }).join('');
+    } catch(e) {
+        grid.innerHTML = '<div class="empty-state" style="grid-column:1/-1;color:#ef4444;"><i class="fa-solid fa-circle-exclamation"></i>Gagal memuat dokumentasi</div>';
+    }
+}
+
+// ===== DETAIL LOGBOOK MODAL =====
+async function bukaDetailLogbook(id) {
+    const overlay = document.getElementById('modal-detail-logbook');
+    const body = document.getElementById('modal-body');
+    const title = document.getElementById('modal-title');
+
+    body.innerHTML = '<div class="empty-state"><i class="fa-solid fa-spinner fa-spin"></i>Memuat detail logbook...</div>';
+    overlay.classList.add('active');
+
+    try {
+        const res = await fetch(`/api/ortu/logbook/${id}`);
+        if (!res.ok) throw new Error('Gagal memuat');
+        const data = await res.json();
+
+        title.innerHTML = `<i class="fa-solid fa-book-open" style="margin-right:8px;"></i>${formatTanggalPanjang(data.logbook.tanggal)} — ${data.logbook.nama_kelas}`;
+
+        let html = '';
+
+        // Kegiatan
+        if (data.kegiatan && data.kegiatan.length > 0) {
+            html += `<div class="modal-section-title"><i class="fa-solid fa-list-check"></i>Kegiatan Pembelajaran</div>`;
+            html += data.kegiatan.map(k => `
+                <div class="kegiatan-card">
+                    <div class="kg-kategori">${k.kategori}</div>
+                    <div class="kg-judul">${k.judul}</div>
+                    <div class="kg-desk">${k.deskripsi}</div>
+                </div>
+            `).join('');
+        }
+
+        // Catatan anak (hanya milik anak ini)
+        if (data.catatan && data.catatan.length > 0) {
+            html += `<div class="modal-section-title" style="margin-top:8px;"><i class="fa-solid fa-message"></i>Catatan untuk ${profilAnak ? profilAnak.nama_lengkap : 'Anak Anda'}</div>`;
+            data.catatan.forEach(c => {
+                html += `
+                    <div class="modal-catatan-box">
+                        <div class="mc-label"><i class="fa-solid fa-quote-left" style="margin-right:4px;"></i>Catatan Guru</div>
+                        <div class="mc-text">${c.catatan}</div>
+                    </div>
+                `;
+            });
+        }
+
+        // Dokumentasi
+        if (data.dokumentasi && data.dokumentasi.length > 0) {
+            html += `<div class="modal-section-title" style="margin-top:8px;"><i class="fa-solid fa-camera"></i>Dokumentasi</div>`;
+            html += '<div class="modal-doc-grid">';
+            html += data.dokumentasi.map(d => {
+                let imgSrc;
+                if (d.file_foto.startsWith('http')) imgSrc = d.file_foto;
+                else if (d.file_foto.startsWith('doc-')) imgSrc = `/uploads/${d.file_foto}`;
+                else imgSrc = `/assets/${d.file_foto}`;
+                return `<img src="${imgSrc}" alt="${d.keterangan || 'Foto'}" loading="lazy" 
+                         onerror="this.src='https://images.unsplash.com/photo-1577896851231-70ef18881754?q=80&w=300&auto=format&fit=crop'">`;
+            }).join('');
+            html += '</div>';
+        }
+
+        if (!html) {
+            html = '<div class="empty-state"><i class="fa-regular fa-folder-open"></i>Belum ada data di logbook ini</div>';
+        }
+
+        body.innerHTML = html;
+    } catch(e) {
+        body.innerHTML = '<div class="empty-state" style="color:#ef4444;"><i class="fa-solid fa-circle-exclamation"></i>Gagal memuat detail logbook</div>';
+    }
+}
+
+function tutupModal() {
+    document.getElementById('modal-detail-logbook').classList.remove('active');
+}
+
+// Tutup modal klik overlay
+document.getElementById('modal-detail-logbook').addEventListener('click', function(e) {
+    if (e.target === this) tutupModal();
+});
+
+// ESC untuk tutup modal
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') tutupModal();
+});
+
+// ===== START =====
+muatDashboard();
+</script>
+
+</body>
+</html>
