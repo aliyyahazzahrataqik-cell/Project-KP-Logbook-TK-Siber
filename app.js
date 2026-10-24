@@ -304,6 +304,37 @@ app.get('/api/jadwal-hari-ini', (req, res) => {
     });
 });
 
+// GET /api/jadwal-mingguan (publik untuk landing page tamu agar seminggu terlihat & hari ini di-highlight)
+app.get('/api/jadwal-mingguan', (req, res) => {
+    const hariSekarang = new Date().toLocaleDateString('id-ID', { weekday: 'long' });
+
+    const query = `
+        SELECT
+            jadwal.id_jadwal,
+            jadwal.id_kelas,
+            jadwal.hari,
+            jadwal.jam_mulai,
+            jadwal.jam_selesai,
+            jadwal.kegiatan,
+            jadwal.keterangan,
+            kelas.nama_kelas
+        FROM jadwal
+        JOIN kelas ON jadwal.id_kelas = kelas.id_kelas
+        ORDER BY FIELD(jadwal.hari, 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'), jadwal.jam_mulai
+    `;
+
+    db.query(query, (err, results) => {
+        if (err) {
+            console.error('Error fetching jadwal mingguan:', err);
+            return res.status(500).json({ error: 'Gagal mengambil jadwal mingguan' });
+        }
+        res.json({
+            hari_ini: hariSekarang,
+            jadwal: results || []
+        });
+    });
+});
+
 // ===================== API MENU MAKAN =====================
 
 // GET /api/menu-makan (publik untuk landing page & dashboard)

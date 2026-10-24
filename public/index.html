@@ -89,22 +89,51 @@
         </section>
 
 
-        <!-- ==================== KEGIATAN MENDATANG ==================== -->
+        <!-- ==================== JADWAL KEGIATAN MINGGUAN ==================== -->
         <section class="jadwal-section">
             <div class="container">
 
                 <div class="section-header">
                     <div>
-                        <h2>Kegiatan mendatang</h2>
-                        <p class="section-sub">Momen belajar dan kebersamaan yang terbuka untuk umum.</p>
+                        <span class="section-badge-pill">Agenda Belajar</span>
+                        <h2>Jadwal kegiatan mingguan</h2>
+                        <p class="section-sub">Aktivitas terpadu belajar dan bermain sepanjang pekan. Hari ini otomatis disorot.</p>
                     </div>
                     <a href="/kelola-jadwal" id="btn-semua-jadwal" class="btn-outline-sm">
-                        Semua jadwal
+                        Kelola Jadwal Lengkap
                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
                     </a>
                 </div>
 
-                <!-- Grid card jadwal (diisi JS) -->
+                <!-- Kontrol Hari Sepekan & Filter -->
+                <div class="jadwal-controls-wrap">
+                    <div id="weekend-notice-box" style="display: none;" class="weekend-notice">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                        <span id="weekend-notice-text">Hari ini Sabtu (Libur Akhir Pekan) · Menampilkan agenda belajar Senin s/d Jumat.</span>
+                    </div>
+
+                    <!-- Papan 5 Hari (Senin - Jumat) -->
+                    <div class="jadwal-week-bar" id="jadwal-week-bar">
+                        <!-- Diisi via JavaScript -->
+                    </div>
+
+                    <!-- Sub-bar Status Hari Terpilih & Filter Kelas -->
+                    <div class="jadwal-filter-status-row">
+                        <div class="jadwal-active-day-label">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1d5c45" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                            <span>Menampilkan: <span class="active-day-highlight" id="active-day-title">Hari Senin</span></span>
+                            <span id="active-day-badge"></span>
+                        </div>
+
+                        <div class="kelas-filter-group" id="filter-kelas-group">
+                            <button type="button" class="kelas-filter-btn active" data-kelas="semua">Semua Kelas</button>
+                            <button type="button" class="kelas-filter-btn" data-kelas="TK A">TK A</button>
+                            <button type="button" class="kelas-filter-btn" data-kelas="TK B">TK B</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Grid card kegiatan (diisi JS) -->
                 <div class="jadwal-grid" id="jadwal-grid">
                     <!-- skeleton loader -->
                     <div class="jadwal-card skeleton-card"></div>
@@ -114,7 +143,7 @@
 
                 <div class="info-bar">
                     <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                    Hanya kegiatan hari ini yang ditampilkan di sini. Data anak dan logbook internal tidak tersedia untuk tamu.
+                    Jadwal mingguan ini terhubung langsung ke database aktif TK SIBER UINSSC. Data anak dan logbook internal tetap aman dan hanya untuk pengguna terdaftar.
                 </div>
 
             </div>
@@ -170,6 +199,7 @@
             'literasi': `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>`,
             'seni': `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="13.5" cy="6.5" r=".5"/><circle cx="17.5" cy="10.5" r=".5"/><circle cx="8.5" cy="7.5" r=".5"/><circle cx="6.5" cy="12.5" r=".5"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></svg>`,
             'musik': `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>`,
+            'ibadah': `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>`,
             'default': `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>`
         };
 
@@ -177,9 +207,10 @@
 
         function getIkon(kegiatan = '') {
             const k = kegiatan.toLowerCase();
-            if (k.includes('baca') || k.includes('cerita') || k.includes('dongeng') || k.includes('literasi')) return ikonMap['literasi'];
-            if (k.includes('seni') || k.includes('warna') || k.includes('kreasi') || k.includes('gambar')) return ikonMap['seni'];
-            if (k.includes('musik') || k.includes('lagu') || k.includes('pentas') || k.includes('gerak')) return ikonMap['musik'];
+            if (k.includes('baca') || k.includes('cerita') || k.includes('dongeng') || k.includes('literasi') || k.includes('kata') || k.includes('huruf')) return ikonMap['literasi'];
+            if (k.includes('seni') || k.includes('warna') || k.includes('kreasi') || k.includes('gambar') || k.includes('origami') || k.includes('lukis')) return ikonMap['seni'];
+            if (k.includes('musik') || k.includes('lagu') || k.includes('nyanyi') || k.includes('gerak') || k.includes('senam')) return ikonMap['musik'];
+            if (k.includes('doa') || k.includes('ibadah') || k.includes('sholat') || k.includes('wudhu') || k.includes('infaq') || k.includes('surat')) return ikonMap['ibadah'];
             return ikonMap['default'];
         }
 
@@ -187,59 +218,139 @@
             return jam ? jam.substring(0, 5) : '';
         }
 
-        function formatTanggal(dateStr) {
-            const d = new Date(dateStr);
-            return d.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
-        }
+        const HARI_SEPEKAN = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat'];
+        let semuaJadwal = [];
+        let hariIniAktif = '';
+        let hariTerpilih = 'Senin';
+        let kelasTerpilih = 'semua';
 
         async function muatJadwal() {
+            const weekBar = document.getElementById('jadwal-week-bar');
             const grid = document.getElementById('jadwal-grid');
+            const weekendBox = document.getElementById('weekend-notice-box');
+            const weekendText = document.getElementById('weekend-notice-text');
+
             try {
-                const res = await fetch('/api/jadwal-hari-ini');
+                const res = await fetch('/api/jadwal-mingguan');
                 const data = await res.json();
 
-                if (!data.jadwal || data.jadwal.length === 0) {
-                    grid.innerHTML = `
-                        <div class="jadwal-empty">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-                            <p>Tidak ada kegiatan hari ini.</p>
-                        </div>`;
-                    return;
+                semuaJadwal = data.jadwal || [];
+                hariIniAktif = data.hari_ini || 'Senin';
+
+                const isWeekend = hariIniAktif.toLowerCase() === 'sabtu' || hariIniAktif.toLowerCase() === 'minggu';
+                if (isWeekend) {
+                    weekendBox.style.display = 'flex';
+                    weekendText.textContent = `Hari ini ${hariIniAktif} (Libur Akhir Pekan) · Menampilkan jadwal pekanan aktif (Senin s/d Jumat).`;
+                    hariTerpilih = 'Senin';
+                } else {
+                    weekendBox.style.display = 'none';
+                    const adaDiHariKerja = HARI_SEPEKAN.some(h => h.toLowerCase() === hariIniAktif.toLowerCase());
+                    hariTerpilih = adaDiHariKerja ? hariIniAktif : 'Senin';
                 }
 
-                grid.innerHTML = data.jadwal.map((item, i) => `
-                    <article class="jadwal-card ${warnaMap[i % warnaMap.length]}">
-                        <div class="card-top">
-                            <div class="card-icon-wrap">${getIkon(item.kegiatan)}</div>
-                        </div>
-                        <div class="card-category">${item.keterangan || 'Kegiatan umum'}</div>
-                        <h3 class="card-title">${item.kegiatan}</h3>
-                        <div class="card-meta">
-                            <span class="card-date">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-                                ${data.hari}, ${new Date().toLocaleDateString('id-ID', {day: 'numeric', month: 'long', year: 'numeric'})}
-                            </span>
-                            <span class="card-time">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                                ${formatWaktu(item.jam_mulai)}–${formatWaktu(item.jam_selesai)} WIB
-                            </span>
-                        </div>
-                        <div class="card-kelas">${item.nama_kelas} · Terbuka untuk umum</div>
-                        <a href="/kelola-jadwal" class="card-link">
-                            Lihat detail
-                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-                        </a>
-                    </article>
-                `).join('');
+                renderBarHari();
+                renderKegiatanHariIni();
 
             } catch (err) {
+                console.error('Error muat jadwal:', err);
                 grid.innerHTML = `
                     <div class="jadwal-empty">
                         <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-                        <p>Gagal memuat jadwal. Coba refresh halaman.</p>
+                        <p>Gagal memuat jadwal mingguan. Silakan refresh halaman.</p>
                     </div>`;
             }
         }
+
+        // Render 5 tombol hari sepekan dengan highlight hari ini
+        function renderBarHari() {
+            const weekBar = document.getElementById('jadwal-week-bar');
+
+            weekBar.innerHTML = HARI_SEPEKAN.map(hari => {
+                const isToday = hari.toLowerCase() === hariIniAktif.toLowerCase();
+                const isActive = hari.toLowerCase() === hariTerpilih.toLowerCase();
+                const countJadwal = semuaJadwal.filter(j => j.hari.toLowerCase() === hari.toLowerCase()).length;
+
+                return `
+                    <div class="day-tab-btn ${isToday ? 'is-today' : ''} ${isActive ? 'active' : ''}" onclick="gantiHari('${hari}')">
+                        <div class="day-tab-btn-header">
+                            <span class="day-tab-name">${hari}</span>
+                            ${isToday ? '<span class="today-badge">Hari ini</span>' : ''}
+                        </div>
+                        <span class="day-tab-count">${countJadwal} Kegiatan</span>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Ganti hari saat tombol hari di-klik
+        function gantiHari(hari) {
+            hariTerpilih = hari;
+            renderBarHari();
+            renderKegiatanHariIni();
+        }
+
+        // Render card jadwal untuk hari dan filter kelas yang dipilih
+        function renderKegiatanHariIni() {
+            const grid = document.getElementById('jadwal-grid');
+            const titleEl = document.getElementById('active-day-title');
+            const badgeEl = document.getElementById('active-day-badge');
+
+            titleEl.textContent = `Hari ${hariTerpilih}`;
+
+            const isToday = hariTerpilih.toLowerCase() === hariIniAktif.toLowerCase();
+            badgeEl.innerHTML = isToday ? '<span class="today-badge" style="margin-left: 6px;">Hari Ini</span>' : '';
+
+            // Filter data sesuai hari dan filter kelas
+            let items = semuaJadwal.filter(j => j.hari.toLowerCase() === hariTerpilih.toLowerCase());
+
+            if (kelasTerpilih !== 'semua') {
+                items = items.filter(j => (j.nama_kelas || '').toLowerCase() === kelasTerpilih.toLowerCase());
+            }
+
+            if (items.length === 0) {
+                grid.innerHTML = `
+                    <div class="jadwal-empty">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                        <p>Tidak ada kegiatan untuk hari ${hariTerpilih} ${kelasTerpilih !== 'semua' ? `(${kelasTerpilih})` : ''}.</p>
+                    </div>`;
+                return;
+            }
+
+            grid.innerHTML = items.map((item, i) => `
+                <article class="jadwal-card ${warnaMap[i % warnaMap.length]}">
+                    <div class="card-top">
+                        <div class="card-icon-wrap">${getIkon(item.kegiatan)}</div>
+                        <span class="badge-kelas" style="font-size: 11px; padding: 3px 9px; background: #eaf3ee; color: #1a4a35; border-radius: 8px; font-weight: 700;">${item.nama_kelas}</span>
+                    </div>
+                    <div class="card-category">${item.keterangan || 'Agenda Rutin'}</div>
+                    <h3 class="card-title">${item.kegiatan}</h3>
+                    <div class="card-meta">
+                        <span class="card-date">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                            Setiap ${item.hari}
+                        </span>
+                        <span class="card-time">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                            ${formatWaktu(item.jam_mulai)} – ${formatWaktu(item.jam_selesai)} WIB
+                        </span>
+                    </div>
+                    <a href="/kelola-jadwal" class="card-link">
+                        Lihat detail kegiatan
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                    </a>
+                </article>
+            `).join('');
+        }
+
+        // Event listener filter kelas
+        document.querySelectorAll('.kelas-filter-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.kelas-filter-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                kelasTerpilih = this.getAttribute('data-kelas');
+                renderKegiatanHariIni();
+            });
+        });
 
         async function muatMenuMakan() {
             const grid = document.getElementById('menu-makan-grid');

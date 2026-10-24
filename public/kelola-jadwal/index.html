@@ -840,45 +840,6 @@
 
     <!-- ===== JAVASCRIPT LOGIC ===== -->
     <script>
-        // Data Jadwal Awal TK SIBER
-        const INITIAL_JADWAL = [
-            // SENIN
-            { id_jadwal: 101, hari: "Senin", id_kelas: 1, nama_kelas: "TK A", jam_mulai: "08:00", jam_selesai: "08:30", kegiatan: "Pembukaan & Doa Pagi", keterangan: "Lingkaran pagi dan presensi" },
-            { id_jadwal: 102, hari: "Senin", id_kelas: 1, nama_kelas: "TK A", jam_mulai: "08:30", jam_selesai: "09:30", kegiatan: "Mengenal Huruf & Kata", keterangan: "Literasi awal buku cerita" },
-            { id_jadwal: 103, hari: "Senin", id_kelas: 1, nama_kelas: "TK A", jam_mulai: "09:30", jam_selesai: "10:15", kegiatan: "Istirahat & Snack Time", keterangan: "Cuci tangan & makan sehat" },
-            { id_jadwal: 104, hari: "Senin", id_kelas: 1, nama_kelas: "TK A", jam_mulai: "10:15", jam_selesai: "11:00", kegiatan: "Bermain Balok & Motorik", keterangan: "Kreativitas kelompok" },
-            { id_jadwal: 105, hari: "Senin", id_kelas: 1, nama_kelas: "TK A", jam_mulai: "11:00", jam_selesai: "11:30", kegiatan: "Refleksi & Penutupan", keterangan: "Doa pulang & penjemputan" },
-            { id_jadwal: 106, hari: "Senin", id_kelas: 2, nama_kelas: "TK B", jam_mulai: "08:00", jam_selesai: "08:30", kegiatan: "Pembukaan & Doa Pagi", keterangan: "Lingkaran pagi dan presensi" },
-            { id_jadwal: 107, hari: "Senin", id_kelas: 2, nama_kelas: "TK B", jam_mulai: "08:30", jam_selesai: "09:30", kegiatan: "Membaca Mandiri & Menulis", keterangan: "Persiapan calistung ceria" },
-            { id_jadwal: 108, hari: "Senin", id_kelas: 2, nama_kelas: "TK B", jam_mulai: "09:30", jam_selesai: "10:15", kegiatan: "Istirahat & Snack Time", keterangan: "Makan bersama" },
-            { id_jadwal: 109, hari: "Senin", id_kelas: 2, nama_kelas: "TK B", jam_mulai: "10:15", jam_selesai: "11:00", kegiatan: "Eksplorasi Sains Dasar", keterangan: "Percobaan warna & air" },
-            { id_jadwal: 110, hari: "Senin", id_kelas: 2, nama_kelas: "TK B", jam_mulai: "11:00", jam_selesai: "11:30", kegiatan: "Doa & Penutupan", keterangan: "Pulang" },
-
-            // SELASA
-            { id_jadwal: 201, hari: "Selasa", id_kelas: 1, nama_kelas: "TK A", jam_mulai: "08:00", jam_selesai: "08:30", kegiatan: "Senam Pagi Ceria", keterangan: "Halaman sekolah" },
-            { id_jadwal: 202, hari: "Selasa", id_kelas: 1, nama_kelas: "TK A", jam_mulai: "08:30", jam_selesai: "09:30", kegiatan: "Mewarnai & Menggambar", keterangan: "Pengenalan bentuk & warna" },
-            { id_jadwal: 203, hari: "Selasa", id_kelas: 1, nama_kelas: "TK A", jam_mulai: "09:30", jam_selesai: "10:15", kegiatan: "Istirahat & Makan", keterangan: "Makan bekal" },
-            { id_jadwal: 204, hari: "Selasa", id_kelas: 1, nama_kelas: "TK A", jam_mulai: "10:15", jam_selesai: "11:30", kegiatan: "Menyanyi & Gerak Irama", keterangan: "Lagu anak nusantara" },
-
-            // RABU
-            { id_jadwal: 301, hari: "Rabu", id_kelas: 1, nama_kelas: "TK A", jam_mulai: "08:00", jam_selesai: "08:30", kegiatan: "Berdoa & Murajaah Surat Pendek", keterangan: "Hafalan Al-Ikhlas & An-Nas" },
-            { id_jadwal: 302, hari: "Rabu", id_kelas: 1, nama_kelas: "TK A", jam_mulai: "08:30", jam_selesai: "09:30", kegiatan: "Berhitung Menyenangkan", keterangan: "Menggunakan kancing angka" },
-            { id_jadwal: 303, hari: "Rabu", id_kelas: 1, nama_kelas: "TK A", jam_mulai: "09:30", jam_selesai: "10:15", kegiatan: "Istirahat", keterangan: "Bermain di halaman" },
-            { id_jadwal: 304, hari: "Rabu", id_kelas: 1, nama_kelas: "TK A", jam_mulai: "10:15", jam_selesai: "11:30", kegiatan: "Bercerita / Dongeng Pagi", keterangan: "Kisah fabel kejujuran" },
-
-            // KAMIS
-            { id_jadwal: 401, hari: "Kamis", id_kelas: 1, nama_kelas: "TK A", jam_mulai: "08:00", jam_selesai: "08:45", kegiatan: "Praktek Toilet Training & Kemandirian", keterangan: "Pembiasaan adab harian" },
-            { id_jadwal: 402, hari: "Kamis", id_kelas: 1, nama_kelas: "TK A", jam_mulai: "08:45", jam_selesai: "09:45", kegiatan: "Kreativitas Origami / Lipat Kertas", keterangan: "Membuat burung & perahu" },
-            { id_jadwal: 403, hari: "Kamis", id_kelas: 1, nama_kelas: "TK A", jam_mulai: "09:45", jam_selesai: "10:30", kegiatan: "Istirahat & Minum Susu", keterangan: "Gizi seimbang" },
-            { id_jadwal: 404, hari: "Kamis", id_kelas: 1, nama_kelas: "TK A", jam_mulai: "10:30", jam_selesai: "11:30", kegiatan: "Permainan Tradisional", keterangan: "Ular naga & lompat tali" },
-
-            // JUMAT
-            { id_jadwal: 501, hari: "Jumat", id_kelas: 1, nama_kelas: "TK A", jam_mulai: "08:00", jam_selesai: "08:45", kegiatan: "Pembiasaan Ibadah & Wudhu", keterangan: "Praktek sholat dhuha" },
-            { id_jadwal: 502, hari: "Jumat", id_kelas: 1, nama_kelas: "TK A", jam_mulai: "08:45", jam_selesai: "09:45", kegiatan: "Infaq & Kisah Sahabat Nabi", keterangan: "Pendidikan karakter berbagi" },
-            { id_jadwal: 503, hari: "Jumat", id_kelas: 1, nama_kelas: "TK A", jam_mulai: "09:45", jam_selesai: "10:30", kegiatan: "Makan Bersama Menu Gizi", keterangan: "Sayur & buah" },
-            { id_jadwal: 504, hari: "Jumat", id_kelas: 1, nama_kelas: "TK A", jam_mulai: "10:30", jam_selesai: "11:00", kegiatan: "Doa & Pulang Lebih Awal", keterangan: "Jumat berkah" }
-        ];
-
         let listJadwal = [];
         let hariAktif = 'Senin';
         let isEditMode = false;
@@ -899,7 +860,7 @@
             }
         });
 
-        // Logout terpadu (Support file://, Live Server, dan Express localhost:3000)
+        // Logout terpadu
         function keluarAplikasi(e) {
             if (e) e.preventDefault();
             try {
@@ -918,25 +879,6 @@
             window.location.replace(target);
         }
 
-        // Penyimpanan Lokal
-        function loadLocalData() {
-            const saved = localStorage.getItem('kpalya_data_jadwal');
-            if (saved) {
-                try {
-                    listJadwal = JSON.parse(saved);
-                } catch(e) {
-                    listJadwal = [...INITIAL_JADWAL];
-                }
-            } else {
-                listJadwal = [...INITIAL_JADWAL];
-                saveLocalData();
-            }
-        }
-
-        function saveLocalData() {
-            localStorage.setItem('kpalya_data_jadwal', JSON.stringify(listJadwal));
-        }
-
         // Muat info user login
         async function muatUser() {
             try {
@@ -950,22 +892,20 @@
             } catch(e) {}
         }
 
-        // Muat Data Jadwal (Coba API Backend dulu, jika gagal fallback ke local storage)
+        // Muat Data Jadwal langsung dari Database API
         async function muatDataJadwal() {
             try {
                 const res = await fetch('/api/jadwal');
                 if (res.ok) {
                     const data = await res.json();
-                    if (Array.isArray(data) && data.length > 0) {
-                        listJadwal = data;
-                        saveLocalData();
-                        renderJadwal();
-                        return;
-                    }
+                    listJadwal = Array.isArray(data) ? data : [];
+                    renderJadwal();
+                    return;
                 }
-            } catch(e) {}
-
-            loadLocalData();
+            } catch(e) {
+                console.error('Gagal memuat jadwal dari database:', e);
+            }
+            listJadwal = [];
             renderJadwal();
         }
 
@@ -1115,64 +1055,46 @@
 
             const nama_kelas = id_kelas == '1' ? 'TK A' : 'TK B';
 
-            // Coba panggil API backend jika ada
             try {
+                let res;
                 if (isEditMode) {
-                    await fetch(`/api/jadwal/${id}`, {
+                    res = await fetch(`/api/jadwal/${id}`, {
                         method: 'PUT',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ id_kelas, hari, jam_mulai, jam_selesai, kegiatan, keterangan })
                     });
                 } else {
-                    await fetch('/api/jadwal', {
+                    res = await fetch('/api/jadwal', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ id_kelas, hari, jam_mulai, jam_selesai, kegiatan, keterangan })
                     });
                 }
-            } catch(e) {}
 
-            // Update State Lokal
-            if (isEditMode) {
-                const idx = listJadwal.findIndex(item => item.id_jadwal == id);
-                if (idx !== -1) {
-                    listJadwal[idx] = {
-                        ...listJadwal[idx],
-                        hari,
-                        id_kelas: parseInt(id_kelas),
-                        nama_kelas,
-                        jam_mulai,
-                        jam_selesai,
-                        kegiatan,
-                        keterangan
-                    };
+                if (!res.ok) {
+                    const errData = await res.json().catch(() => ({}));
+                    btn.disabled = false;
+                    btn.textContent = 'Simpan Jadwal';
+                    return showAlert('error', errData.error || 'Gagal menyimpan ke database!');
                 }
-                showAlert('success', 'Jadwal berhasil diperbarui!');
-            } else {
-                const newId = Date.now();
-                listJadwal.push({
-                    id_jadwal: newId,
-                    hari,
-                    id_kelas: parseInt(id_kelas),
-                    nama_kelas,
-                    jam_mulai,
-                    jam_selesai,
-                    kegiatan,
-                    keterangan
-                });
-                showAlert('success', 'Jadwal baru berhasil ditambahkan!');
-            }
 
-            saveLocalData();
+                showAlert('success', isEditMode ? 'Jadwal berhasil diperbarui!' : 'Jadwal baru berhasil ditambahkan!');
+                await muatDataJadwal();
 
-            // Pindahkan tab ke hari yang baru ditambahkan/diedit
-            pilihHari(hari);
+                // Pindahkan tab ke hari yang baru ditambahkan/diedit
+                pilihHari(hari);
 
-            setTimeout(() => {
+                setTimeout(() => {
+                    btn.disabled = false;
+                    btn.textContent = 'Simpan Jadwal';
+                    tutupModal();
+                }, 600);
+            } catch(e) {
+                console.error(e);
                 btn.disabled = false;
                 btn.textContent = 'Simpan Jadwal';
-                tutupModal();
-            }, 750);
+                showAlert('error', 'Terjadi kesalahan koneksi server.');
+            }
         }
 
         // Hapus Jadwal
@@ -1181,14 +1103,17 @@
                 return;
             }
 
-            // Coba API backend jika ada
             try {
-                await fetch(`/api/jadwal/${id}`, { method: 'DELETE' });
-            } catch(e) {}
-
-            listJadwal = listJadwal.filter(item => item.id_jadwal != id);
-            saveLocalData();
-            renderJadwal();
+                const res = await fetch(`/api/jadwal/${id}`, { method: 'DELETE' });
+                if (res.ok) {
+                    await muatDataJadwal();
+                } else {
+                    alert('Gagal menghapus jadwal dari database!');
+                }
+            } catch(e) {
+                console.error(e);
+                alert('Terjadi kesalahan koneksi server.');
+            }
         }
 
         // Modal backdrop click

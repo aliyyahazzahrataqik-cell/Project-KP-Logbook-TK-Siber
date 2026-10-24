@@ -207,3 +207,59 @@ INSERT INTO menu_makan (hari, menu, keterangan) VALUES
 ('Rabu', 'Sop Bening Bakso', 'Nasi + Sop Sayur Bakso Telur'),
 ('Kamis', 'Jamur Krispi Gurih', 'Nasi + Jamur Krispi + Sayur Asem'),
 ('Jumat', 'Tempe & Telur Karage', 'Nasi + Tempe Telur Karage + Buah');
+
+-- =========================================
+-- DATA AWAL JADWAL KEGIATAN
+-- =========================================
+INSERT INTO jadwal (id_kelas, hari, jam_mulai, jam_selesai, kegiatan, keterangan) VALUES
+-- SENIN (TK A & TK B)
+(1, 'Senin', '08:00:00', '08:30:00', 'Pembukaan & Doa Pagi', 'Lingkaran pagi dan presensi'),
+(1, 'Senin', '08:30:00', '09:30:00', 'Mengenal Huruf & Kata', 'Literasi awal buku cerita'),
+(1, 'Senin', '09:30:00', '10:15:00', 'Istirahat & Snack Time', 'Cuci tangan & makan sehat'),
+(1, 'Senin', '10:15:00', '11:00:00', 'Bermain Balok & Motorik', 'Kreativitas kelompok'),
+(1, 'Senin', '11:00:00', '11:30:00', 'Refleksi & Penutupan', 'Doa pulang & penjemputan'),
+(2, 'Senin', '08:00:00', '08:30:00', 'Pembukaan & Doa Pagi', 'Lingkaran pagi dan presensi'),
+(2, 'Senin', '08:30:00', '09:30:00', 'Membaca Mandiri & Menulis', 'Persiapan calistung ceria'),
+(2, 'Senin', '09:30:00', '10:15:00', 'Istirahat & Snack Time', 'Makan bersama'),
+(2, 'Senin', '10:15:00', '11:00:00', 'Eksplorasi Sains Dasar', 'Percobaan warna & air'),
+(2, 'Senin', '11:00:00', '11:30:00', 'Doa & Penutupan', 'Pulang'),
+
+-- SELASA (TK A & TK B)
+(1, 'Selasa', '08:00:00', '08:30:00', 'Senam Pagi Ceria', 'Halaman sekolah'),
+(1, 'Selasa', '08:30:00', '09:30:00', 'Mewarnai & Menggambar', 'Pengenalan bentuk & warna'),
+(1, 'Selasa', '09:30:00', '10:15:00', 'Istirahat & Makan', 'Makan bekal'),
+(1, 'Selasa', '10:15:00', '11:30:00', 'Menyanyi & Gerak Irama', 'Lagu anak nusantara'),
+(2, 'Selasa', '08:00:00', '08:30:00', 'Senam Pagi Ceria', 'Halaman sekolah'),
+(2, 'Selasa', '08:30:00', '09:30:00', 'Melukis Tematik & Kolase', 'Kreativitas motorik halus'),
+(2, 'Selasa', '09:30:00', '10:15:00', 'Istirahat & Makan', 'Makan bekal bersama'),
+(2, 'Selasa', '10:15:00', '11:30:00', 'Bahasa Inggris Ceria', 'Pengenalan kata dasar dan lagu'),
+
+-- RABU (TK A & TK B)
+(1, 'Rabu', '08:00:00', '08:30:00', 'Berdoa & Murajaah Surat Pendek', 'Hafalan Al-Ikhlas & An-Nas'),
+(1, 'Rabu', '08:30:00', '09:30:00', 'Berhitung Menyenangkan', 'Menggunakan kancing angka'),
+(1, 'Rabu', '09:30:00', '10:15:00', 'Istirahat', 'Bermain di halaman'),
+(1, 'Rabu', '10:15:00', '11:30:00', 'Bercerita / Dongeng Pagi', 'Kisah fabel kejujuran'),
+(2, 'Rabu', '08:00:00', '08:30:00', 'Berdoa & Murajaah Hafalan', 'Surat pendek & doa harian'),
+(2, 'Rabu', '08:30:00', '09:30:00', 'Matematika Dasar & Pola Logika', 'Penjumlahan objek visual'),
+(2, 'Rabu', '09:30:00', '10:15:00', 'Istirahat', 'Bermain aktif bersama'),
+(2, 'Rabu', '10:15:00', '11:30:00', 'Bermain Peran & Percakapan', 'Melatih kepercayaan diri'),
+
+-- KAMIS (TK A & TK B)
+(1, 'Kamis', '08:00:00', '08:45:00', 'Praktek Kemandirian', 'Pembiasaan adab harian'),
+(1, 'Kamis', '08:45:00', '09:45:00', 'Kreativitas Origami', 'Membuat burung & perahu'),
+(1, 'Kamis', '09:45:00', '10:30:00', 'Istirahat & Minum Susu', 'Gizi seimbang'),
+(1, 'Kamis', '10:30:00', '11:30:00', 'Permainan Tradisional', 'Ular naga & lompat tali'),
+(2, 'Kamis', '08:00:00', '08:45:00', 'Eksplorasi Lingkungan & Alam', 'Mengenal tanaman sekolah'),
+(2, 'Kamis', '08:45:00', '09:45:00', 'Prakarya & Keterampilan Tangan', 'Membuat kreasi daur ulang'),
+(2, 'Kamis', '09:45:00', '10:30:00', 'Istirahat & Minum Susu', 'Makan sehat'),
+(2, 'Kamis', '10:30:00', '11:30:00', 'Olahraga Kelincahan & Ketangkasan', 'Halaman sekolah'),
+
+-- JUMAT (TK A & TK B)
+(1, 'Jumat', '08:00:00', '08:45:00', 'Pembiasaan Ibadah & Wudhu', 'Praktek sholat dhuha ceria'),
+(1, 'Jumat', '08:45:00', '09:45:00', 'Infaq & Kisah Sahabat Nabi', 'Karakter berbagi sesama'),
+(1, 'Jumat', '09:45:00', '10:30:00', 'Makan Bersama Menu Sehat', 'Sayur & buah segar'),
+(1, 'Jumat', '10:30:00', '11:00:00', 'Doa & Penutupan', 'Jumat berkah & pulang'),
+(2, 'Jumat', '08:00:00', '08:45:00', 'Praktik Ibadah & Tata Krama', 'Sholat dhuha & akhlak mulia'),
+(2, 'Jumat', '08:45:00', '09:45:00', 'Infaq Ceria & Storytelling Islami', 'Kisah keteladanan'),
+(2, 'Jumat', '09:45:00', '10:30:00', 'Makan Bersama Menu Sehat', 'Sayur & buah segar'),
+(2, 'Jumat', '10:30:00', '11:00:00', 'Evaluasi Pekanan & Doa', 'Jumat berkah & kepulangan');
