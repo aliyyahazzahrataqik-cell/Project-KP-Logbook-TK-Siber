@@ -889,13 +889,18 @@
 
                 <div class="form-group">
                     <label for="input-nama">Nama Lengkap Siswa *</label>
-                    <input type="text" id="input-nama" placeholder="Contoh: Budi Santoso" autocomplete="off">
+                    <input type="text" id="input-nama" placeholder="Contoh: Muhammad Fatih" autocomplete="off">
+                </div>
+
+                <div class="form-group">
+                    <label for="input-panggilan">Nama Panggilan Siswa *</label>
+                    <input type="text" id="input-panggilan" placeholder="Contoh: Fatih" autocomplete="off">
+                    <span class="hint">Nama panggilan otomatis digunakan sebagai username & password awal akun orang tua.</span>
                 </div>
 
                 <div class="form-group">
                     <label for="input-nisn">NISN (Nomor Induk Siswa Nasional) *</label>
                     <input type="text" id="input-nisn" placeholder="Contoh: 0012345678" maxlength="15" autocomplete="off">
-                    <span class="hint">NISN akan digunakan sebagai identitas login untuk orang tua.</span>
                 </div>
 
                 <div class="form-group">
@@ -965,38 +970,9 @@
             window.location.replace(target);
         }
 
-        // Data master awal (Mock Data & Fallback jika backend/API belum siap)
-        const INITIAL_ANAK = [
-            { id_anak: 1, nama_lengkap: "Budi Santoso", nisn: "202601001", jenis_kelamin: "L", id_kelas: 1, nama_kelas: "TK A" },
-            { id_anak: 2, nama_lengkap: "Siti Aminah", nisn: "202601002", jenis_kelamin: "P", id_kelas: 1, nama_kelas: "TK A" },
-            { id_anak: 3, nama_lengkap: "Andi Wijaya", nisn: "202601003", jenis_kelamin: "L", id_kelas: 2, nama_kelas: "TK B" },
-            { id_anak: 4, nama_lengkap: "Rina Kartika", nisn: "202601004", jenis_kelamin: "P", id_kelas: 2, nama_kelas: "TK B" },
-            { id_anak: 5, nama_lengkap: "Muhammad Rayhan", nisn: "202601005", jenis_kelamin: "L", id_kelas: 1, nama_kelas: "TK A" },
-            { id_anak: 6, nama_lengkap: "Aisyah Putri", nisn: "202601006", jenis_kelamin: "P", id_kelas: 2, nama_kelas: "TK B" }
-        ];
-
         let listAnak = [];
         let genderTerpilih = '';
         let isEditMode = false;
-
-        // Inisialisasi data
-        function loadLocalData() {
-            const saved = localStorage.getItem('kpalya_data_anak');
-            if (saved) {
-                try {
-                    listAnak = JSON.parse(saved);
-                } catch(e) {
-                    listAnak = [...INITIAL_ANAK];
-                }
-            } else {
-                listAnak = [...INITIAL_ANAK];
-                saveLocalData();
-            }
-        }
-
-        function saveLocalData() {
-            localStorage.setItem('kpalya_data_anak', JSON.stringify(listAnak));
-        }
 
         // Muat info user login
         async function muatUser() {
@@ -1010,28 +986,33 @@
             } catch(e) {}
         }
 
-        // Ambil data siswa (coba API backend dulu, jika gagal fallback ke local storage)
+        // Ambil data siswa murni dari database via API backend
         async function muatDataAnak() {
+            const tbody = document.getElementById('tbody-anak');
             try {
                 const res = await fetch('/api/anak');
-                if (res.ok) {
-                    const data = await res.json();
-                    if (Array.isArray(data) && data.length > 0) {
-                        listAnak = data;
-                        saveLocalData();
-                        terapkanFilter();
-                        updateStats();
-                        return;
-                    }
-                }
-            } catch(e) {
-                console.log('Menggunakan data lokal:', e);
+                if (!res.ok) throw new Error('Gagal memuat data siswa');
+                const data = await res.json();
+                listAnak = Array.isArray(data) ? data : [];
+                // Bersihkan cache lokal lama agar tidak tercampur data dummy
+                localStorage.removeItem('kpalya_data_anak');
+                terapkanFilter();
+                updateStats();
+            } catch (err) {
+                console.error('Error muat anak:', err);
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="6" style="text-align: center; padding: 40px 20px; color: #ef4444;">
+                            <i class="fa-solid fa-triangle-exclamation" style="font-size: 28px; margin-bottom: 10px;"></i>
+                            <p style="font-weight: 600;">Gagal memuat data siswa dari server</p>
+                            <span style="font-size: 13px; color: #6b7280;">Pastikan server dan database MySQL berjalan dengan baik.</span>
+                        </td>
+                    </tr>
+                `;
+                document.getElementById('stat-total').textContent = '0';
+                document.getElementById('stat-laki').textContent = '0';
+                document.getElementById('stat-perempuan').textContent = '0';
             }
-
-            // Fallback
-            loadLocalData();
-            terapkanFilter();
-            updateStats();
         }
 
         // Update kartu statistik
@@ -1096,6 +1077,7 @@
                         <td><span class="nisn-pill">${anak.nisn || '-'}</span></td>
                         <td>
                             <strong style="color: #124b3c; font-size: 14px;">${anak.nama_lengkap}</strong>
+                            ${anak.nama_panggilan ? `<span style="display:block; font-size:12px; color:#5a7366; font-weight:500;">Panggilan: <strong style="color:#1d5c45;">${anak.nama_panggilan}</strong> (User Ortu: <em>${anak.nama_panggilan.toLowerCase()}</em>)</span>` : ''}
                         </td>
                         <td>${genderBadge}</td>
                         <td><span class="badge badge-kelas">${kelasNama}</span></td>
@@ -1129,6 +1111,7 @@
             document.getElementById('modal-title').textContent = 'Tambah Siswa Baru';
             document.getElementById('input-id-anak').value = '';
             document.getElementById('input-nama').value = '';
+            document.getElementById('input-panggilan').value = '';
             document.getElementById('input-nisn').value = '';
             document.getElementById('input-kelas').value = '';
             pilihGender('');
@@ -1146,6 +1129,7 @@
             document.getElementById('modal-title').textContent = 'Edit Data Siswa';
             document.getElementById('input-id-anak').value = anak.id_anak;
             document.getElementById('input-nama').value = anak.nama_lengkap;
+            document.getElementById('input-panggilan').value = anak.nama_panggilan || '';
             document.getElementById('input-nisn').value = anak.nisn;
             document.getElementById('input-kelas').value = anak.id_kelas || (anak.nama_kelas === 'TK A' ? '1' : '2');
             pilihGender(anak.jenis_kelamin);
@@ -1169,102 +1153,91 @@
             document.getElementById('modal-alert-success').style.display = 'none';
         }
 
-        // Simpan Anak (Tambah / Edit)
+        // Simpan Anak (Tambah / Edit) murni ke database MySQL via API
         async function simpanAnak() {
             const id = document.getElementById('input-id-anak').value;
             const nama = document.getElementById('input-nama').value.trim();
+            const nama_panggilan = document.getElementById('input-panggilan').value.trim();
             const nisn = document.getElementById('input-nisn').value.trim();
             const id_kelas = document.getElementById('input-kelas').value;
             const jenis_kelamin = genderTerpilih;
 
-            // Validasi
+            // Validasi input
             if (!nama) return showAlert('error', 'Nama lengkap siswa wajib diisi!');
+            if (!nama_panggilan) return showAlert('error', 'Nama panggilan siswa wajib diisi!');
             if (!nisn) return showAlert('error', 'NISN wajib diisi!');
             if (!jenis_kelamin) return showAlert('error', 'Silakan pilih jenis kelamin!');
             if (!id_kelas) return showAlert('error', 'Silakan pilih kelas!');
-
-            // Cek duplikasi NISN (kecuali anak yang sedang diedit)
-            const duplikat = listAnak.find(a => a.nisn === nisn && a.id_anak != id);
-            if (duplikat) {
-                return showAlert('error', `NISN "${nisn}" sudah terdaftar untuk siswa lain!`);
-            }
 
             const btn = document.getElementById('btn-simpan-anak');
             btn.disabled = true;
             btn.textContent = 'Menyimpan...';
 
-            const nama_kelas = id_kelas == '1' ? 'TK A' : 'TK B';
-
-            // Coba simpan ke Backend API jika tersedia
-            let apiBerhasil = false;
             try {
-                if (!isEditMode) {
+                if (isEditMode) {
+                    const res = await fetch(`/api/anak/${id}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ nama_lengkap: nama, nama_panggilan, nisn, jenis_kelamin, id_kelas })
+                    });
+                    const result = await res.json();
+                    if (!res.ok) {
+                        btn.disabled = false;
+                        btn.textContent = 'Simpan Data';
+                        return showAlert('error', result.error || 'Gagal memperbarui data siswa');
+                    }
+                    showAlert('success', 'Data siswa berhasil diperbarui di database!');
+                } else {
                     const res = await fetch('/api/anak', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ nama_lengkap: nama, nisn, jenis_kelamin, id_kelas })
+                        body: JSON.stringify({ nama_lengkap: nama, nama_panggilan, nisn, jenis_kelamin, id_kelas })
                     });
-                    if (res.ok) {
-                        const data = await res.json();
-                        apiBerhasil = true;
+                    const result = await res.json();
+                    if (!res.ok) {
+                        btn.disabled = false;
+                        btn.textContent = 'Simpan Data';
+                        return showAlert('error', result.error || 'Gagal menambah data siswa');
                     }
+                    showAlert('success', `Siswa berhasil ditambahkan! Akun ortu otomatis dibuat: ${result.username_ortu || nama_panggilan.toLowerCase()}`);
                 }
-            } catch(e) {}
 
-            // Update state lokal
-            if (isEditMode) {
-                const idx = listAnak.findIndex(a => a.id_anak == id);
-                if (idx !== -1) {
-                    listAnak[idx] = {
-                        ...listAnak[idx],
-                        nama_lengkap: nama,
-                        nisn: nisn,
-                        jenis_kelamin: jenis_kelamin,
-                        id_kelas: parseInt(id_kelas),
-                        nama_kelas: nama_kelas
-                    };
-                }
-                showAlert('success', 'Data siswa berhasil diperbarui!');
-            } else {
-                const newId = Date.now();
-                listAnak.unshift({
-                    id_anak: newId,
-                    nama_lengkap: nama,
-                    nisn: nisn,
-                    jenis_kelamin: jenis_kelamin,
-                    id_kelas: parseInt(id_kelas),
-                    nama_kelas: nama_kelas
-                });
-                showAlert('success', 'Siswa baru berhasil ditambahkan!');
-            }
+                // Muat ulang data terbaru langsung dari database
+                await muatDataAnak();
 
-            saveLocalData();
-            updateStats();
-            terapkanFilter();
+                setTimeout(() => {
+                    btn.disabled = false;
+                    btn.textContent = 'Simpan Data';
+                    tutupModal();
+                }, 700);
 
-            setTimeout(() => {
+            } catch (err) {
+                console.error('Error simpan anak:', err);
                 btn.disabled = false;
                 btn.textContent = 'Simpan Data';
-                tutupModal();
-            }, 800);
+                showAlert('error', 'Terjadi kesalahan koneksi ke server!');
+            }
         }
 
-        // Hapus Anak
+        // Hapus Anak langsung dari database MySQL via API
         async function hapusAnak(id, nama) {
-            if (!confirm(`Apakah Anda yakin ingin menghapus siswa "${nama}"?`)) {
+            if (!confirm(`Apakah Anda yakin ingin menghapus siswa "${nama}" dari database?`)) {
                 return;
             }
 
-            // Coba panggil API backend jika ada
             try {
-                await fetch(`/api/anak/${id}`, { method: 'DELETE' });
-            } catch(e) {}
-
-            // Hapus dari state lokal
-            listAnak = listAnak.filter(a => a.id_anak != id);
-            saveLocalData();
-            updateStats();
-            terapkanFilter();
+                const res = await fetch(`/api/anak/${id}`, { method: 'DELETE' });
+                const result = await res.json();
+                if (!res.ok) {
+                    alert(result.error || 'Gagal menghapus siswa dari database!');
+                    return;
+                }
+                // Muat ulang data terbaru dari database
+                await muatDataAnak();
+            } catch (err) {
+                console.error('Error hapus anak:', err);
+                alert('Terjadi kesalahan koneksi saat menghapus data siswa!');
+            }
         }
 
         // Event Listeners

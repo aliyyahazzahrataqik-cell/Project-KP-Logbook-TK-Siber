@@ -581,7 +581,9 @@
             <a href="/kelola-akun" class="menu-item">
                 <i class="fa-solid fa-users-gear"></i> Kelola Akun
             </a>
-
+            <a href="/kelola-pengumuman" class="menu-item">
+                <i class="fa-solid fa-bullhorn"></i> Kelola Pengumuman
+            </a>
         </nav>
 
         <div class="sidebar-footer">
@@ -612,7 +614,7 @@
         </header>
 
         <!-- Stats -->
-        <div class="stats-grid">
+        <div class="stats-grid" style="max-width: 720px; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));">
             <div class="stat-card">
                 <div class="stat-icon icon-blue">
                     <i class="fa-solid fa-users"></i>
@@ -620,6 +622,15 @@
                 <div class="stat-info">
                     <h2 id="stat-users">–</h2>
                     <p>Total Akun Pengguna</p>
+                </div>
+            </div>
+            <div class="stat-card" style="cursor: pointer;" onclick="window.location.href='/kelola-pengumuman'">
+                <div class="stat-icon icon-green">
+                    <i class="fa-solid fa-bullhorn"></i>
+                </div>
+                <div class="stat-info">
+                    <h2 id="stat-pengumuman">–</h2>
+                    <p>Pengumuman & Berita</p>
                 </div>
             </div>
         </div>
@@ -741,6 +752,15 @@
                 const users = await res.json();
 
                 document.getElementById('stat-users').textContent = users.length;
+
+                // Muat count pengumuman
+                try {
+                    const resP = await fetch('/api/pengumuman');
+                    if (resP.ok) {
+                        const listP = await resP.json();
+                        document.getElementById('stat-pengumuman').textContent = listP.length;
+                    }
+                } catch(e) {}
 
                 const tbody = document.getElementById('tbody-users');
                 if (users.length === 0) {

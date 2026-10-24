@@ -212,6 +212,9 @@
             <a href="/kelola-akun" class="menu-item active">
                 <i class="fa-solid fa-users-gear"></i> Kelola Akun
             </a>
+            <a href="/kelola-pengumuman" class="menu-item">
+                <i class="fa-solid fa-bullhorn"></i> Kelola Pengumuman
+            </a>
         </div>
         <div class="sidebar-footer">
             <button type="button" class="sidebar-logout-btn" onclick="keluarAplikasi(event)">
@@ -389,7 +392,10 @@
                 semuaAnak = await res.json();
                 const sel = document.getElementById('input-anak');
                 sel.innerHTML = `<option value="" disabled selected>Pilih anak...</option>` +
-                    semuaAnak.map(a => `<option value="${a.id_anak}" data-nisn="${a.nisn}">${a.nama_lengkap} (${a.nisn}) – ${a.nama_kelas}</option>`).join('');
+                    semuaAnak.map(a => {
+                        const panggilan = (a.nama_panggilan || (a.nama_lengkap ? a.nama_lengkap.split(' ')[0] : 'anak')).toLowerCase().replace(/\s+/g, '');
+                        return `<option value="${a.id_anak}" data-nisn="${a.nisn}" data-panggilan="${panggilan}">${a.nama_lengkap} (Panggilan: ${a.nama_panggilan || '-'}) – ${a.nama_kelas}</option>`;
+                    }).join('');
             } catch(e) {}
         }
 
@@ -452,16 +458,19 @@
             const isOrtu = role === 'orang_tua';
             document.getElementById('group-anak').style.display = isOrtu ? 'block' : 'none';
             document.getElementById('hint-username').textContent = isOrtu
-                ? 'Untuk orang tua, gunakan NIS anak sebagai username.'
+                ? 'Untuk orang tua, username & password awal otomatis menggunakan nama panggilan anak.'
                 : '';
         }
 
-        // Auto-isi username dengan NISN saat anak dipilih
+        // Auto-isi username & password dengan nama panggilan anak saat dipilih
         document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('input-anak').addEventListener('change', function() {
                 const opt = this.options[this.selectedIndex];
-                if (opt && opt.dataset.nisn) {
-                    document.getElementById('input-username').value = opt.dataset.nisn;
+                if (opt && opt.dataset.panggilan) {
+                    const uname = opt.dataset.panggilan;
+                    document.getElementById('input-username').value = uname;
+                    document.getElementById('input-password').value = uname;
+                    document.getElementById('input-confirm').value = uname;
                 }
             });
 

@@ -52,6 +52,45 @@ app.use(session({
     cookie: { maxAge: 1000 * 60 * 60 * 8 } // 8 jam
 }));
 
+// ===================== AUTO-CREATE TABEL PENGUMUMAN =====================
+db.query(`
+    CREATE TABLE IF NOT EXISTS pengumuman (
+        id_pengumuman INT AUTO_INCREMENT PRIMARY KEY,
+        judul VARCHAR(255) NOT NULL,
+        kategori ENUM('Penting', 'Agenda', 'Libur', 'Prestasi', 'Umum') DEFAULT 'Umum',
+        isi TEXT NOT NULL,
+        tanggal DATE NOT NULL,
+        penulis VARCHAR(100) DEFAULT 'Admin TK Siber',
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    )
+`, (err) => {
+    if (err) {
+        console.error('Gagal membuat tabel pengumuman:', err.message);
+    } else {
+        console.log('Tabel pengumuman siap! ✅');
+        // Seed contoh data jika tabel masih kosong
+        db.query('SELECT COUNT(*) AS total FROM pengumuman', (cntErr, rows) => {
+            if (!cntErr && rows && rows[0].total === 0) {
+                const initialData = [
+                    ['Penerimaan Peserta Didik Baru (PPDB) T.A 2026/2027 Dibuka', 'Penting', 'TK Siber UINSSC resmi membuka pendaftaran peserta didik baru untuk tahun ajaran 2026/2027. Kuota terbatas untuk kelompok belajar TK A dan TK B. Orang tua dapat mengambil formulir fisik di kantor administrasi atau menghubungi hotline sekolah.', '2026-10-22', 'Admin TK Siber'],
+                    ['Agenda Senam Ceria & Pemeriksaan Gigi Bersama Puskesmas', 'Agenda', 'Dalam rangka menjaga kesehatan dan kebugaran anak, pada hari Jumat mendatang akan diadakan kegiatan senam bersama dilanjutkan pemeriksaan kesehatan gigi rutin. Mohon anak-anak mengenakan seragam olahraga.', '2026-10-27', 'Admin TK Siber'],
+                    ['Selamat! Ananda Juara 1 Lomba Mewarnai Tingkat Gugus Paud', 'Prestasi', 'Alhamdulillah, selamat dan sukses kepada ananda perwakilan TK B yang berhasil meraih Juara 1 dalam Festival Kreativitas Anak Usia Dini tingkat gugus. Semoga menjadi motivasi bagi teman-teman lainnya!', '2026-10-18', 'Admin TK Siber'],
+                    ['Pemberitahuan Kegiatan Libur Bersama Akhir Pekan Panjang', 'Libur', 'Diberitahukan kepada seluruh bapak/ibu wali murid bahwa kegiatan pembelajaran tatap muka akan diliburkan sesuai kalender pendidikan nasional dan aktif kembali seperti biasa pada hari Senin berikutnya.', '2026-10-14', 'Admin TK Siber']
+                ];
+                db.query(
+                    'INSERT INTO pengumuman (judul, kategori, isi, tanggal, penulis) VALUES ?',
+                    [initialData],
+                    (insErr) => {
+                        if (insErr) console.error('Gagal seed pengumuman:', insErr.message);
+                        else console.log('Data awal pengumuman berhasil ditambahkan! 📢');
+                    }
+                );
+            }
+        });
+    }
+});
+
 // ===================== AUTH GUARD =====================
 function setNoCache(res) {
     res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
@@ -126,6 +165,10 @@ app.get('/dashboard-admin', requireRole('admin'), (req, res) => {
 
 app.get('/kelola-akun', requireRole('admin'), (req, res) => {
     res.sendFile(__dirname + '/public/kelola-akun/index.html');
+});
+
+app.get('/kelola-pengumuman', requireRole('admin'), (req, res) => {
+    res.sendFile(__dirname + '/public/kelola-pengumuman/index.html');
 });
 
 // ===================== AUTH ROUTES =====================
@@ -407,6 +450,113 @@ app.post('/api/menu-makan/bulk', requireRole('admin', 'guru'), async (req, res) 
     }
 });
 
+// ===================== API PENGUMUMAN & BERITA =====================
+
+// GET /api/pengumuman (publik - untuk landing page & admin)
+app.get('/api/pengumuman', (req, res) => {
+    const { kategori, limit } = req.query;
+    let sql = `
+        SELECT id_pengumuman, judul, kategori, isi, 
+               DATE_FORMAT(tanggal, '%Y-%m-%d') as tanggal, 
+               penulis, created_at 
+        FROM pengumuman
+    `;
+    const params = [];
+
+    if (kategori && kategori !== 'Semua') {
+        sql += ` WHERE kategori = ?`;
+        params.push(kategori);
+    }
+
+    sql += ` ORDER BY tanggal DESC, id_pengumuman DESC`;
+
+    const limitVal = parseInt(limit, 10);
+    if (!isNaN(limitVal) && limitVal > 0) {
+        sql += ` LIMIT ?`;
+        params.push(limitVal);
+    }
+
+    db.query(sql, params, (err, rows) => {
+        if (err) {
+            console.error('Error ambil pengumuman:', err);
+            return res.status(500).json({ error: 'Gagal mengambil data pengumuman' });
+        }
+        res.json(rows || []);
+    });
+});
+
+// GET /api/pengumuman/:id
+app.get('/api/pengumuman/:id', (req, res) => {
+    const { id } = req.params;
+    const sql = `
+        SELECT id_pengumuman, judul, kategori, isi, 
+               DATE_FORMAT(tanggal, '%Y-%m-%d') as tanggal, 
+               penulis, created_at 
+        FROM pengumuman 
+        WHERE id_pengumuman = ?
+    `;
+    db.query(sql, [id], (err, rows) => {
+        if (err || !rows || rows.length === 0) {
+            return res.status(404).json({ error: 'Pengumuman tidak ditemukan' });
+        }
+        res.json(rows[0]);
+    });
+});
+
+// POST /api/pengumuman (khusus admin)
+app.post('/api/pengumuman', requireRole('admin'), (req, res) => {
+    const { judul, kategori, isi, tanggal, penulis } = req.body;
+    if (!judul || !isi || !tanggal) {
+        return res.status(400).json({ error: 'Judul, isi, dan tanggal wajib diisi' });
+    }
+
+    const kategoriFix = kategori || 'Umum';
+    const penulisFix = penulis || req.session.user.nama || 'Admin TK Siber';
+
+    const sql = `INSERT INTO pengumuman (judul, kategori, isi, tanggal, penulis) VALUES (?, ?, ?, ?, ?)`;
+    db.query(sql, [judul, kategoriFix, isi, tanggal, penulisFix], (err, result) => {
+        if (err) {
+            console.error('Error tambah pengumuman:', err);
+            return res.status(500).json({ error: 'Gagal menambahkan pengumuman' });
+        }
+        res.json({ success: true, message: 'Pengumuman berhasil diterbitkan', id: result.insertId });
+    });
+});
+
+// PUT /api/pengumuman/:id (khusus admin)
+app.put('/api/pengumuman/:id', requireRole('admin'), (req, res) => {
+    const { id } = req.params;
+    const { judul, kategori, isi, tanggal, penulis } = req.body;
+    if (!judul || !isi || !tanggal) {
+        return res.status(400).json({ error: 'Judul, isi, dan tanggal wajib diisi' });
+    }
+
+    const kategoriFix = kategori || 'Umum';
+    const penulisFix = penulis || req.session.user.nama || 'Admin TK Siber';
+
+    const sql = `UPDATE pengumuman SET judul = ?, kategori = ?, isi = ?, tanggal = ?, penulis = ? WHERE id_pengumuman = ?`;
+    db.query(sql, [judul, kategoriFix, isi, tanggal, penulisFix, id], (err, result) => {
+        if (err) {
+            console.error('Error update pengumuman:', err);
+            return res.status(500).json({ error: 'Gagal memperbarui pengumuman' });
+        }
+        res.json({ success: true, message: 'Pengumuman berhasil diperbarui' });
+    });
+});
+
+// DELETE /api/pengumuman/:id (khusus admin)
+app.delete('/api/pengumuman/:id', requireRole('admin'), (req, res) => {
+    const { id } = req.params;
+    const sql = `DELETE FROM pengumuman WHERE id_pengumuman = ?`;
+    db.query(sql, [id], (err, result) => {
+        if (err) {
+            console.error('Error hapus pengumuman:', err);
+            return res.status(500).json({ error: 'Gagal menghapus pengumuman' });
+        }
+        res.json({ success: true, message: 'Pengumuman berhasil dihapus' });
+    });
+});
+
 // GET /api/jadwal?hari=Senin&kelas=1
 app.get('/api/jadwal', requireLogin, (req, res) => {
     const { hari, kelas } = req.query;
@@ -480,34 +630,64 @@ app.get('/api/anak', requireLogin, (req, res) => {
 
 // POST /api/anak
 app.post('/api/anak', requireRole('admin', 'guru'), (req, res) => {
-    const { nama_lengkap, nisn, jenis_kelamin, id_kelas } = req.body;
+    const { nama_lengkap, nama_panggilan, nisn, jenis_kelamin, id_kelas } = req.body;
     if (!nama_lengkap || !nisn || !jenis_kelamin || !id_kelas) {
         return res.status(400).json({ error: 'Data tidak lengkap' });
     }
 
+    const panggilanFix = (nama_panggilan || nama_lengkap.split(' ')[0] || 'anak').trim();
+
     db.query(
-        `INSERT INTO anak (nama_lengkap, nisn, jenis_kelamin, id_kelas) VALUES (?, ?, ?, ?)`,
-        [nama_lengkap, nisn, jenis_kelamin, id_kelas],
-        (err, result) => {
+        `INSERT INTO anak (nama_lengkap, nama_panggilan, nisn, jenis_kelamin, id_kelas) VALUES (?, ?, ?, ?, ?)`,
+        [nama_lengkap, panggilanFix, nisn, jenis_kelamin, id_kelas],
+        async (err, result) => {
             if (err) {
                 if (err.code === 'ER_DUP_ENTRY') return res.status(400).json({ error: 'NISN sudah terdaftar' });
                 return res.status(500).json({ error: 'Gagal tambah anak' });
             }
-            res.json({ success: true, id: result.insertId });
+
+            const idAnakBaru = result.insertId;
+
+            // Otomatis buatkan akun orang tua dengan username & password awal = nama panggilan
+            try {
+                let baseUsername = panggilanFix.toLowerCase().replace(/[^a-z0-9]/g, '');
+                if (!baseUsername) baseUsername = `ortu${idAnakBaru}`;
+
+                db.query(`SELECT id_user FROM users WHERE username = ?`, [baseUsername], async (uErr, uRows) => {
+                    let finalUsername = baseUsername;
+                    if (!uErr && uRows && uRows.length > 0) {
+                        finalUsername = `${baseUsername}${idAnakBaru}`;
+                    }
+
+                    const defaultHash = await bcrypt.hash(panggilanFix.toLowerCase(), 10);
+                    db.query(
+                        `INSERT INTO users (username, password, role, id_anak) VALUES (?, ?, 'orang_tua', ?)`,
+                        [finalUsername, defaultHash, idAnakBaru],
+                        (insUErr) => {
+                            if (insUErr) console.error('Gagal auto-create akun ortu:', insUErr.message);
+                            else console.log(`Akun ortu otomatis dibuat: ${finalUsername} / ${panggilanFix.toLowerCase()}`);
+                        }
+                    );
+                });
+            } catch (e) {}
+
+            res.json({ success: true, id: idAnakBaru, username_ortu: panggilanFix.toLowerCase() });
         }
     );
 });
 
 // PUT /api/anak/:id
 app.put('/api/anak/:id', requireRole('admin', 'guru'), (req, res) => {
-    const { nama_lengkap, nisn, jenis_kelamin, id_kelas } = req.body;
+    const { nama_lengkap, nama_panggilan, nisn, jenis_kelamin, id_kelas } = req.body;
     if (!nama_lengkap || !nisn || !jenis_kelamin || !id_kelas) {
         return res.status(400).json({ error: 'Data tidak lengkap' });
     }
 
+    const panggilanFix = (nama_panggilan || nama_lengkap.split(' ')[0] || '').trim();
+
     db.query(
-        `UPDATE anak SET nama_lengkap=?, nisn=?, jenis_kelamin=?, id_kelas=? WHERE id_anak=?`,
-        [nama_lengkap, nisn, jenis_kelamin, id_kelas, req.params.id],
+        `UPDATE anak SET nama_lengkap=?, nama_panggilan=?, nisn=?, jenis_kelamin=?, id_kelas=? WHERE id_anak=?`,
+        [nama_lengkap, panggilanFix, nisn, jenis_kelamin, id_kelas, req.params.id],
         (err) => {
             if (err) {
                 if (err.code === 'ER_DUP_ENTRY') return res.status(400).json({ error: 'NISN sudah terdaftar' });
@@ -516,6 +696,34 @@ app.put('/api/anak/:id', requireRole('admin', 'guru'), (req, res) => {
             res.json({ success: true });
         }
     );
+});
+
+// PUT /api/user/ganti-password — ganti password sendiri (khususnya untuk Orang Tua)
+app.put('/api/user/ganti-password', requireLogin, async (req, res) => {
+    const { password_baru, konfirmasi_password } = req.body;
+    if (!password_baru || !konfirmasi_password) {
+        return res.status(400).json({ error: 'Password baru dan konfirmasi wajib diisi' });
+    }
+    if (password_baru.length < 4) {
+        return res.status(400).json({ error: 'Password minimal 4 karakter' });
+    }
+    if (password_baru !== konfirmasi_password) {
+        return res.status(400).json({ error: 'Konfirmasi password tidak cocok' });
+    }
+
+    try {
+        const hashed = await bcrypt.hash(password_baru, 10);
+        const userId = req.session.user.id;
+        db.query(`UPDATE users SET password = ? WHERE id_user = ?`, [hashed, userId], (err) => {
+            if (err) {
+                console.error('Error ganti password:', err);
+                return res.status(500).json({ error: 'Gagal mengubah password' });
+            }
+            res.json({ success: true, message: 'Password Anda berhasil diperbarui!' });
+        });
+    } catch (e) {
+        res.status(500).json({ error: 'Server error' });
+    }
 });
 
 // DELETE /api/anak/:id

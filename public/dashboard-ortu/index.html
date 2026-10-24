@@ -211,6 +211,28 @@
             color: #6b7280;
         }
 
+        .btn-ganti-pw {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: white;
+            color: #124b3c;
+            border: 1px solid #d2e4d8;
+            padding: 8px 16px;
+            border-radius: 50px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+            transition: all 0.15s ease;
+        }
+
+        .btn-ganti-pw:hover {
+            background: #edf5f0;
+            border-color: #124b3c;
+            transform: translateY(-1px);
+        }
+
         /* ===== PROFIL ANAK CARD ===== */
         .child-profile-card {
             background: linear-gradient(135deg, #124b3c 0%, #1f6b54 50%, #2a8b6a 100%);
@@ -809,6 +831,9 @@
                 <p id="header-greeting">Selamat datang!</p>
             </div>
             <div class="header-actions">
+                <button type="button" class="btn-ganti-pw" onclick="bukaModalGantiPassword()">
+                    <i class="fa-solid fa-key"></i> Ganti Password
+                </button>
                 <div class="user-profile-card">
                     <div class="profile-avatar" id="avatar-initial">O</div>
                     <div class="profile-details">
@@ -1300,9 +1325,107 @@ document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') tutupModal();
 });
 
+// ===== FITUR GANTI PASSWORD SENDIRI =====
+function bukaModalGantiPassword() {
+    document.getElementById('input-pw-baru').value = '';
+    document.getElementById('input-pw-konfirmasi').value = '';
+    document.getElementById('alert-pw').style.display = 'none';
+    document.getElementById('modal-ganti-pw').classList.add('active');
+    document.getElementById('input-pw-baru').focus();
+}
+
+function tutupModalGantiPassword() {
+    document.getElementById('modal-ganti-pw').classList.remove('active');
+}
+
+async function simpanPasswordBaru(e) {
+    e.preventDefault();
+    const pwBaru = document.getElementById('input-pw-baru').value;
+    const pwKonf = document.getElementById('input-pw-konfirmasi').value;
+    const alertEl = document.getElementById('alert-pw');
+    const btn = document.getElementById('btn-submit-pw');
+
+    if (pwBaru.length < 6) {
+        alertEl.style.display = 'block';
+        alertEl.style.background = '#fee2e2';
+        alertEl.style.color = '#dc2626';
+        alertEl.textContent = 'Password minimal 6 karakter!';
+        return;
+    }
+
+    if (pwBaru !== pwKonf) {
+        alertEl.style.display = 'block';
+        alertEl.style.background = '#fee2e2';
+        alertEl.style.color = '#dc2626';
+        alertEl.textContent = 'Konfirmasi password tidak cocok!';
+        return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = 'Menyimpan...';
+
+    try {
+        const res = await fetch('/api/user/ganti-password', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ password_baru: pwBaru, konfirmasi_password: pwKonf })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Gagal mengubah password');
+
+        alertEl.style.display = 'block';
+        alertEl.style.background = '#dcfce7';
+        alertEl.style.color = '#15803d';
+        alertEl.textContent = 'Password berhasil diubah!';
+
+        setTimeout(() => {
+            tutupModalGantiPassword();
+            btn.disabled = false;
+            btn.textContent = 'Simpan Password';
+            alert('Password Anda berhasil diganti! Gunakan password baru ini untuk login berikutnya.');
+        }, 1000);
+    } catch(err) {
+        alertEl.style.display = 'block';
+        alertEl.style.background = '#fee2e2';
+        alertEl.style.color = '#dc2626';
+        alertEl.textContent = err.message;
+        btn.disabled = false;
+        btn.textContent = 'Simpan Password';
+    }
+}
+
 // ===== START =====
 muatDashboard();
 </script>
+
+<!-- MODAL GANTI PASSWORD SENDIRI -->
+<div class="modal-overlay" id="modal-ganti-pw" onclick="if(event.target === this) tutupModalGantiPassword()">
+    <div class="modal" style="width: 440px;">
+        <div class="modal-header">
+            <h2><i class="fa-solid fa-key" style="color:#124b3c; margin-right:8px;"></i> Ganti Password Akun</h2>
+            <button type="button" class="btn-close-modal" onclick="tutupModalGantiPassword()">&times;</button>
+        </div>
+        <form id="form-ganti-pw" onsubmit="simpanPasswordBaru(event)">
+            <div class="modal-body" style="padding: 22px;">
+                <div id="alert-pw" style="display:none; padding:10px 14px; border-radius:8px; font-size:13px; margin-bottom:14px; font-weight:600;"></div>
+
+                <div style="display:flex; flex-direction:column; gap:6px; margin-bottom:16px;">
+                    <label style="font-size:13px; font-weight:700; color:#374151;">Password Baru (Min. 6 Karakter) *</label>
+                    <input type="password" id="input-pw-baru" placeholder="Masukkan password baru..." required style="padding:10px 14px; border-radius:8px; border:1px solid #d1d5db; font-size:14px; outline:none;">
+                </div>
+
+                <div style="display:flex; flex-direction:column; gap:6px;">
+                    <label style="font-size:13px; font-weight:700; color:#374151;">Konfirmasi Password Baru *</label>
+                    <input type="password" id="input-pw-konfirmasi" placeholder="Ulangi password baru..." required style="padding:10px 14px; border-radius:8px; border:1px solid #d1d5db; font-size:14px; outline:none;">
+                </div>
+            </div>
+            <div style="padding:14px 22px; display:flex; justify-content:flex-end; gap:10px; background:#f9fafb; border-top:1px solid #f3f4f6;">
+                <button type="button" onclick="tutupModalGantiPassword()" style="padding:9px 16px; border-radius:8px; border:1px solid #d1d5db; background:white; font-size:13px; font-weight:600; cursor:pointer;">Batal</button>
+                <button type="submit" id="btn-submit-pw" style="padding:9px 18px; border-radius:8px; border:none; background:#124b3c; color:white; font-size:13px; font-weight:700; cursor:pointer;">Simpan Password</button>
+            </div>
+        </form>
+    </div>
+</div>
 
 </body>
 </html>
