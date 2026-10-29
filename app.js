@@ -819,8 +819,11 @@ app.get('/api/logbook/:id', requireLogin, (req, res) => {
         `;
 
         const queryDokumentasi = `
-            SELECT * FROM dokumentasi 
-            WHERE id_logbook = ?
+            SELECT d.*, a.nama_lengkap AS nama_anak 
+            FROM dokumentasi d
+            LEFT JOIN anak a ON d.id_anak = a.id_anak
+            WHERE d.id_logbook = ?
+            ORDER BY d.id_dokumentasi DESC
         `;
 
         db.query(queryKegiatan, [id], (errK, kegiatans) => {
@@ -1020,8 +1023,9 @@ app.post('/api/dokumentasi/upload', requireRole('admin', 'guru'), (req, res) => 
         }
 
         const fileName = req.file.filename;
+        const anakVal = (id_anak && id_anak !== '' && id_anak !== 'null') ? parseInt(id_anak, 10) : null;
         const query = `INSERT INTO dokumentasi (id_logbook, id_anak, file_foto, keterangan) VALUES (?, ?, ?, ?)`;
-        db.query(query, [id_logbook, id_anak || null, fileName, keterangan || null], (dbErr, result) => {
+        db.query(query, [id_logbook, anakVal, fileName, keterangan || null], (dbErr, result) => {
             if (dbErr) {
                 console.error('Error insert dokumentasi:', dbErr);
                 try { fs.unlinkSync(req.file.path); } catch(e) {}
@@ -1033,6 +1037,7 @@ app.post('/api/dokumentasi/upload', requireRole('admin', 'guru'), (req, res) => 
                 message: 'Foto dokumentasi berhasil diunggah',
                 id_dokumentasi: result.insertId,
                 file_foto: fileName,
+                id_anak: anakVal,
                 keterangan: keterangan || ''
             });
         });
@@ -1046,8 +1051,9 @@ app.post('/api/dokumentasi', requireRole('admin', 'guru'), (req, res) => {
         return res.status(400).json({ error: 'Logbook dan File Foto wajib diisi' });
     }
 
+    const anakVal = (id_anak && id_anak !== '' && id_anak !== 'null') ? parseInt(id_anak, 10) : null;
     const query = `INSERT INTO dokumentasi (id_logbook, id_anak, file_foto, keterangan) VALUES (?, ?, ?, ?)`;
-    db.query(query, [id_logbook, id_anak || null, file_foto, keterangan || null], (err, result) => {
+    db.query(query, [id_logbook, anakVal, file_foto, keterangan || null], (err, result) => {
         if (err) {
             console.error('Error insert dokumentasi:', err);
             return res.status(500).json({ error: 'Gagal menambahkan dokumentasi' });
@@ -1284,23 +1290,25 @@ app.get('/api/ortu/catatan', requireApiOrtu, (req, res) => {
     });
 });
 
-// GET /api/ortu/dokumentasi — dokumentasi dari kelas anak
+// GET /api/ortu/dokumentasi — dokumentasi dari kelas anak (khusus untuk anak mereka & umum kelas)
 app.get('/api/ortu/dokumentasi', requireApiOrtu, (req, res) => {
     resolveIdAnak(req, (id_anak) => {
         if (!id_anak) return res.status(400).json({ error: 'Akun belum ditautkan ke data anak' });
 
         const query = `
-            SELECT d.id_dokumentasi, d.file_foto, d.keterangan, 
-                   DATE_FORMAT(l.tanggal, '%Y-%m-%d') AS tanggal, k.nama_kelas
+            SELECT d.id_dokumentasi, d.file_foto, d.keterangan, d.id_anak,
+                   DATE_FORMAT(l.tanggal, '%Y-%m-%d') AS tanggal, k.nama_kelas,
+                   a.nama_lengkap AS nama_anak
             FROM dokumentasi d
             JOIN logbook l ON d.id_logbook = l.id_logbook
             JOIN kelas k ON l.id_kelas = k.id_kelas
-            JOIN anak a ON a.id_kelas = k.id_kelas
-            WHERE a.id_anak = ?
-            ORDER BY l.tanggal DESC, d.id_dokumentasi DESC
-            LIMIT 8
+            JOIN anak target_anak ON target_anak.id_kelas = k.id_kelas AND target_anak.id_anak = ?
+            LEFT JOIN anak a ON d.id_anak = a.id_anak
+            WHERE (d.id_anak = ? OR d.id_anak IS NULL)
+            ORDER BY (d.id_anak = ?) DESC, l.tanggal DESC, d.id_dokumentasi DESC
+            LIMIT 12
         `;
-        db.query(query, [id_anak], (err, results) => {
+        db.query(query, [id_anak, id_anak, id_anak], (err, results) => {
             if (err) return res.status(500).json({ error: 'Gagal mengambil dokumentasi' });
             res.json(results);
         });
@@ -1344,7 +1352,14 @@ app.get('/api/ortu/logbook/:id', requireApiOrtu, (req, res) => {
                         `SELECT ca.*, a.nama_lengkap AS nama_anak FROM catatan_anak ca JOIN anak a ON ca.id_anak = a.id_anak WHERE ca.id_logbook = ? AND ca.id_anak = ?`,
                         [id, id_anak],
                         (errC, catatans) => {
-                            db.query(`SELECT * FROM dokumentasi WHERE id_logbook = ?`, [id], (errD, docs) => {
+                            const queryDocsOrtu = `
+                                SELECT d.*, a.nama_lengkap AS nama_anak 
+                                FROM dokumentasi d
+                                LEFT JOIN anak a ON d.id_anak = a.id_anak
+                                WHERE d.id_logbook = ? AND (d.id_anak = ? OR d.id_anak IS NULL)
+                                ORDER BY (d.id_anak = ?) DESC, d.id_dokumentasi DESC
+                            `;
+                            db.query(queryDocsOrtu, [id, id_anak, id_anak], (errD, docs) => {
                                 res.json({
                                     logbook,
                                     kegiatan: kegiatans || [],

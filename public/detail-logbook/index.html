@@ -696,6 +696,218 @@
             background: #fee2e2;
         }
 
+        /* Child Card Photos preview */
+        .child-card-photos {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 6px 0 12px;
+            overflow-x: auto;
+            padding: 4px 0 2px;
+        }
+
+        .child-thumb-wrap {
+            width: 52px;
+            height: 52px;
+            border-radius: 8px;
+            overflow: hidden;
+            flex-shrink: 0;
+            cursor: pointer;
+            border: 1.5px solid #e5e7eb;
+            background: #f3f4f6;
+            transition: all 0.15s ease;
+            position: relative;
+        }
+
+        .child-thumb-wrap:hover {
+            transform: translateY(-2px);
+            border-color: var(--accent);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        .child-thumb-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .child-photo-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 12px;
+            margin-left: auto;
+        }
+
+        .child-photo-badge.has-photos {
+            background: #dcfce7;
+            color: #15803d;
+        }
+
+        .child-photo-badge.no-photos {
+            background: #f3f4f6;
+            color: #9ca3af;
+        }
+
+        /* Detail Modal Siswa */
+        .modal-detail-anak-box {
+            width: 620px;
+            max-width: 95%;
+            background: white;
+            border-radius: 18px;
+            overflow: hidden;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.25);
+            max-height: 90vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .modal-detail-header {
+            background: linear-gradient(135deg, #124b3c, #1f6b54);
+            color: white;
+            padding: 20px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .mda-profile-row {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .mda-avatar {
+            width: 46px;
+            height: 46px;
+            border-radius: 50%;
+            background: white;
+            color: #124b3c;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: 800;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+        }
+
+        .mda-title h3 {
+            font-size: 17px;
+            font-weight: 800;
+            color: white;
+        }
+
+        .mda-title p {
+            font-size: 12.5px;
+            color: #d1fae5;
+            margin-top: 2px;
+        }
+
+        .modal-detail-content {
+            padding: 22px 24px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        .mda-section-card {
+            background: #f8faf9;
+            border: 1px solid #e5e9e6;
+            border-radius: 12px;
+            padding: 16px 18px;
+        }
+
+        .mda-section-title {
+            font-size: 13px;
+            font-weight: 700;
+            color: #124b3c;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            border-bottom: 1px solid #e5e9e6;
+            padding-bottom: 8px;
+        }
+
+        .mda-catatan-text {
+            font-size: 13.5px;
+            color: #374151;
+            line-height: 1.6;
+            font-style: italic;
+            background: white;
+            padding: 12px 16px;
+            border-radius: 8px;
+            border-left: 3px solid #124b3c;
+        }
+
+        .mda-photos-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+            gap: 12px;
+        }
+
+        .mda-photo-item {
+            position: relative;
+            aspect-ratio: 4/3;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid #d1d5db;
+            background: #000;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .mda-photo-item:hover {
+            transform: scale(1.03);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .mda-photo-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .mda-photo-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 4px 8px;
+            background: linear-gradient(transparent, rgba(0,0,0,0.8));
+            color: white;
+            font-size: 10.5px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .mda-btn-del-photo {
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            background: rgba(220, 38, 38, 0.9);
+            color: white;
+            border: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+
+        .mda-btn-del-photo:hover {
+            background: #dc2626;
+        }
+
         .footer-disclaimer {
             margin-top: 32px;
             display: flex;
@@ -1117,6 +1329,14 @@
                     </div>
 
                     <div class="form-group">
+                        <label for="select-anak-doc"><i class="fa-solid fa-child" style="color: var(--accent);"></i> Khusus Siswa (Opsional)</label>
+                        <select id="select-anak-doc" style="padding: 10px 14px; border: 1.5px solid #d1d5db; border-radius: 10px; font-size: 13.5px; font-family: inherit; outline: none;">
+                            <option value="">— Foto Umum (Semua Siswa) —</option>
+                        </select>
+                        <p style="font-size: 11.5px; color: #6b7280; margin-top: 4px;">Pilih nama anak jika foto ini dokumentasi perorangan agar hanya tampil di akun orang tua anak tersebut.</p>
+                    </div>
+
+                    <div class="form-group">
                         <label for="input-keterangan-foto">Keterangan Foto (Opsional)</label>
                         <input type="text" id="input-keterangan-foto" placeholder="Contoh: Senam pagi bersama atau mewarnai gambar">
                     </div>
@@ -1128,6 +1348,66 @@
                         </button>
                     </div>
                 </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== MODAL DETAIL PERKEMBANGAN ANAK & FOTO ===== -->
+    <div class="modal-overlay" id="modal-detail-anak" onclick="if(event.target === this) tutupModalDetailAnak()">
+        <div class="modal-detail-anak-box">
+            <div class="modal-detail-header">
+                <div class="mda-profile-row">
+                    <div class="mda-avatar" id="mda-avatar">A</div>
+                    <div class="mda-title">
+                        <h3 id="mda-nama">Nama Siswa</h3>
+                        <p id="mda-subtitle">TK A · 9 Oktober 2026</p>
+                    </div>
+                </div>
+                <button class="btn-close-modal" style="color: white; font-size: 20px;" onclick="tutupModalDetailAnak()">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="modal-detail-content">
+                <!-- Section 1: Catatan Observasi -->
+                <div class="mda-section-card">
+                    <div class="mda-section-title">
+                        <span><i class="fa-solid fa-message" style="color: var(--accent); margin-right: 6px;"></i> Catatan Observasi Perkembangan</span>
+                        <button type="button" class="btn-child-action" id="mda-btn-edit-catatan" style="font-size: 11.5px; padding: 4px 10px;">
+                            <i class="fa-solid fa-pen"></i> Edit Catatan
+                        </button>
+                    </div>
+                    <div class="mda-catatan-text" id="mda-catatan-content">
+                        Catatan belum tersedia.
+                    </div>
+                </div>
+
+                <!-- Section 2: Galeri Foto Khusus Anak -->
+                <div class="mda-section-card">
+                    <div class="mda-section-title">
+                        <span>
+                            <i class="fa-solid fa-images" style="color: #6366f1; margin-right: 6px;"></i>
+                            Dokumentasi Foto Khusus <span id="mda-photo-count">(0 Foto)</span>
+                        </span>
+                        <button type="button" class="btn-child-action" id="mda-btn-tambah-foto" style="background: #eef7f2; color: #124b3c; border-color: #cce5d7; font-size: 11.5px; padding: 4px 12px;">
+                            <i class="fa-solid fa-cloud-arrow-up"></i> + Tambah Foto
+                        </button>
+                    </div>
+                    <div class="mda-photos-grid" id="mda-photos-container">
+                        <!-- Dynamic photos rendered here -->
+                    </div>
+                </div>
+
+                <!-- Section 3: Info Hak Akses Orang Tua -->
+                <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 10px; padding: 12px 14px; font-size: 12px; color: #166534; display: flex; align-items: center; gap: 10px;">
+                    <i class="fa-solid fa-shield-halved" style="font-size: 18px; color: #22c55e;"></i>
+                    <div>
+                        <strong>Tersinkronisasi ke Akun Orang Tua</strong><br>
+                        Catatan dan foto khusus di atas otomatis dapat dipantau langsung oleh orang tua siswa yang bersangkutan melalui Dashboard Orang Tua.
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer" style="padding: 12px 24px; display: flex; justify-content: flex-end; background: #fafafa; border-top: 1px solid #e5e7eb;">
+                <button type="button" class="btn-batal" onclick="tutupModalDetailAnak()">Tutup</button>
             </div>
         </div>
     </div>
@@ -1229,8 +1509,17 @@ async function muatDaftarAnak(idKelas) {
         
         const sel = document.getElementById('select-anak');
         sel.innerHTML = '<option value="">— Pilih Siswa —</option>';
+        
+        const selDoc = document.getElementById('select-anak-doc');
+        if (selDoc) {
+            selDoc.innerHTML = '<option value="">— Foto Umum (Semua Siswa) —</option>';
+        }
+
         daftarAnakKelas.forEach(a => {
             sel.innerHTML += `<option value="${a.id_anak}">${escapeHtml(a.nama_lengkap)}</option>`;
+            if (selDoc) {
+                selDoc.innerHTML += `<option value="${a.id_anak}">Khusus: ${escapeHtml(a.nama_lengkap)}</option>`;
+            }
         });
     } catch(e) {}
 }
@@ -1338,21 +1627,29 @@ function renderDokumentasi(docs) {
         }
 
         let labelText = d.keterangan || d.file_foto || 'foto-kegiatan.jpg';
+        const isAnak = d.id_anak && d.nama_anak;
+        const targetBadge = isAnak 
+            ? `<span style="display:inline-flex;align-items:center;gap:4px;background:#e0e7ff;color:#3730a3;font-size:11px;font-weight:700;padding:2px 8px;border-radius:12px;margin-bottom:6px;"><i class="fa-solid fa-user"></i> Khusus: ${escapeHtml(d.nama_anak)}</span>`
+            : `<span style="display:inline-flex;align-items:center;gap:4px;background:#f3f4f6;color:#4b5563;font-size:11px;font-weight:600;padding:2px 8px;border-radius:12px;margin-bottom:6px;"><i class="fa-solid fa-users"></i> Umum Kelas</span>`;
 
         return `
             <div class="doc-photo-card" style="position: relative;">
                 <div class="doc-photo-img-wrap" onclick="bukaLightbox('${imgSrc}', '${escapeHtml(labelText)}')">
                     <img src="${imgSrc}" alt="${escapeHtml(labelText)}" class="doc-photo-img" onerror="this.src='https://images.unsplash.com/photo-1577896851231-70ef18881754?q=80&w=300&auto=format&fit=crop'">
+                    ${isAnak ? `<span style="position:absolute;top:8px;left:8px;background:rgba(55,48,163,0.92);color:white;font-size:10px;font-weight:700;padding:3px 8px;border-radius:8px;backdrop-filter:blur(4px);box-shadow:0 2px 4px rgba(0,0,0,0.2);"><i class="fa-solid fa-user"></i> ${escapeHtml(d.nama_anak)}</span>` : ''}
                 </div>
-                <div class="doc-photo-info">
-                    <span class="doc-filename" title="${escapeHtml(labelText)}">${escapeHtml(labelText)}</span>
-                    <div style="display: flex; gap: 6px; align-items: center;">
-                        <button type="button" class="btn-pratinjau" onclick="bukaLightbox('${imgSrc}', '${escapeHtml(labelText)}')">
-                            <i class="fa-solid fa-up-right-and-down-left-from-center"></i> Pratinjau
-                        </button>
-                        <button type="button" class="btn-hapus-doc" title="Hapus Foto" onclick="hapusDokumentasi(${d.id_dokumentasi})">
-                            <i class="fa-solid fa-trash-can"></i>
-                        </button>
+                <div class="doc-photo-info" style="flex-direction: column; align-items: flex-start; gap: 6px;">
+                    ${targetBadge}
+                    <div style="display: flex; width: 100%; align-items: center; justify-content: space-between; gap: 10px;">
+                        <span class="doc-filename" title="${escapeHtml(labelText)}">${escapeHtml(labelText)}</span>
+                        <div style="display: flex; gap: 6px; align-items: center;">
+                            <button type="button" class="btn-pratinjau" onclick="bukaLightbox('${imgSrc}', '${escapeHtml(labelText)}')">
+                                <i class="fa-solid fa-up-right-and-down-left-from-center"></i> Pratinjau
+                            </button>
+                            <button type="button" class="btn-hapus-doc" title="Hapus Foto" onclick="hapusDokumentasi(${d.id_dokumentasi})">
+                                <i class="fa-solid fa-trash-can"></i>
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>`;
@@ -1360,8 +1657,12 @@ function renderDokumentasi(docs) {
 }
 
 // ===================== UPLOAD & KELOLA DOKUMENTASI =====================
-function bukaModalUploadDoc() {
+function bukaModalUploadDoc(idAnakDefault = '') {
     document.getElementById('form-upload-doc').reset();
+    const selDoc = document.getElementById('select-anak-doc');
+    if (selDoc) {
+        selDoc.value = idAnakDefault ? String(idAnakDefault) : '';
+    }
     document.getElementById('preview-foto-wrap').style.display = 'none';
     document.getElementById('preview-foto-img').src = '';
     document.getElementById('modal-upload-doc').classList.add('active');
@@ -1398,6 +1699,7 @@ async function unggahFotoDokumentasi(e) {
 
     const fileInput = document.getElementById('input-foto-file');
     const ketInput = document.getElementById('input-keterangan-foto');
+    const selDoc = document.getElementById('select-anak-doc');
     const btn = document.getElementById('btn-submit-upload');
 
     if (!fileInput.files || fileInput.files.length === 0) {
@@ -1408,6 +1710,9 @@ async function unggahFotoDokumentasi(e) {
     const formData = new FormData();
     formData.append('foto', fileInput.files[0]);
     formData.append('id_logbook', currentLogbookId);
+    if (selDoc && selDoc.value) {
+        formData.append('id_anak', selDoc.value);
+    }
     formData.append('keterangan', ketInput.value.trim());
 
     btn.disabled = true;
@@ -1424,8 +1729,8 @@ async function unggahFotoDokumentasi(e) {
 
         tutupModalUploadDoc();
         // Muat ulang data logbook agar foto langsung tampil
-        await muatDetailLogbook();
-        alert('Foto dokumentasi berhasil diunggah!');
+        await muatDetailLogbook(currentLogbookId);
+        showToast('Foto dokumentasi berhasil diunggah!');
     } catch(err) {
         alert('Error: ' + err.message);
     } finally {
@@ -1444,7 +1749,8 @@ async function hapusDokumentasi(idDoc) {
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || 'Gagal menghapus');
 
-        await muatDetailLogbook();
+        await muatDetailLogbook(currentLogbookId);
+        showToast('Foto dokumentasi berhasil dihapus');
     } catch(err) {
         alert('Error: ' + err.message);
     }
@@ -1458,9 +1764,26 @@ function renderCatatanAnak(catatans, namaKelas, tglFormatted) {
         return;
     }
 
+    const docs = (currentLogbookData && currentLogbookData.dokumentasi) ? currentLogbookData.dokumentasi : [];
+
     container.innerHTML = catatans.map((c, index) => {
         const initials = `A${index + 1}`;
         const nama = c.nama_anak || `Anak 0${index + 1}`;
+        const childDocs = docs.filter(d => d.id_anak == c.id_anak);
+
+        let photosHtml = '';
+        if (childDocs.length > 0) {
+            photosHtml = `
+                <div class="child-card-photos">
+                    ${childDocs.map(cd => {
+                        let src = cd.file_foto.startsWith('http') ? cd.file_foto : (cd.file_foto.startsWith('doc-') ? `/uploads/${cd.file_foto}` : `/assets/${cd.file_foto}`);
+                        return `
+                            <div class="child-thumb-wrap" onclick="bukaLightbox('${src}', '${escapeHtml(cd.keterangan || 'Foto ' + nama)}'); event.stopPropagation();" title="${escapeHtml(cd.keterangan || 'Foto ' + nama)}">
+                                <img src="${src}" class="child-thumb-img" onerror="this.src='https://images.unsplash.com/photo-1577896851231-70ef18881754?q=80&w=300&auto=format&fit=crop'">
+                            </div>`;
+                    }).join('')}
+                </div>`;
+        }
 
         return `
             <div class="child-note-card">
@@ -1470,14 +1793,27 @@ function renderCatatanAnak(catatans, namaKelas, tglFormatted) {
                         <h4>${escapeHtml(nama)}</h4>
                         <p>${escapeHtml(namaKelas)} · ${tglFormatted}</p>
                     </div>
+                    <span class="child-photo-badge ${childDocs.length > 0 ? 'has-photos' : 'no-photos'}">
+                        <i class="fa-solid fa-camera"></i> ${childDocs.length} Foto
+                    </span>
                 </div>
                 <div class="child-note-text">
                     ${escapeHtml(c.catatan)}
                 </div>
+                ${photosHtml}
                 <div class="child-card-actions">
-                    <button class="btn-child-action" onclick="lihatDetailCatatan('${escapeHtml(nama)}', '${escapeHtml(c.catatan)}')">Detail</button>
-                    <button class="btn-child-action" onclick="bukaModalEditCatatan(${c.id_catatan}, ${c.id_anak}, '${escapeHtml(c.catatan)}')">Edit</button>
-                    <button class="btn-child-action btn-delete" onclick="hapusCatatanAnak(${c.id_catatan})">Hapus</button>
+                    <button class="btn-child-action" style="background:#eef7f2;color:#124b3c;border-color:#cce5d7;" onclick="bukaModalUploadDoc(${c.id_anak})" title="Upload foto khusus untuk ${escapeHtml(nama)}">
+                        <i class="fa-solid fa-camera"></i> + Foto
+                    </button>
+                    <button class="btn-child-action" style="background:#f0fdf4;color:#15803d;border-color:#bbf7d0;" onclick="bukaModalDetailAnak(${c.id_anak}, ${c.id_catatan})" title="Lihat detail perkembangan dan semua foto anak ini">
+                        <i class="fa-solid fa-address-card"></i> Detail
+                    </button>
+                    <button class="btn-child-action" onclick="bukaModalEditCatatan(${c.id_catatan}, ${c.id_anak}, '${escapeHtml(c.catatan)}')">
+                        <i class="fa-solid fa-pen"></i> Edit
+                    </button>
+                    <button class="btn-child-action btn-delete" onclick="hapusCatatanAnak(${c.id_catatan})" title="Hapus catatan">
+                        <i class="fa-solid fa-trash"></i>
+                    </button>
                 </div>
             </div>`;
     }).join('');
@@ -1569,8 +1905,89 @@ async function hapusCatatanAnak(idCatatan) {
     }
 }
 
-function lihatDetailCatatan(nama, catatan) {
-    alert(`Catatan Khusus: ${nama}\n\n"${catatan}"`);
+// ===================== DETAIL MODAL SISWA & FOTO =====================
+function bukaModalDetailAnak(idAnak, idCatatan) {
+    if (!currentLogbookData) return;
+    const catatanItem = (currentLogbookData.catatan || []).find(c => c.id_catatan == idCatatan) || (currentLogbookData.catatan || []).find(c => c.id_anak == idAnak);
+    const anakInfo = (daftarAnakKelas || []).find(a => a.id_anak == idAnak) || {};
+    const nama = catatanItem ? (catatanItem.nama_anak || anakInfo.nama_lengkap || 'Siswa') : (anakInfo.nama_lengkap || 'Siswa');
+    const namaKelas = currentLogbookData.logbook ? currentLogbookData.logbook.nama_kelas : 'Kelas';
+    const tgl = currentLogbookData.logbook ? formatTanggalLengkap(currentLogbookData.logbook.tanggal) : '-';
+    const docs = (currentLogbookData.dokumentasi || []).filter(d => d.id_anak == idAnak);
+
+    document.getElementById('mda-nama').textContent = nama;
+    document.getElementById('mda-avatar').textContent = (nama.charAt(0) || 'A').toUpperCase();
+    document.getElementById('mda-subtitle').textContent = `${namaKelas} · ${tgl} · NISN: ${anakInfo.nisn || '-'}`;
+
+    // Catatan
+    const catatanTextEl = document.getElementById('mda-catatan-content');
+    if (catatanItem && catatanItem.catatan) {
+        catatanTextEl.textContent = `"${catatanItem.catatan}"`;
+        document.getElementById('mda-btn-edit-catatan').style.display = 'inline-flex';
+        document.getElementById('mda-btn-edit-catatan').onclick = function() {
+            tutupModalDetailAnak();
+            bukaModalEditCatatan(catatanItem.id_catatan, idAnak, catatanItem.catatan);
+        };
+    } else {
+        catatanTextEl.textContent = "Belum ada catatan observasi untuk siswa ini.";
+        document.getElementById('mda-btn-edit-catatan').style.display = 'none';
+    }
+
+    // Foto-foto
+    const photoContainer = document.getElementById('mda-photos-container');
+    document.getElementById('mda-photo-count').textContent = `(${docs.length} Foto)`;
+
+    if (docs.length === 0) {
+        photoContainer.innerHTML = `
+            <div style="grid-column: 1/-1; text-align: center; padding: 24px 10px; background: white; border-radius: 8px; border: 1.5px dashed #cbd5e1; color: #6b7280; font-size: 13px;">
+                <i class="fa-regular fa-images" style="font-size: 30px; color: #94a3b8; display: block; margin-bottom: 8px;"></i>
+                Belum ada foto dokumentasi khusus untuk <strong>${escapeHtml(nama)}</strong> pada logbook ini.<br>
+                <button type="button" class="btn-child-action" style="margin-top: 10px; background: var(--accent); color: white; border: none; padding: 7px 16px;" onclick="tutupModalDetailAnak(); bukaModalUploadDoc(${idAnak});">
+                    <i class="fa-solid fa-cloud-arrow-up"></i> Unggah Foto Sekarang
+                </button>
+            </div>
+        `;
+    } else {
+        photoContainer.innerHTML = docs.map(d => {
+            let imgSrc = d.file_foto.startsWith('http') ? d.file_foto : (d.file_foto.startsWith('doc-') ? `/uploads/${d.file_foto}` : `/assets/${d.file_foto}`);
+            let caption = d.keterangan || 'Foto Kegiatan';
+            return `
+                <div class="mda-photo-item" onclick="bukaLightbox('${imgSrc}', '${escapeHtml(caption)} (${escapeHtml(nama)})')">
+                    <img src="${imgSrc}" alt="${escapeHtml(caption)}" onerror="this.src='https://images.unsplash.com/photo-1577896851231-70ef18881754?q=80&w=300&auto=format&fit=crop'">
+                    <div class="mda-photo-overlay" title="${escapeHtml(caption)}">${escapeHtml(caption)}</div>
+                    <button type="button" class="mda-btn-del-photo" title="Hapus Foto" onclick="event.stopPropagation(); hapusDokumentasiDariDetail(${d.id_dokumentasi}, ${idAnak}, ${idCatatan});">
+                        <i class="fa-solid fa-trash-can"></i>
+                    </button>
+                </div>
+            `;
+        }).join('');
+    }
+
+    // Set tombol Tambah Foto di header section
+    document.getElementById('mda-btn-tambah-foto').onclick = function() {
+        tutupModalDetailAnak();
+        bukaModalUploadDoc(idAnak);
+    };
+
+    document.getElementById('modal-detail-anak').classList.add('active');
+}
+
+function tutupModalDetailAnak() {
+    document.getElementById('modal-detail-anak').classList.remove('active');
+}
+
+async function hapusDokumentasiDariDetail(idDoc, idAnak, idCatatan) {
+    if (!confirm('Apakah Anda yakin ingin menghapus foto dokumentasi ini?')) return;
+    try {
+        const res = await fetch(`/api/dokumentasi/${idDoc}`, { method: 'DELETE' });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Gagal menghapus');
+        await muatDetailLogbook(currentLogbookId);
+        showToast('Foto berhasil dihapus');
+        bukaModalDetailAnak(idAnak, idCatatan);
+    } catch(e) {
+        showToast(e.message || 'Gagal menghapus', 'error');
+    }
 }
 
 // ===================== AKSI LOGBOOK (EDIT & HAPUS) =====================
