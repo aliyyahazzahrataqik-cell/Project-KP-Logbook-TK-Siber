@@ -353,6 +353,7 @@
             align-items: center;
             justify-content: center;
             padding: 20px;
+            overflow-y: auto;
         }
         .modal-overlay.active { display: flex; }
         .modal {
@@ -365,7 +366,8 @@
             overflow: hidden;
             display: flex;
             flex-direction: column;
-            max-height: 90vh;
+            max-height: 88vh;
+            margin: auto;
         }
         @keyframes modalIn {
             from { opacity: 0; transform: translateY(16px) scale(0.97); }
@@ -373,14 +375,15 @@
         }
 
         .modal-head {
-            padding: 20px 24px;
+            padding: 16px 24px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             border-bottom: 1px solid #f3f5f4;
             background: #fafbfa;
+            flex-shrink: 0;
         }
-        .modal-head h3 { font-size: 17px; font-weight: 800; color: #111827; }
+        .modal-head h3 { font-size: 17px; font-weight: 800; color: #111827; margin: 0; }
         .btn-close-modal {
             background: none; border: none; font-size: 18px; color: #9ca3af;
             cursor: pointer; padding: 4px; transition: color 0.15s;
@@ -388,12 +391,30 @@
         .btn-close-modal:hover { color: #111; }
 
         .modal-body {
-            padding: 24px;
+            padding: 20px 24px;
             overflow-y: auto;
+            max-height: calc(88vh - 130px);
             display: flex;
             flex-direction: column;
-            gap: 16px;
+            gap: 14px;
+            flex: 1;
+            min-height: 0;
         }
+
+        .modal-body::-webkit-scrollbar {
+            width: 6px;
+        }
+        .modal-body::-webkit-scrollbar-track {
+            background: #f1f5f3;
+        }
+        .modal-body::-webkit-scrollbar-thumb {
+            background: #c2d6ce;
+            border-radius: 4px;
+        }
+        .modal-body::-webkit-scrollbar-thumb:hover {
+            background: #124b3c;
+        }
+
         .form-group {
             display: flex;
             flex-direction: column;
@@ -433,12 +454,13 @@
         }
 
         .modal-footer {
-            padding: 16px 24px;
+            padding: 14px 24px;
             display: flex;
             justify-content: flex-end;
             gap: 12px;
             border-top: 1px solid #f3f5f4;
             background: #fafbfa;
+            flex-shrink: 0;
         }
         .btn-modal-cancel {
             padding: 10px 18px;
@@ -564,6 +586,9 @@
             <a href="/kelola-pengumuman" class="menu-item active">
                 <i class="fa-solid fa-bullhorn"></i> Kelola Pengumuman
             </a>
+            <a href="/kelola-menu" class="menu-item">
+                <i class="fa-solid fa-utensils"></i> Kelola Menu Makan
+            </a>
         </div>
         <div class="sidebar-footer">
             <button type="button" class="sidebar-logout-btn" onclick="keluarAplikasi(event)">
@@ -678,56 +703,71 @@
 
     <!-- MODAL FORM TAMBAH / EDIT -->
     <div class="modal-overlay" id="modal-form">
-        <div class="modal">
+        <form class="modal" id="form-pengumuman" onsubmit="simpanPengumuman(event)">
             <div class="modal-head">
                 <h3 id="modal-form-title">Buat Pengumuman Baru</h3>
                 <button type="button" class="btn-close-modal" onclick="tutupModalForm()">&times;</button>
             </div>
-            <form id="form-pengumuman" onsubmit="simpanPengumuman(event)">
-                <div class="modal-body">
-                    <input type="hidden" id="form-id">
+            <div class="modal-body">
+                <input type="hidden" id="form-id">
 
+                <div class="form-group">
+                    <label for="form-judul">Judul Pengumuman / Berita <span style="color:#ef4444;">*</span></label>
+                    <input type="text" id="form-judul" class="form-control" placeholder="Contoh: Jadwal Libur Lebaran 2026" required>
+                </div>
+
+                <div class="form-row">
                     <div class="form-group">
-                        <label for="form-judul">Judul Pengumuman / Berita <span style="color:#ef4444;">*</span></label>
-                        <input type="text" id="form-judul" class="form-control" placeholder="Contoh: Jadwal Libur Lebaran 2026" required>
+                        <label for="form-kategori">Kategori</label>
+                        <select id="form-kategori" class="form-control">
+                            <option value="Penting">Penting</option>
+                            <option value="Agenda">Agenda</option>
+                            <option value="Libur">Libur</option>
+                            <option value="Prestasi">Prestasi</option>
+                            <option value="Umum" selected>Umum</option>
+                        </select>
                     </div>
-
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="form-kategori">Kategori</label>
-                            <select id="form-kategori" class="form-control">
-                                <option value="Penting">Penting</option>
-                                <option value="Agenda">Agenda</option>
-                                <option value="Libur">Libur</option>
-                                <option value="Prestasi">Prestasi</option>
-                                <option value="Umum" selected>Umum</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="form-tanggal">Tanggal Berlaku / Rilis <span style="color:#ef4444;">*</span></label>
-                            <input type="date" id="form-tanggal" class="form-control" required>
-                        </div>
-                    </div>
-
                     <div class="form-group">
-                        <label for="form-penulis">Nama Penulis / Penerbit</label>
-                        <input type="text" id="form-penulis" class="form-control" placeholder="Admin TK Siber">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="form-isi">Isi Pengumuman Lengkap <span style="color:#ef4444;">*</span></label>
-                        <textarea id="form-isi" class="form-control" placeholder="Tuliskan detail berita, agenda, arahan, atau informasi lengkap yang ingin disampaikan kepada wali murid..." required></textarea>
+                        <label for="form-tanggal">Tanggal Berlaku / Rilis <span style="color:#ef4444;">*</span></label>
+                        <input type="date" id="form-tanggal" class="form-control" required>
                     </div>
                 </div>
 
-                <div class="modal-footer">
-                    <button type="button" class="btn-modal-cancel" onclick="tutupModalForm()">Batal</button>
-                    <button type="submit" class="btn-modal-save" id="btn-submit-form">
-                        <i class="fa-solid fa-paper-plane"></i> Publikasikan
+                <div class="form-group">
+                    <label for="form-penulis">Nama Penulis / Penerbit</label>
+                    <input type="text" id="form-penulis" class="form-control" placeholder="Admin TK Siber">
+                </div>
+
+                <div class="form-group">
+                    <label>Foto / Gambar Berita <span style="font-size:12px; font-weight:normal; color:#6b7280;">(Opsional)</span></label>
+                    <input type="hidden" id="form-foto" value="">
+                    <input type="file" id="file-foto-berita" accept="image/jpeg,image/png,image/webp,image/gif" style="display:none;" onchange="uploadFotoBerita(event)">
+                    
+                    <div id="foto-preview-box" style="display: none; position: relative; margin-bottom: 10px; border-radius: 10px; overflow: hidden; max-height: 160px; border: 1px solid #e5e7eb; background: #f9fafb;">
+                        <img id="img-preview-berita" src="" alt="Pratinjau Foto" style="width: 100%; height: auto; max-height: 160px; object-fit: cover; display: block;">
+                        <button type="button" onclick="hapusFotoBerita()" style="position: absolute; top: 8px; right: 8px; background: rgba(220, 38, 38, 0.9); color: white; border: none; border-radius: 6px; padding: 5px 10px; font-size: 11.5px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 5px; box-shadow: 0 2px 6px rgba(0,0,0,0.2);">
+                            <i class="fa-solid fa-trash"></i> Hapus Foto
+                        </button>
+                    </div>
+
+                    <button type="button" id="btn-pilih-foto" onclick="document.getElementById('file-foto-berita').click()" style="padding: 8px 14px; background: #edf7f2; border: 1.5px dashed #124b3c; border-radius: 8px; color: #124b3c; font-size: 13px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; width: 100%; justify-content: center;">
+                        <i class="fa-solid fa-cloud-arrow-up" style="font-size: 15px;"></i> <span id="label-upload-berita">Pilih Foto / Gambar Berita</span>
                     </button>
                 </div>
-            </form>
-        </div>
+
+                <div class="form-group">
+                    <label for="form-isi">Isi Pengumuman Lengkap <span style="color:#ef4444;">*</span></label>
+                    <textarea id="form-isi" class="form-control" placeholder="Tuliskan detail berita, agenda, arahan, atau informasi lengkap yang ingin disampaikan kepada wali murid..." required></textarea>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn-modal-cancel" onclick="tutupModalForm()">Batal</button>
+                <button type="submit" class="btn-modal-save" id="btn-submit-form">
+                    <i class="fa-solid fa-paper-plane"></i> Publikasikan
+                </button>
+            </div>
+        </form>
     </div>
 
     <!-- MODAL DETAIL PREVIEW -->
@@ -738,6 +778,9 @@
                 <button type="button" class="btn-close-modal" onclick="tutupModalPreview()">&times;</button>
             </div>
             <div class="modal-body">
+                <div id="preview-foto-container" style="display:none; margin-bottom: 16px; border-radius: 12px; overflow: hidden; max-height: 260px; background: #f3f4f6;">
+                    <img id="preview-foto" src="" alt="Foto Berita" style="width: 100%; height: auto; max-height: 260px; object-fit: cover; display: block;">
+                </div>
                 <div class="preview-kategori-row">
                     <span id="preview-badge" class="badge-kategori badge-umum">Kategori</span>
                     <span class="preview-date"><i class="fa-regular fa-calendar"></i> <span id="preview-tanggal">-</span></span>
@@ -883,8 +926,13 @@
                             </span>
                         </td>
                         <td>
-                            <div class="pengumuman-title">${escapeHtml(item.judul)}</div>
-                            <div class="pengumuman-snippet">${escapeHtml(item.isi)}</div>
+                            <div style="display: flex; gap: 12px; align-items: flex-start;">
+                                ${item.foto ? `<img src="/uploads/${item.foto}" alt="${escapeHtml(item.judul)}" style="width:48px; height:48px; object-fit:cover; border-radius:8px; border:1px solid #e5e7eb; flex-shrink:0;">` : ''}
+                                <div style="flex:1;">
+                                    <div class="pengumuman-title">${escapeHtml(item.judul)}</div>
+                                    <div class="pengumuman-snippet">${escapeHtml(item.isi)}</div>
+                                </div>
+                            </div>
                         </td>
                         <td style="color:#4b5563; font-weight:500;">
                             <i class="fa-regular fa-user" style="font-size:11px; margin-right:4px;"></i> ${escapeHtml(item.penulis || 'Admin')}
@@ -917,6 +965,13 @@
             document.getElementById('form-tanggal').value = new Date().toISOString().split('T')[0];
             document.getElementById('form-isi').value = '';
             
+            document.getElementById('form-foto').value = '';
+            document.getElementById('foto-preview-box').style.display = 'none';
+            document.getElementById('img-preview-berita').src = '';
+            document.getElementById('label-upload-berita').textContent = 'Pilih Foto / Gambar Berita';
+            const fInput = document.getElementById('file-foto-berita');
+            if (fInput) fInput.value = '';
+
             const currentAdmin = document.getElementById('user-display-name').textContent;
             document.getElementById('form-penulis').value = currentAdmin || 'Admin TK Siber';
 
@@ -937,6 +992,20 @@
             document.getElementById('form-penulis').value = item.penulis || 'Admin TK Siber';
             document.getElementById('form-isi').value = item.isi;
 
+            if (item.foto) {
+                document.getElementById('form-foto').value = item.foto;
+                document.getElementById('img-preview-berita').src = `/uploads/${item.foto}`;
+                document.getElementById('foto-preview-box').style.display = 'block';
+                document.getElementById('label-upload-berita').textContent = 'Ganti Foto / Gambar';
+            } else {
+                document.getElementById('form-foto').value = '';
+                document.getElementById('foto-preview-box').style.display = 'none';
+                document.getElementById('img-preview-berita').src = '';
+                document.getElementById('label-upload-berita').textContent = 'Pilih Foto / Gambar Berita';
+            }
+            const fInput = document.getElementById('file-foto-berita');
+            if (fInput) fInput.value = '';
+
             document.getElementById('modal-form').classList.add('active');
         }
 
@@ -948,6 +1017,16 @@
         function bukaModalPreview(id) {
             const item = semuaPengumuman.find(p => p.id_pengumuman === id);
             if (!item) return;
+
+            const fotoContainer = document.getElementById('preview-foto-container');
+            const fotoImg = document.getElementById('preview-foto');
+            if (item.foto) {
+                fotoImg.src = `/uploads/${item.foto}`;
+                fotoContainer.style.display = 'block';
+            } else {
+                fotoContainer.style.display = 'none';
+                fotoImg.src = '';
+            }
 
             const badgeEl = document.getElementById('preview-badge');
             badgeEl.className = `badge-kategori ${getBadgeClass(item.kategori)}`;
@@ -965,6 +1044,57 @@
             document.getElementById('modal-preview').classList.remove('active');
         }
 
+        async function uploadFotoBerita(event) {
+            let file = event.target.files[0];
+            if (!file) return;
+
+            const labelBtn = document.getElementById('label-upload-berita');
+            const oldText = labelBtn.innerHTML;
+            labelBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Mengompres & Mengunggah...';
+
+            try {
+                // Auto-compress foto sebelum upload
+                if (typeof compressImage === 'function') {
+                    file = await compressImage(file, { maxWidth: 1600, maxHeight: 1200, quality: 0.82 });
+                }
+
+                const formData = new FormData();
+                formData.append('foto', file);
+
+                const res = await fetch('/api/pengumuman/upload-foto', {
+                    method: 'POST',
+                    body: formData
+                });
+                const contentType = res.headers.get('content-type') || '';
+                let data;
+                if (contentType.includes('application/json')) {
+                    data = await res.json();
+                } else {
+                    throw new Error(`Server status ${res.status}. Pastikan server node sudah di-restart.`);
+                }
+                if (!res.ok) throw new Error(data.error || 'Gagal mengunggah foto');
+
+                document.getElementById('form-foto').value = data.filename;
+                document.getElementById('img-preview-berita').src = data.url;
+                document.getElementById('foto-preview-box').style.display = 'block';
+                labelBtn.innerHTML = '<i class="fa-solid fa-check"></i> Ganti Foto / Gambar';
+                showToast('Foto berita berhasil diunggah!');
+            } catch (err) {
+                showToast('Upload foto gagal: ' + err.message, true);
+                labelBtn.innerHTML = oldText;
+            }
+        }
+
+        function hapusFotoBerita() {
+            document.getElementById('form-foto').value = '';
+            document.getElementById('foto-preview-box').style.display = 'none';
+            document.getElementById('img-preview-berita').src = '';
+            document.getElementById('label-upload-berita').innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i> Pilih Foto / Gambar Berita';
+            const fileInput = document.getElementById('file-foto-berita');
+            if (fileInput) fileInput.value = '';
+            showToast('Foto berita dihapus dari form');
+        }
+
         // Submit form (Tambah / Edit)
         async function simpanPengumuman(e) {
             e.preventDefault();
@@ -975,13 +1105,14 @@
             const tanggal = document.getElementById('form-tanggal').value;
             const penulis = document.getElementById('form-penulis').value.trim();
             const isi = document.getElementById('form-isi').value.trim();
+            const foto = document.getElementById('form-foto').value.trim();
 
             if (!judul || !isi || !tanggal) {
                 showToast('Mohon lengkapi judul, tanggal, dan isi pengumuman', true);
                 return;
             }
 
-            const payload = { judul, kategori, tanggal, penulis, isi };
+            const payload = { judul, kategori, tanggal, penulis, isi, foto: foto || null };
             const isEdit = !!id;
             const url = isEdit ? `/api/pengumuman/${id}` : '/api/pengumuman';
             const method = isEdit ? 'PUT' : 'POST';
@@ -1084,5 +1215,6 @@
             }, 3000);
         }
     </script>
+    <script src="/js/image-compress.js"></script>
 </body>
 </html>

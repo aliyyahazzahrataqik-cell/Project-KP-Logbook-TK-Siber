@@ -180,7 +180,8 @@ CREATE TABLE menu_makan (
     id_menu INT AUTO_INCREMENT PRIMARY KEY,
     hari ENUM('Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat') NOT NULL UNIQUE,
     menu VARCHAR(150) NOT NULL,
-    keterangan VARCHAR(255) NULL
+    keterangan VARCHAR(255) NULL,
+    foto VARCHAR(255) NULL
 );
 
 -- =========================================
@@ -191,6 +192,7 @@ CREATE TABLE pengumuman (
     judul VARCHAR(255) NOT NULL,
     kategori ENUM('Penting', 'Agenda', 'Libur', 'Prestasi', 'Umum') DEFAULT 'Umum',
     isi TEXT NOT NULL,
+    foto VARCHAR(255) NULL,
     tanggal DATE NOT NULL,
     penulis VARCHAR(100) DEFAULT 'Admin TK Siber',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

@@ -427,6 +427,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            flex-shrink: 0;
         }
 
         .modal-header h2 {
@@ -451,9 +452,12 @@
         .modal-body {
             padding: 20px 24px;
             overflow-y: auto;
+            max-height: calc(90vh - 140px);
             display: flex;
             flex-direction: column;
             gap: 14px;
+            flex: 1;
+            min-height: 0;
         }
 
         .menu-row-input {
@@ -497,6 +501,7 @@
             display: flex;
             justify-content: flex-end;
             gap: 10px;
+            flex-shrink: 0;
         }
 
         .btn-batal {
@@ -548,6 +553,9 @@
             </a>
             <a href="/kelola-jadwal" class="menu-item">
                 <i class="fa-solid fa-calendar-days"></i> Kelola Jadwal
+            </a>
+            <a href="/kelola-menu" class="menu-item">
+                <i class="fa-solid fa-utensils"></i> Kelola Menu Makan
             </a>
             <a href="/kelola-logbook" class="menu-item">
                 <i class="fa-solid fa-book"></i> Kelola Logbook
@@ -639,21 +647,22 @@
                 <div class="card">
                     <div style="display: flex; justify-content: space-between; align-items: center; padding: 18px 24px 12px; border-bottom: 1px solid #f3f4f6;">
                         <h3 style="margin: 0; font-size: 16px; color: var(--text-dark);">Menu Makan Minggu ini</h3>
-                        <button type="button" class="btn-kelola-menu" onclick="bukaModalEditMenu()">
+                        <a href="/kelola-menu" class="btn-kelola-menu" style="text-decoration: none; display: inline-flex; align-items: center; gap: 8px;">
                             <i class="fa-solid fa-pen-to-square"></i> Kelola Menu
-                        </button>
+                        </a>
                     </div>
                     <div class="table-container">
                         <table>
                             <thead>
                                 <tr>
                                     <th style="width: 100px;">Hari</th>
+                                    <th style="width: 65px; text-align: center;">Foto</th>
                                     <th>Menu</th>
                                     <th>Keterangan</th>
                                 </tr>
                             </thead>
                             <tbody id="tbody-menu-makan">
-                                <tr><td colspan="3" style="text-align:center;color:#9ca3af;padding:25px;">Memuat data menu...</td></tr>
+                                <tr><td colspan="4" style="text-align:center;color:#9ca3af;padding:25px;">Memuat data menu...</td></tr>
                             </tbody>
                         </table>
                     </div>
@@ -697,6 +706,22 @@
         </div>
     </div>
 
+    <!-- Modal Preview Foto Menu -->
+    <div class="modal-overlay" id="modal-preview-foto-menu" onclick="if(event.target === this) tutupPreviewFotoMenu()">
+        <div class="modal" style="width: 440px; text-align: center;">
+            <div class="modal-header">
+                <h3 id="title-preview-foto-modal" style="margin: 0; font-size: 16px; color: #124b3c;">Foto Menu Makan</h3>
+                <button type="button" class="btn-close-modal" onclick="tutupPreviewFotoMenu()">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="modal-body" style="align-items: center; padding: 20px;">
+                <img id="img-preview-foto-modal" src="" alt="Menu Makan" style="max-width: 100%; max-height: 380px; object-fit: contain; border-radius: 12px; box-shadow: 0 4px 16px rgba(0,0,0,0.08);">
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/image-compress.js"></script>
 </body>
 </html>
 
@@ -860,13 +885,16 @@ async function muatMenuMakan() {
         dataMenuMakan = data.menu_mingguan || [];
 
         if (dataMenuMakan.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="3" style="text-align:center;color:#9ca3af;padding:25px;">Belum ada menu makan yang diinput</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;color:#9ca3af;padding:25px;">Belum ada menu makan yang diinput</td></tr>`;
             return;
         }
 
         const hariIni = (data.hari_ini || '').toLowerCase();
         tbody.innerHTML = dataMenuMakan.map(m => {
             const isToday = m.hari.toLowerCase() === hariIni;
+            const fotoHtml = m.foto 
+                ? `<img src="/uploads/${m.foto}" alt="${m.menu}" style="width:40px;height:40px;object-fit:cover;border-radius:8px;border:1px solid #e5e7eb;cursor:pointer;display:inline-block;" onclick="previewFotoMenu('/uploads/${m.foto}', '${m.menu}')" title="Klik untuk perbesar">`
+                : `<div style="width:40px;height:40px;background:#f3f4f6;border-radius:8px;display:inline-flex;align-items:center;justify-content:center;color:#9ca3af;font-size:15px;" title="Belum ada foto"><i class="fa-regular fa-image"></i></div>`;
             return `
                 <tr style="${isToday ? 'background: #f0fdf4; font-weight: 600;' : ''}">
                     <td>
@@ -875,13 +903,14 @@ async function muatMenuMakan() {
                             ${isToday ? '<span style="background:#22c55e;color:white;font-size:9.5px;padding:2px 7px;border-radius:10px;font-weight:700;">HARI INI</span>' : ''}
                         </span>
                     </td>
+                    <td style="text-align:center;">${fotoHtml}</td>
                     <td style="color:#124b3c;font-weight:600;">${m.menu}</td>
                     <td style="color:#6b7280;font-size:13px;">${m.keterangan || '-'}</td>
                 </tr>
             `;
         }).join('');
     } catch (e) {
-        tbody.innerHTML = `<tr><td colspan="3" style="text-align:center;color:#ef4444;padding:25px;">Gagal memuat data menu</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;color:#ef4444;padding:25px;">Gagal memuat data menu</td></tr>`;
     }
 }
 
@@ -890,14 +919,45 @@ function bukaModalEditMenu() {
     const hariList = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat'];
 
     body.innerHTML = hariList.map(h => {
-        const item = dataMenuMakan.find(m => m.hari === h) || { hari: h, menu: '', keterangan: '' };
+        const item = dataMenuMakan.find(m => m.hari === h) || { hari: h, menu: '', keterangan: '', foto: '' };
+        const hasFoto = Boolean(item.foto);
         return `
             <div class="menu-row-input" data-hari="${h}">
                 <div class="menu-row-header">
                     <span><i class="fa-regular fa-calendar" style="margin-right: 5px; color:#124b3c;"></i> Hari ${h}</span>
+                    <span id="badge-foto-${h}" style="font-size:11.5px; font-weight:600; color:${hasFoto ? '#15803d' : '#9ca3af'};">
+                        ${hasFoto ? '<i class="fa-solid fa-check-circle"></i> Ada Foto' : '<i class="fa-regular fa-image"></i> Tanpa Foto'}
+                    </span>
                 </div>
-                <input type="text" class="input-nama-menu" placeholder="Nama Menu (cth: Chicken Katsu)" value="${item.menu || ''}" required>
-                <input type="text" class="input-ket-menu" placeholder="Keterangan Lauk / Buah (cth: Nasi + Sop + Buah)" value="${item.keterangan || ''}">
+                
+                <div style="display: flex; gap: 12px; align-items: flex-start;">
+                    <!-- Kotak Foto & Upload -->
+                    <div style="flex-shrink: 0; width: 78px; text-align: center;">
+                        <div id="preview-wrap-${h}" style="width: 78px; height: 78px; border-radius: 8px; border: 1.5px dashed ${hasFoto ? '#124b3c' : '#d1d5db'}; background: #fff; display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative;">
+                            ${hasFoto 
+                                ? `<img id="img-preview-${h}" src="/uploads/${item.foto}" style="width: 100%; height: 100%; object-fit: cover;">` 
+                                : `<div id="img-placeholder-${h}" style="color: #9ca3af; font-size: 11px; display: flex; flex-direction: column; align-items: center; gap: 4px;"><i class="fa-solid fa-camera" style="font-size: 18px;"></i><span>Foto</span></div>`
+                            }
+                        </div>
+                        <input type="file" id="file-foto-${h}" accept="image/jpeg,image/png,image/webp,image/gif" style="display:none;" onchange="uploadFotoHari(event, '${h}')">
+                        <input type="hidden" class="input-foto-menu" id="input-foto-${h}" value="${item.foto || ''}">
+                        
+                        <div style="margin-top: 6px; display: flex; gap: 4px; justify-content: center;">
+                            <button type="button" onclick="document.getElementById('file-foto-${h}').click()" title="Unggah Foto Makanan" style="padding: 3px 8px; font-size: 11px; background: #e0ece6; color: #124b3c; border: 1px solid #c2dbcf; border-radius: 5px; cursor: pointer; font-weight: 600;">
+                                <i class="fa-solid fa-camera"></i> ${hasFoto ? 'Ganti' : 'Pilih'}
+                            </button>
+                            <button type="button" id="btn-hapus-foto-${h}" onclick="hapusFotoHari('${h}')" title="Hapus Foto" style="padding: 3px 7px; font-size: 11px; background: #fee2e2; color: #b91c1c; border: 1px solid #fecaca; border-radius: 5px; cursor: pointer; display: ${hasFoto ? 'inline-block' : 'none'};">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Input Nama & Keterangan -->
+                    <div style="flex: 1; display: flex; flex-direction: column; gap: 8px;">
+                        <input type="text" class="input-nama-menu" placeholder="Nama Menu (cth: Chicken Katsu)" value="${item.menu || ''}" required>
+                        <input type="text" class="input-ket-menu" placeholder="Keterangan Lauk / Buah (cth: Nasi + Sop + Buah)" value="${item.keterangan || ''}">
+                    </div>
+                </div>
             </div>
         `;
     }).join('');
@@ -905,8 +965,82 @@ function bukaModalEditMenu() {
     document.getElementById('modal-menu-makan').classList.add('active');
 }
 
+async function uploadFotoHari(event, hari) {
+    let file = event.target.files[0];
+    if (!file) return;
+
+    const previewWrap = document.getElementById(`preview-wrap-${hari}`);
+    const oldHtml = previewWrap.innerHTML;
+    previewWrap.innerHTML = '<span style="font-size:10px;color:#124b3c;text-align:center;"><i class="fa-solid fa-spinner fa-spin"></i> Kompres & Upload...</span>';
+
+    try {
+        // Auto-compress gambar sebelum diupload
+        if (typeof compressImage === 'function') {
+            file = await compressImage(file, { maxWidth: 1280, maxHeight: 1280, quality: 0.82 });
+        }
+
+        const formData = new FormData();
+        formData.append('foto', file);
+
+        const res = await fetch('/api/menu-makan/upload-foto', {
+            method: 'POST',
+            body: formData
+        });
+        const contentType = res.headers.get('content-type') || '';
+        let data;
+        if (contentType.includes('application/json')) {
+            data = await res.json();
+        } else {
+            throw new Error(`Server mengembalikan status ${res.status} (${res.statusText}). Pastikan terminal server node sudah di-restart.`);
+        }
+        if (!res.ok) throw new Error(data.error || 'Gagal mengunggah foto');
+
+        document.getElementById(`input-foto-${hari}`).value = data.filename;
+        previewWrap.style.borderColor = '#124b3c';
+        previewWrap.innerHTML = `<img id="img-preview-${hari}" src="${data.url}" style="width:100%;height:100%;object-fit:cover;">`;
+
+        document.getElementById(`btn-hapus-foto-${hari}`).style.display = 'inline-block';
+        const badge = document.getElementById(`badge-foto-${hari}`);
+        if (badge) {
+            badge.style.color = '#15803d';
+            badge.innerHTML = '<i class="fa-solid fa-check-circle"></i> Ada Foto';
+        }
+    } catch (err) {
+        alert('Upload foto gagal: ' + err.message);
+        previewWrap.innerHTML = oldHtml;
+    }
+}
+
+function hapusFotoHari(hari) {
+    document.getElementById(`input-foto-${hari}`).value = '';
+    const previewWrap = document.getElementById(`preview-wrap-${hari}`);
+    previewWrap.style.borderColor = '#d1d5db';
+    previewWrap.innerHTML = `<div id="img-placeholder-${hari}" style="color: #9ca3af; font-size: 11px; display: flex; flex-direction: column; align-items: center; gap: 4px;"><i class="fa-solid fa-camera" style="font-size: 18px;"></i><span>Foto</span></div>`;
+    document.getElementById(`btn-hapus-foto-${hari}`).style.display = 'none';
+    const fileInput = document.getElementById(`file-foto-${hari}`);
+    if (fileInput) fileInput.value = '';
+    const badge = document.getElementById(`badge-foto-${hari}`);
+    if (badge) {
+        badge.style.color = '#9ca3af';
+        badge.innerHTML = '<i class="fa-regular fa-image"></i> Tanpa Foto';
+    }
+}
+
 function tutupModalMenu() {
     document.getElementById('modal-menu-makan').classList.remove('active');
+}
+
+function previewFotoMenu(src, title) {
+    const modal = document.getElementById('modal-preview-foto-menu');
+    if (!modal) return;
+    document.getElementById('img-preview-foto-modal').src = src;
+    document.getElementById('title-preview-foto-modal').textContent = title || 'Foto Menu Makan';
+    modal.classList.add('active');
+}
+
+function tutupPreviewFotoMenu() {
+    const modal = document.getElementById('modal-preview-foto-menu');
+    if (modal) modal.classList.remove('active');
 }
 
 async function simpanMenuMakan() {
@@ -918,8 +1052,10 @@ async function simpanMenuMakan() {
         const hari = r.getAttribute('data-hari');
         const menu = r.querySelector('.input-nama-menu').value.trim();
         const keterangan = r.querySelector('.input-ket-menu').value.trim();
+        const fotoInput = r.querySelector('.input-foto-menu');
+        const foto = fotoInput ? fotoInput.value.trim() : null;
         if (hari && menu) {
-            items.push({ hari, menu, keterangan });
+            items.push({ hari, menu, keterangan, foto: foto || null });
         }
     });
 

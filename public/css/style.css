@@ -184,7 +184,7 @@ a {
     line-height: 1.65;
     color: #4a7a6d;
     max-width: 420px;
-    margin-bottom: 28px;
+    margin-bottom: 0;
 }
 
 .hero-actions {
@@ -758,6 +758,29 @@ a {
     font-size: 18px;
 }
 
+.menu-photo-wrap {
+    width: 100%;
+    height: 120px;
+    border-radius: 12px;
+    overflow: hidden;
+    position: relative;
+    cursor: pointer;
+    background: #edf6ec;
+    box-shadow: inset 0 0 0 1px rgba(0,0,0,0.06);
+}
+
+.menu-photo-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.25s ease;
+}
+
+.menu-card:hover .menu-photo-wrap img {
+    transform: scale(1.05);
+}
+
 .menu-name {
     font-size: 15.5px;
     font-weight: 700;
@@ -995,6 +1018,38 @@ a {
     flex-direction: column;
     justify-content: space-between;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.pengumuman-card.has-cover {
+    padding: 0;
+    overflow: hidden;
+}
+
+.pengumuman-cover-wrap {
+    width: 100%;
+    height: 180px;
+    overflow: hidden;
+    background: #edf6ec;
+}
+
+.pengumuman-cover-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.3s ease;
+}
+
+.pengumuman-card:hover .pengumuman-cover-wrap img {
+    transform: scale(1.05);
+}
+
+.pengumuman-card.has-cover .pengumuman-card-body {
+    padding: 20px 24px 0;
+}
+
+.pengumuman-card.has-cover .pengumuman-card-footer {
+    margin: 0 24px 20px;
 }
 
 .pengumuman-card:hover {

@@ -69,17 +69,6 @@
                         iTales membantu sekolah dan keluarga terhubung melalui informasi kegiatan.
                         Jelajahi agenda publik tanpa perlu login.
                     </p>
-                    <div class="hero-actions">
-                        <a href="#jadwal-section" id="btn-lihat-jadwal" class="btn-primary">
-                            Lihat jadwal hari ini
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-                        </a>
-                        <a href="/login" id="btn-hero-login" class="btn-ghost">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
-                            Login
-                        </a>
-                    </div>
-                    <p class="hero-hint">Sudah memiliki akun? Login untuk akses sesuai peran Anda.</p>
                 </div>
 
                 <!-- Kanan -->
@@ -467,15 +456,21 @@
 
                 grid.innerHTML = list.map(item => {
                     const isToday = item.hari.toLowerCase() === hariIni;
+                    const cleanKet = (item.keterangan || '').replace(/'/g, "\\'");
+                    const visualHtml = item.foto 
+                        ? `<div class="menu-photo-wrap" onclick="previewFotoMenu('/uploads/${item.foto}', '${item.menu}', '${item.hari}', '${cleanKet}')" title="Klik untuk perbesar">
+                             <img src="/uploads/${item.foto}" alt="${item.menu}">
+                           </div>`
+                        : `<div class="menu-icon-wrap">
+                             <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>
+                           </div>`;
                     return `
                         <div class="menu-card ${isToday ? 'is-today' : ''}">
                             <div class="menu-card-header">
                                 <span class="menu-day-title">${item.hari}</span>
                                 ${isToday ? '<span class="today-badge">Hari ini</span>' : ''}
                             </div>
-                            <div class="menu-icon-wrap">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>
-                            </div>
+                            ${visualHtml}
                             <div class="menu-name">${item.menu}</div>
                             <div class="menu-desc">${item.keterangan || '-'}</div>
                         </div>
@@ -485,6 +480,17 @@
             } catch (err) {
                 grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;color:#ef4444;padding:20px;">Gagal memuat data menu makan.</div>`;
             }
+        }
+
+        function previewFotoMenu(src, title, hari, ket) {
+            document.getElementById('modal-foto-menu-img').src = src;
+            document.getElementById('modal-foto-menu-title').textContent = title || 'Foto Menu Makan';
+            document.getElementById('modal-foto-menu-sub').textContent = `${hari ? 'Hari ' + hari : ''}${ket ? ' · ' + ket : ''}`;
+            document.getElementById('landing-modal-foto-menu').classList.add('active');
+        }
+
+        function tutupFotoMenu() {
+            document.getElementById('landing-modal-foto-menu').classList.remove('active');
         }
 
         muatJadwal();
@@ -539,9 +545,15 @@
             grid.innerHTML = filtered.map(item => {
                 const badgeClass = getBadgeKategoriClass(item.kategori);
                 const tgl = formatTglLanding(item.tanggal);
+                const fotoHtml = item.foto 
+                    ? `<div class="pengumuman-cover-wrap">
+                         <img src="/uploads/${item.foto}" alt="${escapeHtml(item.judul)}">
+                       </div>` 
+                    : '';
                 return `
-                    <div class="pengumuman-card">
-                        <div>
+                    <div class="pengumuman-card ${item.foto ? 'has-cover' : ''}">
+                        ${fotoHtml}
+                        <div class="pengumuman-card-body">
                             <div class="pengumuman-card-top">
                                 <span class="pengumuman-date">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
@@ -567,6 +579,16 @@
         function bukaDetailPengumuman(id) {
             const item = listPengumumanLanding.find(p => p.id_pengumuman === id);
             if (!item) return;
+
+            const fotoContainer = document.getElementById('modal-detail-foto-container');
+            const fotoImg = document.getElementById('modal-detail-foto');
+            if (item.foto) {
+                fotoImg.src = `/uploads/${item.foto}`;
+                fotoContainer.style.display = 'block';
+            } else {
+                fotoContainer.style.display = 'none';
+                fotoImg.src = '';
+            }
 
             document.getElementById('modal-detail-badge').className = `kategori-badge ${getBadgeKategoriClass(item.kategori)}`;
             document.getElementById('modal-detail-badge').textContent = item.kategori;
@@ -647,6 +669,9 @@
                 <button type="button" onclick="tutupDetailPengumuman()" style="background:none; border:none; font-size:22px; cursor:pointer; color:#7a9e96; line-height:1;">&times;</button>
             </div>
             <div class="landing-modal-body">
+                <div id="modal-detail-foto-container" style="display:none; border-radius: 12px; overflow: hidden; margin-bottom: 16px; max-height: 320px; background: #f3f4f6;">
+                    <img id="modal-detail-foto" src="" alt="Foto Pengumuman" style="width: 100%; height: auto; max-height: 320px; object-fit: cover; display: block;">
+                </div>
                 <h2 id="modal-detail-title" style="font-size:20px; font-weight:800; color:#1a3a35; line-height:1.35; margin-bottom:12px;">-</h2>
                 <div style="font-size:12px; color:#8aa39b; margin-bottom:18px; padding-bottom:12px; border-bottom:1px solid #f0f4f2;">
                     Diterbitkan oleh: <strong id="modal-detail-author" style="color:#2a5a50;">-</strong>
@@ -655,6 +680,27 @@
             </div>
             <div class="landing-modal-footer">
                 <button type="button" onclick="tutupDetailPengumuman()" class="btn-primary" style="padding:8px 20px; font-size:13px; border-radius:8px;">
+                    Tutup
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL PREVIEW FOTO MENU MAKAN DI LANDING PAGE -->
+    <div class="landing-modal-overlay" id="landing-modal-foto-menu" onclick="if(event.target === this) tutupFotoMenu()">
+        <div class="landing-modal" style="max-width: 480px; text-align: center;">
+            <div class="landing-modal-header" style="justify-content: flex-end; padding-bottom: 4px;">
+                <button type="button" onclick="tutupFotoMenu()" style="background:none; border:none; font-size:24px; cursor:pointer; color:#7a9e96; line-height:1;">&times;</button>
+            </div>
+            <div class="landing-modal-body" style="padding-top: 0;">
+                <div style="border-radius: 12px; overflow: hidden; margin-bottom: 14px; background: #f3f4f6; max-height: 380px;">
+                    <img id="modal-foto-menu-img" src="" alt="Menu Makanan" style="width: 100%; height: auto; max-height: 380px; object-fit: contain; display: block; margin: 0 auto;">
+                </div>
+                <h3 id="modal-foto-menu-title" style="font-size: 19px; font-weight: 800; color: #1a3a35; margin-bottom: 4px;">-</h3>
+                <p id="modal-foto-menu-sub" style="font-size: 13.5px; color: #4a7a6d; margin: 0;">-</p>
+            </div>
+            <div class="landing-modal-footer" style="justify-content: center;">
+                <button type="button" onclick="tutupFotoMenu()" class="btn-primary" style="padding:8px 24px; font-size:13px; border-radius:8px;">
                     Tutup
                 </button>
             </div>

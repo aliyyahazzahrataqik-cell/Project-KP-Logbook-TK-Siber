@@ -59,6 +59,7 @@ db.query(`
         judul VARCHAR(255) NOT NULL,
         kategori ENUM('Penting', 'Agenda', 'Libur', 'Prestasi', 'Umum') DEFAULT 'Umum',
         isi TEXT NOT NULL,
+        foto VARCHAR(255) NULL,
         tanggal DATE NOT NULL,
         penulis VARCHAR(100) DEFAULT 'Admin TK Siber',
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -69,6 +70,15 @@ db.query(`
         console.error('Gagal membuat tabel pengumuman:', err.message);
     } else {
         console.log('Tabel pengumuman siap! ✅');
+        // Auto-alter tabel pengumuman untuk kolom foto jika belum ada
+        db.query("SHOW COLUMNS FROM pengumuman LIKE 'foto'", (fErr, rows) => {
+            if (!fErr && rows && rows.length === 0) {
+                db.query("ALTER TABLE pengumuman ADD COLUMN foto VARCHAR(255) NULL AFTER isi", (alterErr) => {
+                    if (alterErr) console.error("Gagal menambahkan kolom foto ke pengumuman:", alterErr.message);
+                    else console.log("Kolom foto berhasil ditambahkan ke pengumuman! 📸");
+                });
+            }
+        });
         // Seed contoh data jika tabel masih kosong
         db.query('SELECT COUNT(*) AS total FROM pengumuman', (cntErr, rows) => {
             if (!cntErr && rows && rows[0].total === 0) {
@@ -87,6 +97,16 @@ db.query(`
                     }
                 );
             }
+        });
+    }
+});
+
+// Auto-alter tabel menu_makan untuk kolom foto jika belum ada
+db.query("SHOW COLUMNS FROM menu_makan LIKE 'foto'", (err, rows) => {
+    if (!err && rows && rows.length === 0) {
+        db.query("ALTER TABLE menu_makan ADD COLUMN foto VARCHAR(255) NULL AFTER keterangan", (alterErr) => {
+            if (alterErr) console.error("Gagal menambahkan kolom foto ke menu_makan:", alterErr.message);
+            else console.log("Kolom foto berhasil ditambahkan ke menu_makan! 📸");
         });
     }
 });
@@ -115,8 +135,18 @@ function requireAuth(req, res, next) {
 function requireRole(...roles) {
     return (req, res, next) => {
         setNoCache(res);
-        if (!req.session.user) return res.redirect('/login');
-        if (!roles.includes(req.session.user.role)) return res.redirect('/login');
+        if (!req.session.user) {
+            if (req.originalUrl && req.originalUrl.startsWith('/api/')) {
+                return res.status(401).json({ error: 'Sesi berakhir, silakan login kembali' });
+            }
+            return res.redirect('/login');
+        }
+        if (!roles.includes(req.session.user.role)) {
+            if (req.originalUrl && req.originalUrl.startsWith('/api/')) {
+                return res.status(403).json({ error: 'Akses ditolak' });
+            }
+            return res.redirect('/login');
+        }
         next();
     };
 }
@@ -141,6 +171,10 @@ app.get('/dashboard-guru', requireRole('admin', 'guru'), (req, res) => {
 
 app.get('/kelola-jadwal', requireRole('admin', 'guru'), (req, res) => {
     res.sendFile(__dirname + '/public/kelola-jadwal/index.html');
+});
+
+app.get('/kelola-menu', requireRole('admin', 'guru'), (req, res) => {
+    res.sendFile(__dirname + '/public/kelola-menu/index.html');
 });
 
 app.get('/kelola-anak', requireRole('admin', 'guru'), (req, res) => {
@@ -184,9 +218,9 @@ function checkBruteForce(identifier) {
 
     if (record.lockedUntil && Date.now() < record.lockedUntil) {
         const remainingMinutes = Math.ceil((record.lockedUntil - Date.now()) / (60 * 1000));
-        return { 
-            blocked: true, 
-            message: `Akun/Akses terkunci sementara (Anti Brute Force). Silakan coba lagi dalam ${remainingMinutes} menit.` 
+        return {
+            blocked: true,
+            message: `Akun/Akses terkunci sementara (Anti Brute Force). Silakan coba lagi dalam ${remainingMinutes} menit.`
         };
     }
 
@@ -384,7 +418,7 @@ app.get('/api/jadwal-mingguan', (req, res) => {
 app.get('/api/menu-makan', (req, res) => {
     const hariSekarang = new Date().toLocaleDateString('id-ID', { weekday: 'long' });
     const query = `
-        SELECT id_menu, hari, menu, keterangan 
+        SELECT id_menu, hari, menu, keterangan, foto 
         FROM menu_makan 
         ORDER BY FIELD(hari, 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat')
     `;
@@ -405,18 +439,36 @@ app.get('/api/menu-makan', (req, res) => {
 
 // PUT /api/menu-makan/:id (khusus guru & admin update 1 item menu)
 app.put('/api/menu-makan/:id', requireRole('admin', 'guru'), (req, res) => {
-    const { menu, keterangan } = req.body;
+    const { menu, keterangan, foto } = req.body;
     if (!menu) {
         return res.status(400).json({ error: 'Nama menu wajib diisi' });
     }
 
-    const query = `UPDATE menu_makan SET menu = ?, keterangan = ? WHERE id_menu = ?`;
-    db.query(query, [menu, keterangan || null, req.params.id], (err, result) => {
+    const query = `UPDATE menu_makan SET menu = ?, keterangan = ?, foto = ? WHERE id_menu = ?`;
+    db.query(query, [menu, keterangan || null, foto || null, req.params.id], (err, result) => {
         if (err) {
             console.error('Error update menu makan:', err);
             return res.status(500).json({ error: 'Gagal memperbarui menu makan' });
         }
         res.json({ success: true, message: 'Menu makan berhasil diperbarui' });
+    });
+});
+
+// POST /api/menu-makan/upload-foto (upload foto makanan untuk menu)
+app.post('/api/menu-makan/upload-foto', requireRole('admin', 'guru'), (req, res) => {
+    upload.single('foto')(req, res, (err) => {
+        if (err) {
+            return res.status(400).json({ error: err.message || 'Gagal memproses upload file' });
+        }
+        if (!req.file) {
+            return res.status(400).json({ error: 'File foto wajib dipilih' });
+        }
+        res.json({
+            success: true,
+            message: 'Foto menu berhasil diunggah',
+            filename: req.file.filename,
+            url: `/uploads/${req.file.filename}`
+        });
     });
 });
 
@@ -432,11 +484,14 @@ app.post('/api/menu-makan/bulk', requireRole('admin', 'guru'), async (req, res) 
             if (item.hari && item.menu) {
                 await new Promise((resolve, reject) => {
                     const sql = `
-                        INSERT INTO menu_makan (hari, menu, keterangan) 
-                        VALUES (?, ?, ?) 
-                        ON DUPLICATE KEY UPDATE menu = VALUES(menu), keterangan = VALUES(keterangan)
+                        INSERT INTO menu_makan (hari, menu, keterangan, foto) 
+                        VALUES (?, ?, ?, ?) 
+                        ON DUPLICATE KEY UPDATE 
+                            menu = VALUES(menu), 
+                            keterangan = VALUES(keterangan),
+                            foto = VALUES(foto)
                     `;
-                    db.query(sql, [item.hari, item.menu, item.keterangan || null], (err, r) => {
+                    db.query(sql, [item.hari, item.menu, item.keterangan || null, item.foto || null], (err, r) => {
                         if (err) reject(err);
                         else resolve(r);
                     });
@@ -456,7 +511,7 @@ app.post('/api/menu-makan/bulk', requireRole('admin', 'guru'), async (req, res) 
 app.get('/api/pengumuman', (req, res) => {
     const { kategori, limit } = req.query;
     let sql = `
-        SELECT id_pengumuman, judul, kategori, isi, 
+        SELECT id_pengumuman, judul, kategori, isi, foto,
                DATE_FORMAT(tanggal, '%Y-%m-%d') as tanggal, 
                penulis, created_at 
         FROM pengumuman
@@ -489,7 +544,7 @@ app.get('/api/pengumuman', (req, res) => {
 app.get('/api/pengumuman/:id', (req, res) => {
     const { id } = req.params;
     const sql = `
-        SELECT id_pengumuman, judul, kategori, isi, 
+        SELECT id_pengumuman, judul, kategori, isi, foto,
                DATE_FORMAT(tanggal, '%Y-%m-%d') as tanggal, 
                penulis, created_at 
         FROM pengumuman 
@@ -503,9 +558,27 @@ app.get('/api/pengumuman/:id', (req, res) => {
     });
 });
 
+// POST /api/pengumuman/upload-foto (upload foto/gambar pengumuman)
+app.post('/api/pengumuman/upload-foto', requireRole('admin'), (req, res) => {
+    upload.single('foto')(req, res, (err) => {
+        if (err) {
+            return res.status(400).json({ error: err.message || 'Gagal memproses upload file' });
+        }
+        if (!req.file) {
+            return res.status(400).json({ error: 'File foto wajib dipilih' });
+        }
+        res.json({
+            success: true,
+            message: 'Foto pengumuman berhasil diunggah',
+            filename: req.file.filename,
+            url: `/uploads/${req.file.filename}`
+        });
+    });
+});
+
 // POST /api/pengumuman (khusus admin)
 app.post('/api/pengumuman', requireRole('admin'), (req, res) => {
-    const { judul, kategori, isi, tanggal, penulis } = req.body;
+    const { judul, kategori, isi, tanggal, penulis, foto } = req.body;
     if (!judul || !isi || !tanggal) {
         return res.status(400).json({ error: 'Judul, isi, dan tanggal wajib diisi' });
     }
@@ -513,8 +586,8 @@ app.post('/api/pengumuman', requireRole('admin'), (req, res) => {
     const kategoriFix = kategori || 'Umum';
     const penulisFix = penulis || req.session.user.nama || 'Admin TK Siber';
 
-    const sql = `INSERT INTO pengumuman (judul, kategori, isi, tanggal, penulis) VALUES (?, ?, ?, ?, ?)`;
-    db.query(sql, [judul, kategoriFix, isi, tanggal, penulisFix], (err, result) => {
+    const sql = `INSERT INTO pengumuman (judul, kategori, isi, tanggal, penulis, foto) VALUES (?, ?, ?, ?, ?, ?)`;
+    db.query(sql, [judul, kategoriFix, isi, tanggal, penulisFix, foto || null], (err, result) => {
         if (err) {
             console.error('Error tambah pengumuman:', err);
             return res.status(500).json({ error: 'Gagal menambahkan pengumuman' });
@@ -526,7 +599,7 @@ app.post('/api/pengumuman', requireRole('admin'), (req, res) => {
 // PUT /api/pengumuman/:id (khusus admin)
 app.put('/api/pengumuman/:id', requireRole('admin'), (req, res) => {
     const { id } = req.params;
-    const { judul, kategori, isi, tanggal, penulis } = req.body;
+    const { judul, kategori, isi, tanggal, penulis, foto } = req.body;
     if (!judul || !isi || !tanggal) {
         return res.status(400).json({ error: 'Judul, isi, dan tanggal wajib diisi' });
     }
@@ -534,8 +607,8 @@ app.put('/api/pengumuman/:id', requireRole('admin'), (req, res) => {
     const kategoriFix = kategori || 'Umum';
     const penulisFix = penulis || req.session.user.nama || 'Admin TK Siber';
 
-    const sql = `UPDATE pengumuman SET judul = ?, kategori = ?, isi = ?, tanggal = ?, penulis = ? WHERE id_pengumuman = ?`;
-    db.query(sql, [judul, kategoriFix, isi, tanggal, penulisFix, id], (err, result) => {
+    const sql = `UPDATE pengumuman SET judul = ?, kategori = ?, isi = ?, tanggal = ?, penulis = ?, foto = ? WHERE id_pengumuman = ?`;
+    db.query(sql, [judul, kategoriFix, isi, tanggal, penulisFix, foto || null, id], (err, result) => {
         if (err) {
             console.error('Error update pengumuman:', err);
             return res.status(500).json({ error: 'Gagal memperbarui pengumuman' });
@@ -669,7 +742,7 @@ app.post('/api/anak', requireRole('admin', 'guru'), (req, res) => {
                         }
                     );
                 });
-            } catch (e) {}
+            } catch (e) { }
 
             res.json({ success: true, id: idAnakBaru, username_ortu: panggilanFix.toLowerCase() });
         }
@@ -1018,7 +1091,7 @@ app.post('/api/dokumentasi/upload', requireRole('admin', 'guru'), (req, res) => 
 
         const { id_logbook, id_anak, keterangan } = req.body;
         if (!id_logbook) {
-            try { fs.unlinkSync(req.file.path); } catch(e) {}
+            try { fs.unlinkSync(req.file.path); } catch (e) { }
             return res.status(400).json({ error: 'ID Logbook wajib diisi' });
         }
 
@@ -1028,7 +1101,7 @@ app.post('/api/dokumentasi/upload', requireRole('admin', 'guru'), (req, res) => 
         db.query(query, [id_logbook, anakVal, fileName, keterangan || null], (dbErr, result) => {
             if (dbErr) {
                 console.error('Error insert dokumentasi:', dbErr);
-                try { fs.unlinkSync(req.file.path); } catch(e) {}
+                try { fs.unlinkSync(req.file.path); } catch (e) { }
                 return res.status(500).json({ error: 'Gagal menyimpan dokumentasi ke database' });
             }
 
@@ -1069,7 +1142,7 @@ app.delete('/api/dokumentasi/:id', requireRole('admin', 'guru'), (req, res) => {
             const fileName = rows[0].file_foto;
             const filePath = path.join(uploadDir, fileName);
             if (fs.existsSync(filePath)) {
-                try { fs.unlinkSync(filePath); } catch(e) {}
+                try { fs.unlinkSync(filePath); } catch (e) { }
             }
         }
 

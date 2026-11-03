@@ -1,0 +1,1345 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kelola Menu Makan – TK SIBER (iTales)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --sidebar-bg: #405d4d;
+            --sidebar-active: #537a63;
+            --text-dark: #124b3c;
+            --text-muted: #5a7366;
+            --bg-color: #f6f8f7;
+            --card-bg: #ffffff;
+            --accent: #124b3c;
+            --accent-light: #d6ead2;
+            --accent-hover: #1b6351;
+            --border-color: #e5e9e6;
+            --danger: #ef4444;
+            --danger-bg: #fee2e2;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            display: flex;
+            background-color: var(--bg-color);
+            min-height: 100vh;
+            color: #1f2937;
+        }
+
+        /* ===== SIDEBAR ===== */
+        .sidebar {
+            width: 250px;
+            background-color: var(--sidebar-bg);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100vh;
+            z-index: 100;
+        }
+
+        .sidebar-brand {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 26px 22px;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+        }
+
+        .sidebar-brand img {
+            width: 42px;
+            height: 42px;
+            object-fit: contain;
+        }
+
+        .sidebar-brand h2 {
+            font-size: 16px;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+        }
+
+        .sidebar-brand p {
+            font-size: 12px;
+            font-weight: 400;
+            color: #d1d5db;
+        }
+
+        .sidebar-menu {
+            display: flex;
+            flex-direction: column;
+            margin-top: 15px;
+            flex: 1;
+            gap: 4px;
+            padding: 0 10px;
+        }
+
+        .sidebar-section {
+            padding: 14px 18px 6px;
+            font-size: 11px;
+            font-weight: 700;
+            color: #a3c4b5;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 13px 18px;
+            color: #e2e8e4;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+            border-radius: 10px;
+            transition: all 0.15s ease;
+        }
+
+        .menu-item:hover {
+            background-color: rgba(255,255,255,0.08);
+            color: white;
+        }
+
+        .menu-item.active {
+            background-color: var(--sidebar-active);
+            color: white;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .menu-item i {
+            font-size: 18px;
+            width: 22px;
+            text-align: center;
+        }
+
+        .sidebar-footer {
+            padding: 16px 14px 22px;
+            border-top: 1px solid rgba(255,255,255,0.08);
+        }
+
+        .sidebar-logout-btn {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 18px;
+            color: #fca5a5;
+            background: transparent;
+            border: none;
+            font-weight: 600;
+            font-size: 14px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .sidebar-logout-btn:hover {
+            background: rgba(239, 68, 68, 0.2);
+            color: #fee2e2;
+        }
+
+        /* ===== MAIN CONTENT ===== */
+        .main-content {
+            flex: 1;
+            margin-left: 250px;
+            padding: 30px 42px 60px;
+            min-height: 100vh;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 26px;
+        }
+
+        .header-title h1 {
+            color: var(--text-dark);
+            font-size: 25px;
+            font-weight: 800;
+            letter-spacing: -0.3px;
+        }
+
+        .header-title p {
+            color: var(--text-muted);
+            font-size: 14px;
+            font-weight: 500;
+            margin-top: 4px;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .user-profile-card {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: white;
+            padding: 7px 18px 7px 8px;
+            border-radius: 50px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+            border: 1px solid var(--border-color);
+        }
+
+        .profile-avatar {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #124b3c, #2a7560);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 15px;
+            font-weight: 700;
+            box-shadow: 0 2px 6px rgba(18,75,60,0.25);
+            position: relative;
+        }
+
+        .profile-avatar::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 10px;
+            height: 10px;
+            background: #22c55e;
+            border: 2px solid white;
+            border-radius: 50%;
+        }
+
+        .profile-details {
+            display: flex;
+            flex-direction: column;
+            line-height: 1.25;
+        }
+
+        .profile-name {
+            font-size: 13.5px;
+            font-weight: 700;
+            color: #1f2937;
+        }
+
+        .profile-role {
+            font-size: 11.5px;
+            font-weight: 500;
+            color: #6b7280;
+        }
+
+        /* ===== ACTION BAR / TOOLBAR ===== */
+        .toolbar {
+            background: white;
+            border-radius: 16px;
+            padding: 16px 22px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.03);
+            border: 1px solid var(--border-color);
+            margin-bottom: 24px;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .toolbar-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .toolbar-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            background: #e8f3ee;
+            color: var(--accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .toolbar-text h3 {
+            font-size: 15.5px;
+            font-weight: 700;
+            color: var(--text-dark);
+        }
+
+        .toolbar-text p {
+            font-size: 12.5px;
+            color: #6b7280;
+            margin-top: 2px;
+        }
+
+        .toolbar-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn-primary {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 13.5px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            box-shadow: 0 3px 10px rgba(18,75,60,0.2);
+            text-decoration: none;
+        }
+
+        .btn-primary:hover {
+            background: var(--accent-hover);
+            transform: translateY(-1px);
+        }
+
+        .btn-primary:disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .btn-secondary {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: #f3f4f6;
+            color: #374151;
+            border: 1px solid #e5e7eb;
+            padding: 10px 18px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 13.5px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            text-decoration: none;
+        }
+
+        .btn-secondary:hover {
+            background: #e5e7eb;
+            color: #111;
+        }
+
+        /* ===== MENU CARDS CONTAINER ===== */
+        .menu-list {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .menu-card {
+            background: white;
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 2px 12px rgba(0,0,0,0.03);
+            overflow: hidden;
+            transition: box-shadow 0.2s ease, border-color 0.2s ease;
+        }
+
+        .menu-card:hover {
+            box-shadow: 0 6px 20px rgba(0,0,0,0.06);
+            border-color: #cbd5e1;
+        }
+
+        .menu-card.is-today {
+            border: 2px solid #2d7a56;
+            box-shadow: 0 4px 18px rgba(45,122,86,0.12);
+        }
+
+        .menu-card-header {
+            padding: 16px 22px;
+            background: #f9fbf9;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .menu-day-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 16px;
+            font-weight: 800;
+            color: var(--text-dark);
+        }
+
+        .badge-today {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: linear-gradient(135deg, #124b3c, #2d7a56);
+            color: white;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 20px;
+            letter-spacing: 0.3px;
+            text-transform: uppercase;
+        }
+
+        .btn-save-day {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #e8f3ee;
+            color: var(--accent);
+            border: 1px solid #c7e1d5;
+            padding: 7px 16px;
+            border-radius: 8px;
+            font-size: 12.5px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .btn-save-day:hover {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+
+        .btn-save-day:disabled {
+            background: #e5e7eb;
+            color: #9ca3af;
+            border-color: #e5e7eb;
+            cursor: not-allowed;
+        }
+
+        .menu-card-body {
+            padding: 22px;
+            display: grid;
+            grid-template-columns: 240px 1fr;
+            gap: 24px;
+            align-items: start;
+        }
+
+        @media (max-width: 900px) {
+            .menu-card-body {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Foto Makanan Box */
+        .photo-box {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .photo-preview-wrap {
+            width: 100%;
+            height: 165px;
+            border-radius: 12px;
+            background: #f3f4f6;
+            border: 2px dashed #d1d5db;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .photo-preview-wrap:hover {
+            border-color: var(--accent);
+            background: #edf6f2;
+        }
+
+        .photo-preview-wrap.has-photo {
+            border-style: solid;
+            border-color: #e5e7eb;
+            background: #000;
+        }
+
+        .photo-preview-wrap img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.25s ease;
+        }
+
+        .photo-preview-wrap:hover img {
+            transform: scale(1.04);
+        }
+
+        .photo-empty-placeholder {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            color: #9ca3af;
+            text-align: center;
+            padding: 12px;
+        }
+
+        .photo-empty-placeholder i {
+            font-size: 30px;
+            color: #cbd5e1;
+        }
+
+        .photo-empty-placeholder span {
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .photo-overlay-zoom {
+            position: absolute;
+            inset: 0;
+            background: rgba(0,0,0,0.35);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 22px;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        .photo-preview-wrap.has-photo:hover .photo-overlay-zoom {
+            opacity: 1;
+        }
+
+        .photo-upload-status {
+            position: absolute;
+            inset: 0;
+            background: rgba(255,255,255,0.92);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--accent);
+            z-index: 5;
+        }
+
+        .photo-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-upload-photo {
+            flex: 1;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 8px 12px;
+            background: #ffffff;
+            border: 1px solid #d1d5db;
+            color: #374151;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .btn-upload-photo:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+            background: #f9fbf9;
+        }
+
+        .btn-remove-photo {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            padding: 8px 10px;
+            background: var(--danger-bg);
+            border: 1px solid #fecaca;
+            color: var(--danger);
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .btn-remove-photo:hover {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        /* Detail Menu Inputs */
+        .form-details {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-label {
+            font-size: 13px;
+            font-weight: 700;
+            color: #374151;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .form-label span.req {
+            color: #ef4444;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1.5px solid #e5e7eb;
+            border-radius: 10px;
+            font-size: 14px;
+            color: #1f2937;
+            background: #fdfdfd;
+            transition: all 0.15s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #2d7a56;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(45,122,86,0.12);
+        }
+
+        .form-textarea {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1.5px solid #e5e7eb;
+            border-radius: 10px;
+            font-size: 13.5px;
+            color: #1f2937;
+            background: #fdfdfd;
+            resize: vertical;
+            min-height: 72px;
+            font-family: inherit;
+            line-height: 1.45;
+            transition: all 0.15s ease;
+        }
+
+        .form-textarea:focus {
+            outline: none;
+            border-color: #2d7a56;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(45,122,86,0.12);
+        }
+
+        .quick-suggestions {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+            margin-top: 2px;
+        }
+
+        .quick-tag {
+            font-size: 11px;
+            font-weight: 500;
+            color: #4b5563;
+            background: #f3f4f6;
+            border: 1px solid #e5e7eb;
+            padding: 3px 8px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .quick-tag:hover {
+            background: #e8f3ee;
+            color: var(--accent);
+            border-color: #c7e1d5;
+        }
+
+        /* ===== LIGHTBOX / MODAL PREVIEW FOTO ===== */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(18, 30, 26, 0.7);
+            backdrop-filter: blur(4px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 20px;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-lightbox {
+            background: white;
+            border-radius: 18px;
+            box-shadow: 0 20px 45px rgba(0,0,0,0.25);
+            max-width: 580px;
+            width: 100%;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .modal-lightbox-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid #f3f4f6;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .modal-lightbox-header h3 {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-dark);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-close-lightbox {
+            background: transparent;
+            border: none;
+            color: #6b7280;
+            font-size: 20px;
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 6px;
+            line-height: 1;
+        }
+
+        .btn-close-lightbox:hover {
+            color: #111;
+            background: #f3f4f6;
+        }
+
+        .modal-lightbox-body {
+            padding: 16px;
+            background: #0f172a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-lightbox-body img {
+            max-width: 100%;
+            max-height: 75vh;
+            border-radius: 10px;
+            object-fit: contain;
+        }
+
+        /* ===== TOAST NOTIFICATION ===== */
+        .toast-container {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 1100;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .toast {
+            min-width: 280px;
+            max-width: 380px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+            padding: 14px 18px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-left: 4px solid var(--accent);
+            animation: slideIn 0.25s ease-out;
+            font-size: 13.5px;
+            font-weight: 600;
+            color: #1f2937;
+        }
+
+        .toast.toast-error {
+            border-left-color: #ef4444;
+        }
+
+        .toast i {
+            font-size: 18px;
+            color: var(--accent);
+        }
+
+        .toast.toast-error i {
+            color: #ef4444;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== SIDEBAR ===== -->
+    <aside class="sidebar">
+        <div class="sidebar-brand">
+            <img src="/assets/Logo_uin.png" alt="Logo" onerror="this.src='https://ui-avatars.com/api/?name=TK&background=fff&color=124b3c'">
+            <div>
+                <h2>TK SIBER</h2>
+                <p>Logbook & Kegiatan</p>
+            </div>
+        </div>
+        
+        <nav class="sidebar-menu">
+            <a href="/dashboard-guru" class="menu-item">
+                <i class="fa-solid fa-house"></i> Dashboard
+            </a>
+            <a href="/kelola-anak" class="menu-item">
+                <i class="fa-solid fa-user-group"></i> Kelola Anak
+            </a>
+            <a href="/kelola-jadwal" class="menu-item">
+                <i class="fa-solid fa-calendar-days"></i> Kelola Jadwal
+            </a>
+            <a href="/kelola-menu" class="menu-item active">
+                <i class="fa-solid fa-utensils"></i> Kelola Menu Makan
+            </a>
+            <a href="/kelola-logbook" class="menu-item">
+                <i class="fa-solid fa-book"></i> Kelola Logbook
+            </a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <button type="button" class="sidebar-logout-btn" onclick="keluarAplikasi(event)">
+                <i class="fa-solid fa-right-from-bracket"></i> Keluar
+            </button>
+        </div>
+    </aside>
+
+    <!-- ===== MAIN CONTENT ===== -->
+    <main class="main-content">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-title">
+                <h1>Kelola Menu Makan</h1>
+                <p>Atur daftar menu makan siang sehat bergizi untuk anak setiap hari Senin sampai Jumat</p>
+            </div>
+            <div class="header-actions">
+                <div class="user-profile-card">
+                    <div class="profile-avatar" id="avatar-initial">G</div>
+                    <div class="profile-details">
+                        <span class="profile-name" id="user-display-name">Guru Kelas</span>
+                        <span class="profile-role">Pendidik · Online</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Toolbar / Action Bar -->
+        <div class="toolbar">
+            <div class="toolbar-info">
+                <div class="toolbar-icon">
+                    <i class="fa-solid fa-bowl-food"></i>
+                </div>
+                <div class="toolbar-text">
+                    <h3>Jadwal Menu Mingguan Sekolah</h3>
+                    <p>Foto otomatis dikompresi agar hemat kuota & cepat dimuat di HP orang tua</p>
+                </div>
+            </div>
+
+            <div class="toolbar-actions">
+                <a href="/#jadwal-makan" target="_blank" class="btn-secondary">
+                    <i class="fa-solid fa-arrow-up-right-from-square"></i> Lihat di Landing Page
+                </a>
+                <button type="button" class="btn-primary" id="btn-save-all" onclick="simpanSemuaMenu()">
+                    <i class="fa-solid fa-floppy-disk"></i> Simpan Semua Hari
+                </button>
+            </div>
+        </div>
+
+        <!-- Menu Cards List -->
+        <div class="menu-list" id="menu-cards-container">
+            <div style="text-align: center; padding: 60px 20px; color: #9ca3af; background: white; border-radius: 16px; border: 1px solid var(--border-color);">
+                <i class="fa-solid fa-spinner fa-spin" style="font-size: 26px; color: var(--accent); margin-bottom: 12px;"></i>
+                <p style="font-size: 14px; font-weight: 500;">Memuat jadwal menu makan...</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- ===== LIGHTBOX PREVIEW FOTO ===== -->
+    <div class="modal-overlay" id="modal-lightbox" onclick="tutupLightbox(event)">
+        <div class="modal-lightbox" onclick="event.stopPropagation()">
+            <div class="modal-lightbox-header">
+                <h3 id="lightbox-title"><i class="fa-solid fa-camera"></i> Foto Menu Makan</h3>
+                <button type="button" class="btn-close-lightbox" onclick="tutupLightbox()">&times;</button>
+            </div>
+            <div class="modal-lightbox-body">
+                <img id="lightbox-img" src="" alt="Foto Menu">
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notifications Container -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <!-- Script Compress Foto Universal -->
+    <script src="/js/image-compress.js"></script>
+
+    <script>
+        const DAFTAR_HARI = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat'];
+        let dataMenuState = {};
+        let hariIniStr = '';
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            await muatUser();
+            await muatDataMenu();
+        });
+
+        // Muat Data User
+        async function muatUser() {
+            try {
+                const res = await fetch('/api/me');
+                if (!res.ok) {
+                    window.location.replace('/login');
+                    return;
+                }
+                const user = await res.json();
+                if (user.role !== 'admin' && user.role !== 'guru') {
+                    window.location.replace('/login');
+                    return;
+                }
+                const uname = user.username || 'Guru';
+                document.getElementById('user-display-name').textContent = uname;
+                document.getElementById('avatar-initial').textContent = uname.charAt(0).toUpperCase();
+
+                if (user.role === 'admin') {
+                    const roleEl = document.querySelector('.profile-role');
+                    if (roleEl) roleEl.textContent = 'Administrator · Online';
+                    const nav = document.querySelector('.sidebar-menu');
+                    if (nav) {
+                        nav.innerHTML = `
+                            <span style="padding: 12px 18px 6px; font-size: 11px; font-weight: 700; color: #a3c4b5; text-transform: uppercase; letter-spacing: 0.5px;">Menu Utama</span>
+                            <a href="/dashboard-admin" class="menu-item">
+                                <i class="fa-solid fa-gauge-high"></i> Dashboard
+                            </a>
+                            <a href="/kelola-akun" class="menu-item">
+                                <i class="fa-solid fa-users-gear"></i> Kelola Akun
+                            </a>
+                            <a href="/kelola-pengumuman" class="menu-item">
+                                <i class="fa-solid fa-bullhorn"></i> Kelola Pengumuman
+                            </a>
+                            <a href="/kelola-menu" class="menu-item active">
+                                <i class="fa-solid fa-utensils"></i> Kelola Menu Makan
+                            </a>
+                        `;
+                    }
+                }
+            } catch (e) {
+                console.error('Error fetching user info:', e);
+            }
+        }
+
+        // Keluar Aplikasi
+        function keluarAplikasi(e) {
+            if (e) e.preventDefault();
+            try {
+                fetch('/logout', { method: 'POST' });
+            } catch (err) {}
+            sessionStorage.clear();
+            localStorage.removeItem('kpalya_user');
+            window.location.href = '/login';
+        }
+
+        // Muat Data Menu Makan
+        async function muatDataMenu() {
+            const container = document.getElementById('menu-cards-container');
+            try {
+                const res = await fetch('/api/menu-makan');
+                const data = await res.json();
+                hariIniStr = (data.hari_ini || '').toLowerCase();
+
+                // Format data ke dictionary state berdasarkan hari
+                dataMenuState = {};
+                DAFTAR_HARI.forEach(h => {
+                    dataMenuState[h] = {
+                        id_menu: null,
+                        hari: h,
+                        menu: '',
+                        keterangan: '',
+                        foto: null
+                    };
+                });
+
+                (data.menu_mingguan || []).forEach(item => {
+                    if (dataMenuState[item.hari]) {
+                        dataMenuState[item.hari] = {
+                            id_menu: item.id_menu,
+                            hari: item.hari,
+                            menu: item.menu || '',
+                            keterangan: item.keterangan || '',
+                            foto: item.foto || null
+                        };
+                    }
+                });
+
+                renderCards();
+            } catch (err) {
+                console.error('Gagal memuat menu makan:', err);
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 40px; background: white; border-radius: 16px; border: 1px solid var(--border-color); color: #ef4444;">
+                        <i class="fa-solid fa-triangle-exclamation" style="font-size: 28px; margin-bottom: 8px;"></i>
+                        <p style="font-weight: 600;">Gagal memuat data menu makan dari server</p>
+                        <button onclick="muatDataMenu()" class="btn-primary" style="margin-top: 14px;">
+                            <i class="fa-solid fa-rotate-right"></i> Coba Lagi
+                        </button>
+                    </div>
+                `;
+            }
+        }
+
+        // Render Card Tiap Hari
+        function renderCards() {
+            const container = document.getElementById('menu-cards-container');
+            container.innerHTML = DAFTAR_HARI.map(hari => {
+                const item = dataMenuState[hari] || {};
+                const isToday = hari.toLowerCase() === hariIniStr;
+                const fotoSrc = item.foto ? (item.foto.startsWith('/uploads/') ? item.foto : `/uploads/${item.foto}`) : '';
+
+                return `
+                    <div class="menu-card ${isToday ? 'is-today' : ''}" id="card-${hari}">
+                        <!-- Card Header -->
+                        <div class="menu-card-header">
+                            <div class="menu-day-badge">
+                                <i class="fa-regular fa-calendar-check" style="color: var(--accent);"></i>
+                                <span>Hari ${hari}</span>
+                                ${isToday ? '<span class="badge-today"><i class="fa-solid fa-sparkle"></i> Hari Ini</span>' : ''}
+                            </div>
+                            <button type="button" class="btn-save-day" id="btn-save-${hari}" onclick="simpanHari('${hari}')">
+                                <i class="fa-solid fa-floppy-disk"></i> Simpan Hari ${hari}
+                            </button>
+                        </div>
+
+                        <!-- Card Body -->
+                        <div class="menu-card-body">
+                            <!-- Kolom Foto -->
+                            <div class="photo-box">
+                                <div class="photo-preview-wrap ${item.foto ? 'has-photo' : ''}" id="photo-wrap-${hari}" onclick="bukaLightbox('${hari}')">
+                                    ${item.foto ? `
+                                        <img src="${fotoSrc}" alt="Menu Hari ${hari}" id="img-${hari}">
+                                        <div class="photo-overlay-zoom">
+                                            <i class="fa-solid fa-magnifying-glass-plus"></i>
+                                        </div>
+                                    ` : `
+                                        <div class="photo-empty-placeholder" id="placeholder-${hari}">
+                                            <i class="fa-solid fa-utensils"></i>
+                                            <span>Belum ada foto</span>
+                                        </div>
+                                    `}
+                                    <div class="photo-upload-status" id="upload-status-${hari}" style="display: none;">
+                                        <i class="fa-solid fa-spinner fa-spin" style="font-size: 22px;"></i>
+                                        <span id="upload-status-text-${hari}">Mengompres & upload...</span>
+                                    </div>
+                                </div>
+
+                                <div class="photo-actions">
+                                    <input type="file" id="file-${hari}" accept="image/*" style="display: none;" onchange="prosesUploadFoto(event, '${hari}')">
+                                    <button type="button" class="btn-upload-photo" onclick="document.getElementById('file-${hari}').click()">
+                                        <i class="fa-solid fa-camera"></i> ${item.foto ? 'Ganti Foto' : 'Pilih Foto'}
+                                    </button>
+                                    ${item.foto ? `
+                                        <button type="button" class="btn-remove-photo" id="btn-del-photo-${hari}" onclick="hapusFoto('${hari}')" title="Hapus Foto">
+                                            <i class="fa-solid fa-trash-can"></i> Hapus
+                                        </button>
+                                    ` : ''}
+                                </div>
+                            </div>
+
+                            <!-- Kolom Detail Form -->
+                            <div class="form-details">
+                                <div class="form-group">
+                                    <label class="form-label">
+                                        <i class="fa-solid fa-bowl-rice" style="color: var(--accent);"></i>
+                                        Nama Menu Utama <span class="req">*</span>
+                                    </label>
+                                    <input type="text" class="form-input" id="menu-input-${hari}" 
+                                        value="${escapeHtml(item.menu || '')}" 
+                                        placeholder="cth: Chicken Katsu, Oreg Tempe Manis, Sop Daging Sapi..." 
+                                        oninput="dataMenuState['${hari}'].menu = this.value">
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label">
+                                        <i class="fa-solid fa-list-check" style="color: var(--accent);"></i>
+                                        Keterangan & Lauk Pendamping
+                                    </label>
+                                    <textarea class="form-textarea" id="ket-input-${hari}" 
+                                        placeholder="cth: Nasi + Chicken Katsu + Sop Sayur + Buah Semangka" 
+                                        oninput="dataMenuState['${hari}'].keterangan = this.value">${escapeHtml(item.keterangan || '')}</textarea>
+                                </div>
+
+                                <!-- Saran Cepat Lauk/Sayur -->
+                                <div class="quick-suggestions">
+                                    <span style="font-size: 11px; color: #9ca3af; margin-right: 4px;">Saran cepat:</span>
+                                    <span class="quick-tag" onclick="tambahSaran('${hari}', 'Nasi Putih')">+ Nasi Putih</span>
+                                    <span class="quick-tag" onclick="tambahSaran('${hari}', 'Sop Sayur')">+ Sop Sayur</span>
+                                    <span class="quick-tag" onclick="tambahSaran('${hari}', 'Sayur Bayam')">+ Sayur Bayam</span>
+                                    <span class="quick-tag" onclick="tambahSaran('${hari}', 'Tempe Crispy')">+ Tempe</span>
+                                    <span class="quick-tag" onclick="tambahSaran('${hari}', 'Telur Dadar')">+ Telur</span>
+                                    <span class="quick-tag" onclick="tambahSaran('${hari}', 'Buah Potong')">+ Buah</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Tambah teks saran ke textarea
+        function tambahSaran(hari, saran) {
+            const textarea = document.getElementById(`ket-input-${hari}`);
+            if (!textarea) return;
+            let current = textarea.value.trim();
+            if (current.length === 0) {
+                textarea.value = saran;
+            } else if (current.includes(saran)) {
+                return;
+            } else {
+                textarea.value = current + ' + ' + saran;
+            }
+            dataMenuState[hari].keterangan = textarea.value;
+        }
+
+        // Upload & Auto Compress Foto
+        async function prosesUploadFoto(event, hari) {
+            let file = event.target.files[0];
+            if (!file) return;
+
+            const statusWrap = document.getElementById(`upload-status-${hari}`);
+            const statusText = document.getElementById(`upload-status-text-${hari}`);
+            statusWrap.style.display = 'flex';
+            statusText.textContent = 'Mengompres foto...';
+
+            try {
+                // Auto compress dengan image-compress.js
+                if (window.compressImageFile) {
+                    file = await window.compressImageFile(file, {
+                        maxWidth: 1280,
+                        maxHeight: 1280,
+                        quality: 0.82
+                    });
+                }
+
+                statusText.textContent = 'Mengunggah foto...';
+                const formData = new FormData();
+                formData.append('foto', file);
+
+                const res = await fetch('/api/menu-makan/upload-foto', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await res.json();
+                if (!res.ok || !data.success) {
+                    throw new Error(data.error || 'Gagal mengunggah foto');
+                }
+
+                dataMenuState[hari].foto = data.url;
+                renderCards();
+                showToast(`Foto menu ${hari} berhasil diunggah!`);
+            } catch (err) {
+                console.error(err);
+                alert('Upload gagal: ' + err.message);
+                renderCards();
+            }
+        }
+
+        // Hapus Foto Hari Tertentu
+        function hapusFoto(hari) {
+            if (!confirm(`Hapus foto menu makan hari ${hari}?`)) return;
+            dataMenuState[hari].foto = null;
+            renderCards();
+            showToast(`Foto menu ${hari} dihapus. Klik Simpan untuk memperbarui.`);
+        }
+
+        // Simpan Per Hari
+        async function simpanHari(hari) {
+            const item = dataMenuState[hari];
+            const menuInput = document.getElementById(`menu-input-${hari}`);
+            const ketInput = document.getElementById(`ket-input-${hari}`);
+
+            const menuVal = menuInput ? menuInput.value.trim() : (item.menu || '').trim();
+            const ketVal = ketInput ? ketInput.value.trim() : (item.keterangan || '').trim();
+
+            if (!menuVal) {
+                alert(`Nama menu untuk hari ${hari} wajib diisi!`);
+                if (menuInput) menuInput.focus();
+                return;
+            }
+
+            item.menu = menuVal;
+            item.keterangan = ketVal;
+
+            const btn = document.getElementById(`btn-save-${hari}`);
+            if (btn) {
+                btn.disabled = true;
+                btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Menyimpan...`;
+            }
+
+            try {
+                const res = await fetch('/api/menu-makan/bulk', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        items: [{
+                            hari: item.hari,
+                            menu: item.menu,
+                            keterangan: item.keterangan,
+                            foto: item.foto
+                        }]
+                    })
+                });
+
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error || 'Gagal menyimpan menu');
+
+                showToast(`Menu hari ${hari} berhasil disimpan!`);
+            } catch (err) {
+                alert('Gagal menyimpan: ' + err.message);
+            } finally {
+                if (btn) {
+                    btn.disabled = false;
+                    btn.innerHTML = `<i class="fa-solid fa-floppy-disk"></i> Simpan Hari ${hari}`;
+                }
+            }
+        }
+
+        // Simpan Semua Hari Sekaligus
+        async function simpanSemuaMenu() {
+            const btn = document.getElementById('btn-save-all');
+            const items = [];
+
+            for (const hari of DAFTAR_HARI) {
+                const menuInput = document.getElementById(`menu-input-${hari}`);
+                const ketInput = document.getElementById(`ket-input-${hari}`);
+                const menuVal = menuInput ? menuInput.value.trim() : '';
+                const ketVal = ketInput ? ketInput.value.trim() : '';
+
+                if (menuVal) {
+                    items.push({
+                        hari: hari,
+                        menu: menuVal,
+                        keterangan: ketVal,
+                        foto: dataMenuState[hari]?.foto || null
+                    });
+                }
+            }
+
+            if (items.length === 0) {
+                alert('Mohon isi minimal satu menu makanan sebelum menyimpan.');
+                return;
+            }
+
+            btn.disabled = true;
+            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Menyimpan Semua...`;
+
+            try {
+                const res = await fetch('/api/menu-makan/bulk', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ items })
+                });
+
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error || 'Gagal menyimpan semua menu');
+
+                showToast('Semua menu makan mingguan berhasil disimpan!');
+                await muatDataMenu();
+            } catch (err) {
+                alert('Terjadi kesalahan: ' + err.message);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = `<i class="fa-solid fa-floppy-disk"></i> Simpan Semua Hari`;
+            }
+        }
+
+        // Buka Lightbox Foto
+        function bukaLightbox(hari) {
+            const item = dataMenuState[hari];
+            if (!item || !item.foto) return;
+            const fotoSrc = item.foto.startsWith('/uploads/') ? item.foto : `/uploads/${item.foto}`;
+            document.getElementById('lightbox-img').src = fotoSrc;
+            document.getElementById('lightbox-title').innerHTML = `<i class="fa-solid fa-camera"></i> Foto Menu ${hari}: ${escapeHtml(item.menu || '')}`;
+            document.getElementById('modal-lightbox').classList.add('active');
+        }
+
+        function tutupLightbox(e) {
+            if (e && e.target !== document.getElementById('modal-lightbox') && !e.target.classList.contains('btn-close-lightbox')) return;
+            document.getElementById('modal-lightbox').classList.remove('active');
+        }
+
+        // Toast Helper
+        function showToast(pesan, isError = false) {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast ${isError ? 'toast-error' : ''}`;
+            toast.innerHTML = `
+                <i class="fa-solid ${isError ? 'fa-circle-exclamation' : 'fa-circle-check'}"></i>
+                <span>${escapeHtml(pesan)}</span>
+            `;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateY(10px)';
+                toast.style.transition = 'all 0.3s ease';
+                setTimeout(() => toast.remove(), 300);
+            }, 3200);
+        }
+
+        function escapeHtml(str) {
+            return (str || '').replace(/[&<>"']/g, function(m) {
+                return {
+                    '&': '&amp;',
+                    '<': '&lt;',
+                    '>': '&gt;',
+                    '"': '&quot;',
+                    "'": '&#039;'
+                }[m];
+            });
+        }
+    </script>
+</body>
+</html>
