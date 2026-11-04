@@ -133,14 +133,48 @@ function requireAuth(req, res, next) {
 }
 
 function requireRole(...roles) {
+    const guruAllowed = [
+        '/kelola-kelas',
+        '/kelola-anak',
+        '/kelola-jadwal',
+        '/kelola-menu',
+        '/kelola-logbook',
+        // API endpoints that guru may use
+        '/api/kelas',
+        '/api/anak',
+        '/api/jadwal',
+        '/api/logbook',
+        '/api/catatan-anak',
+        '/api/dokumentasi',
+        '/api/pengumuman',
+        '/api/menu-makan'
+    ];
     return (req, res, next) => {
         setNoCache(res);
+        // No session → handle unauthenticated
         if (!req.session.user) {
             if (req.originalUrl && req.originalUrl.startsWith('/api/')) {
                 return res.status(401).json({ error: 'Sesi berakhir, silakan login kembali' });
             }
             return res.redirect('/login');
         }
+        // Admin gets full access regardless of role list
+        if (req.session.user.role === 'admin') {
+            return next();
+        }
+        // Guru limited to predefined routes
+        if (req.session.user.role === 'guru') {
+            const allowed = guruAllowed.some(p => req.originalUrl.startsWith(p));
+            if (!allowed) {
+                if (req.originalUrl && req.originalUrl.startsWith('/api/')) {
+                    return res.status(403).json({ error: 'Akses guru ditolak' });
+                }
+                return res.redirect('/login');
+            }
+            // If allowed, continue (no further role check needed)
+            return next();
+        }
+        // For other roles (e.g., orang_tua) fall back to original role list
         if (!roles.includes(req.session.user.role)) {
             if (req.originalUrl && req.originalUrl.startsWith('/api/')) {
                 return res.status(403).json({ error: 'Akses ditolak' });
@@ -175,6 +209,10 @@ app.get('/kelola-jadwal', requireRole('admin', 'guru'), (req, res) => {
 
 app.get('/kelola-menu', requireRole('admin', 'guru'), (req, res) => {
     res.sendFile(__dirname + '/public/kelola-menu/index.html');
+});
+
+app.get('/kelola-kelas', requireRole('admin', 'guru'), (req, res) => {
+    res.sendFile(__dirname + '/public/kelola-kelas/index.html');
 });
 
 app.get('/kelola-anak', requireRole('admin', 'guru'), (req, res) => {
@@ -809,10 +847,71 @@ app.delete('/api/anak/:id', requireRole('admin', 'guru'), (req, res) => {
 
 // ===================== API KELAS =====================
 
-app.get('/api/kelas', requireLogin, (req, res) => {
-    db.query(`SELECT * FROM kelas ORDER BY nama_kelas`, (err, results) => {
+app.get('/api/kelas', requireRole('admin', 'guru'), (req, res) => {
+    const q = `
+        SELECT k.*, 
+            COUNT(DISTINCT a.id_anak) AS jumlah_anak,
+            COUNT(DISTINCT j.id_jadwal) AS jumlah_jadwal
+        FROM kelas k
+        LEFT JOIN anak a ON a.id_kelas = k.id_kelas
+        LEFT JOIN jadwal j ON j.id_kelas = k.id_kelas
+        GROUP BY k.id_kelas
+        ORDER BY k.nama_kelas
+    `;
+    db.query(q, (err, results) => {
         if (err) return res.status(500).json({ error: 'Gagal mengambil data kelas' });
+        console.log('DEBUG /api/kelas results', results);
         res.json(results);
+    });
+});
+
+// POST /api/kelas — tambah kelas baru
+app.post('/api/kelas', requireRole('admin', 'guru'), (req, res) => {
+    const { nama_kelas, tahun_ajaran } = req.body;
+    if (!nama_kelas || !tahun_ajaran) {
+        return res.status(400).json({ error: 'Nama kelas dan tahun ajaran wajib diisi' });
+    }
+    db.query(
+        `INSERT INTO kelas (nama_kelas, tahun_ajaran) VALUES (?, ?)`,
+        [nama_kelas.trim(), tahun_ajaran.trim()],
+        (err, result) => {
+            if (err) {
+                if (err.code === 'ER_DUP_ENTRY') return res.status(400).json({ error: 'Nama kelas sudah ada' });
+                return res.status(500).json({ error: 'Gagal menambah kelas' });
+            }
+            res.json({ success: true, id: result.insertId, message: 'Kelas berhasil ditambahkan' });
+        }
+    );
+});
+
+// PUT /api/kelas/:id — edit kelas
+app.put('/api/kelas/:id', requireRole('admin', 'guru'), (req, res) => {
+    const { nama_kelas, tahun_ajaran } = req.body;
+    if (!nama_kelas || !tahun_ajaran) {
+        return res.status(400).json({ error: 'Nama kelas dan tahun ajaran wajib diisi' });
+    }
+    db.query(
+        `UPDATE kelas SET nama_kelas = ?, tahun_ajaran = ? WHERE id_kelas = ?`,
+        [nama_kelas.trim(), tahun_ajaran.trim(), req.params.id],
+        (err, result) => {
+            if (err) return res.status(500).json({ error: 'Gagal memperbarui kelas' });
+            if (result.affectedRows === 0) return res.status(404).json({ error: 'Kelas tidak ditemukan' });
+            res.json({ success: true, message: 'Kelas berhasil diperbarui' });
+        }
+    );
+});
+
+// DELETE /api/kelas/:id — hapus kelas (hanya jika tidak ada anak)
+app.delete('/api/kelas/:id', requireRole('admin', 'guru'), (req, res) => {
+    db.query(`SELECT COUNT(*) AS total FROM anak WHERE id_kelas = ?`, [req.params.id], (err, rows) => {
+        if (err) return res.status(500).json({ error: 'Gagal memeriksa data' });
+        if (rows[0].total > 0) {
+            return res.status(400).json({ error: `Kelas masih memiliki ${rows[0].total} anak terdaftar. Pindahkan atau hapus anak terlebih dahulu.` });
+        }
+        db.query(`DELETE FROM kelas WHERE id_kelas = ?`, [req.params.id], (err2, result) => {
+            if (err2) return res.status(500).json({ error: 'Gagal menghapus kelas' });
+            res.json({ success: true, message: 'Kelas berhasil dihapus' });
+        });
     });
 });
 

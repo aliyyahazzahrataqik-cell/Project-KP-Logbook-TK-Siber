@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kelola Kelas – TK SIBER (iTales)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --sidebar-bg: #405d4d;
+            --sidebar-active: #537a63;
+            --text-dark: #124b3c;
+            --text-muted: #5a7366;
+            --bg-color: #f6f8f7;
+            --card-bg: #ffffff;
+            --accent: #124b3c;
+            --accent-light: #d6ead2;
+            --accent-hover: #1b6351;
+            --border-color: #e5e9e6;
+            --danger: #ef4444;
+            --danger-bg: #fee2e2;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+
+        body { display: flex; background-color: var(--bg-color); min-height: 100vh; color: #1f2937; }
+
+        /* ===== SIDEBAR ===== */
+        .sidebar {
+            width: 250px; background-color: var(--sidebar-bg); color: white;
+            display: flex; flex-direction: column; position: fixed; height: 100vh; z-index: 100;
+        }
+        .sidebar-brand {
+            display: flex; align-items: center; gap: 14px; padding: 26px 22px;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+        }
+        .sidebar-brand img { width: 42px; height: 42px; object-fit: contain; }
+        .sidebar-brand h2 { font-size: 16px; font-weight: 800; letter-spacing: 0.5px; }
+        .sidebar-brand p { font-size: 12px; font-weight: 400; color: #d1d5db; }
+        .sidebar-menu {
+            display: flex; flex-direction: column; margin-top: 15px;
+            flex: 1; gap: 4px; padding: 0 10px;
+        }
+        .menu-item {
+            display: flex; align-items: center; gap: 14px; padding: 13px 18px;
+            color: #e2e8e4; text-decoration: none; font-weight: 600; font-size: 14px;
+            border-radius: 10px; transition: all 0.15s ease;
+        }
+        .menu-item:hover { background-color: rgba(255,255,255,0.08); color: white; }
+        .menu-item.active { background-color: var(--sidebar-active); color: white; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        .menu-item i { font-size: 18px; width: 22px; text-align: center; }
+        .sidebar-footer { padding: 16px 14px 22px; border-top: 1px solid rgba(255,255,255,0.08); }
+        .sidebar-logout-btn {
+            width: 100%; display: flex; align-items: center; gap: 12px; padding: 12px 18px;
+            color: #fca5a5; background: transparent; border: none; font-weight: 600;
+            font-size: 14px; border-radius: 10px; cursor: pointer; transition: all 0.15s ease;
+        }
+        .sidebar-logout-btn:hover { background: rgba(239,68,68,0.2); color: #fee2e2; }
+
+        /* ===== MAIN ===== */
+        .main-content { flex: 1; margin-left: 250px; padding: 30px 42px 60px; }
+
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 26px; }
+        .header-title h1 { color: var(--text-dark); font-size: 25px; font-weight: 800; }
+        .header-title p { color: var(--text-muted); font-size: 14px; font-weight: 500; margin-top: 4px; }
+
+        .user-profile-card {
+            display: flex; align-items: center; gap: 12px; background: white;
+            padding: 7px 18px 7px 8px; border-radius: 50px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.04); border: 1px solid var(--border-color);
+        }
+        .profile-avatar {
+            width: 38px; height: 38px; border-radius: 50%;
+            background: linear-gradient(135deg, #124b3c, #2a7560);
+            color: white; display: flex; align-items: center; justify-content: center;
+            font-size: 15px; font-weight: 700; box-shadow: 0 2px 6px rgba(18,75,60,0.25); position: relative;
+        }
+        .profile-avatar::after {
+            content: ''; position: absolute; bottom: 0; right: 0; width: 10px; height: 10px;
+            background: #22c55e; border: 2px solid white; border-radius: 50%;
+        }
+        .profile-name { font-size: 13.5px; font-weight: 700; color: #1f2937; }
+        .profile-role { font-size: 11.5px; font-weight: 500; color: #6b7280; }
+
+        /* ===== TOP BAR ===== */
+        .topbar {
+            background: white; border-radius: 16px; padding: 16px 22px;
+            display: flex; align-items: center; justify-content: space-between;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.03); border: 1px solid var(--border-color);
+            margin-bottom: 24px; gap: 14px; flex-wrap: wrap;
+        }
+        .topbar-info { display: flex; align-items: center; gap: 12px; }
+        .topbar-icon {
+            width: 44px; height: 44px; border-radius: 12px;
+            background: #e8f3ee; color: var(--accent); display: flex;
+            align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0;
+        }
+        .topbar-text h3 { font-size: 15.5px; font-weight: 700; color: var(--text-dark); }
+        .topbar-text p { font-size: 12.5px; color: #6b7280; margin-top: 2px; }
+        .btn-primary {
+            display: inline-flex; align-items: center; gap: 8px;
+            background: var(--accent); color: white; border: none; padding: 10px 20px;
+            border-radius: 10px; font-weight: 600; font-size: 13.5px; cursor: pointer;
+            transition: all 0.15s ease; box-shadow: 0 3px 10px rgba(18,75,60,0.2);
+        }
+        .btn-primary:hover { background: var(--accent-hover); transform: translateY(-1px); }
+
+        /* ===== STATS CARDS ===== */
+        .stats-row {
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px;
+        }
+        .stat-card {
+            background: white; border-radius: 14px; padding: 20px 22px;
+            border: 1px solid var(--border-color); box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+            display: flex; align-items: center; gap: 14px;
+        }
+        .stat-icon {
+            width: 46px; height: 46px; border-radius: 12px; display: flex;
+            align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0;
+        }
+        .stat-icon.green { background: #e8f3ee; color: #124b3c; }
+        .stat-icon.blue  { background: #e0f0ff; color: #2563eb; }
+        .stat-icon.amber { background: #fef3c7; color: #d97706; }
+        .stat-label { font-size: 12px; font-weight: 600; color: #6b7280; }
+        .stat-value { font-size: 22px; font-weight: 800; color: var(--text-dark); line-height: 1.1; }
+
+        /* ===== KELAS CARDS GRID ===== */
+        .kelas-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(310px, 1fr)); gap: 18px;
+        }
+
+        .kelas-card {
+            background: white; border-radius: 16px; border: 1px solid var(--border-color);
+            box-shadow: 0 2px 12px rgba(0,0,0,0.03); overflow: hidden;
+            transition: box-shadow 0.2s ease, border-color 0.2s ease;
+        }
+        .kelas-card:hover { box-shadow: 0 6px 20px rgba(0,0,0,0.07); border-color: #c8d9d0; }
+
+        .kelas-card-header {
+            padding: 20px 22px 14px; display: flex; align-items: flex-start;
+            justify-content: space-between; gap: 10px;
+        }
+        .kelas-name-wrap { display: flex; align-items: center; gap: 12px; }
+        .kelas-avatar {
+            width: 46px; height: 46px; border-radius: 12px; flex-shrink: 0;
+            background: linear-gradient(135deg, #124b3c, #2d7a56);
+            color: white; display: flex; align-items: center; justify-content: center;
+            font-size: 18px; font-weight: 800; letter-spacing: -1px;
+        }
+        .kelas-title { font-size: 17px; font-weight: 800; color: var(--text-dark); }
+        .kelas-tahun { font-size: 12px; font-weight: 500; color: #6b7280; margin-top: 2px; }
+
+        .kelas-actions { display: flex; gap: 6px; flex-shrink: 0; }
+        .btn-icon {
+            width: 34px; height: 34px; border-radius: 8px; border: 1px solid #e5e7eb;
+            background: #f9fafb; cursor: pointer; display: flex; align-items: center;
+            justify-content: center; font-size: 14px; color: #6b7280;
+            transition: all 0.15s ease;
+        }
+        .btn-icon:hover { background: #e8f3ee; border-color: #c7e1d5; color: var(--accent); }
+        .btn-icon.danger:hover { background: var(--danger-bg); border-color: #fecaca; color: var(--danger); }
+
+        .kelas-divider { height: 1px; background: #f3f4f6; margin: 0 22px; }
+
+        .kelas-stats {
+            padding: 14px 22px 18px; display: flex; gap: 20px;
+        }
+        .kelas-stat-item { display: flex; flex-direction: column; gap: 2px; }
+        .kelas-stat-num { font-size: 20px; font-weight: 800; color: var(--text-dark); }
+        .kelas-stat-label { font-size: 11.5px; font-weight: 500; color: #9ca3af; }
+
+        .kelas-footer {
+            padding: 10px 16px 14px;
+            display: flex; gap: 8px;
+        }
+        .btn-link {
+            flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px;
+            padding: 8px 12px; border-radius: 8px; text-decoration: none;
+            font-size: 12.5px; font-weight: 600; border: 1px solid #e5e7eb;
+            background: #f9fafb; color: #374151; transition: all 0.15s ease; cursor: pointer;
+        }
+        .btn-link:hover { background: #e8f3ee; border-color: #c7e1d5; color: var(--accent); }
+
+        /* ===== EMPTY STATE ===== */
+        .empty-state {
+            grid-column: 1 / -1; text-align: center; padding: 60px 20px;
+            background: white; border-radius: 16px; border: 1px solid var(--border-color);
+        }
+        .empty-state i { font-size: 42px; color: #d1d5db; margin-bottom: 14px; }
+        .empty-state p { font-size: 15px; font-weight: 600; color: #9ca3af; }
+
+        /* ===== MODAL ===== */
+        .modal-overlay {
+            position: fixed; inset: 0; background: rgba(18,30,26,0.6);
+            backdrop-filter: blur(4px); display: none; align-items: center;
+            justify-content: center; z-index: 1000; padding: 20px;
+        }
+        .modal-overlay.active { display: flex; }
+        .modal {
+            background: white; border-radius: 18px; box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+            width: 100%; max-width: 450px; overflow: hidden;
+            display: flex; flex-direction: column; max-height: 90vh;
+        }
+        .modal-header {
+            padding: 20px 24px; border-bottom: 1px solid #f3f4f6;
+            display: flex; align-items: center; justify-content: space-between; flex-shrink: 0;
+        }
+        .modal-header h2 { font-size: 17px; font-weight: 700; color: var(--text-dark); display: flex; align-items: center; gap: 8px; }
+        .btn-close-modal { background: none; border: none; font-size: 20px; color: #9ca3af; cursor: pointer; padding: 2px 6px; border-radius: 6px; }
+        .btn-close-modal:hover { background: #f3f4f6; color: #374151; }
+        .modal-body { padding: 22px 24px; overflow-y: auto; display: flex; flex-direction: column; gap: 16px; }
+        .modal-footer { padding: 14px 24px 20px; border-top: 1px solid #f3f4f6; display: flex; gap: 10px; justify-content: flex-end; flex-shrink: 0; }
+
+        .form-group { display: flex; flex-direction: column; gap: 6px; }
+        .form-label { font-size: 13px; font-weight: 700; color: #374151; }
+        .form-label .req { color: #ef4444; }
+        .form-input {
+            width: 100%; padding: 11px 14px; border: 1.5px solid #e5e7eb;
+            border-radius: 10px; font-size: 14px; color: #1f2937;
+            background: #fdfdfd; transition: all 0.15s ease;
+        }
+        .form-input:focus { outline: none; border-color: #2d7a56; background: white; box-shadow: 0 0 0 3px rgba(45,122,86,0.1); }
+        .form-hint { font-size: 11.5px; color: #9ca3af; margin-top: 2px; }
+
+        .btn-cancel {
+            padding: 10px 20px; background: #f3f4f6; color: #374151; border: 1px solid #e5e7eb;
+            border-radius: 10px; font-weight: 600; font-size: 13.5px; cursor: pointer; transition: all 0.15s;
+        }
+        .btn-cancel:hover { background: #e5e7eb; }
+        .btn-save {
+            padding: 10px 22px; background: var(--accent); color: white; border: none;
+            border-radius: 10px; font-weight: 600; font-size: 13.5px; cursor: pointer; transition: all 0.15s;
+        }
+        .btn-save:hover { background: var(--accent-hover); }
+        .btn-save:disabled { background: #9ca3af; cursor: not-allowed; }
+
+        /* ===== TOAST ===== */
+        .toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 1100; display: flex; flex-direction: column; gap: 10px; }
+        .toast {
+            min-width: 270px; background: white; border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.12); padding: 13px 18px;
+            display: flex; align-items: center; gap: 10px;
+            border-left: 4px solid var(--accent); animation: slideIn 0.25s ease-out;
+            font-size: 13.5px; font-weight: 600; color: #1f2937;
+        }
+        .toast.error { border-left-color: var(--danger); }
+        .toast i { font-size: 17px; color: var(--accent); }
+        .toast.error i { color: var(--danger); }
+        @keyframes slideIn { from { opacity: 0; transform: translateX(28px); } to { opacity: 1; transform: translateX(0); } }
+    </style>
+</head>
+<body>
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="sidebar-brand">
+            <img src="/assets/Logo_uin.png" alt="Logo" onerror="this.src='https://ui-avatars.com/api/?name=TK&background=fff&color=124b3c'">
+            <div>
+                <h2>TK SIBER</h2>
+                <p>Logbook & Kegiatan</p>
+            </div>
+        </div>
+        <nav class="sidebar-menu" id="sidebar-nav">
+            <a href="/dashboard-guru" class="menu-item">
+                <i class="fa-solid fa-house"></i> Dashboard
+            </a>
+            <a href="/kelola-kelas" class="menu-item active">
+                <i class="fa-solid fa-chalkboard"></i> Kelola Kelas
+            </a>
+            <a href="/kelola-anak" class="menu-item">
+                <i class="fa-solid fa-user-group"></i> Kelola Anak
+            </a>
+            <a href="/kelola-jadwal" class="menu-item">
+                <i class="fa-solid fa-calendar-days"></i> Kelola Jadwal
+            </a>
+            <a href="/kelola-menu" class="menu-item">
+                <i class="fa-solid fa-utensils"></i> Kelola Menu
+            </a>
+            <a href="/kelola-logbook" class="menu-item">
+                <i class="fa-solid fa-book"></i> Kelola Logbook
+            </a>
+        </nav>
+        <div class="sidebar-footer">
+            <button type="button" class="sidebar-logout-btn" onclick="keluarAplikasi(event)">
+                <i class="fa-solid fa-right-from-bracket"></i> Keluar
+            </button>
+        </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-title">
+                <h1>Kelola Kelas</h1>
+                <p>Manajemen data kelas, tahun ajaran, dan jumlah siswa terdaftar</p>
+            </div>
+            <div>
+                <div class="user-profile-card">
+                    <div class="profile-avatar" id="avatar-initial">G</div>
+                    <div style="display:flex;flex-direction:column;line-height:1.25;">
+                        <span class="profile-name" id="user-display-name">Guru</span>
+                        <span class="profile-role" id="user-role-label">Pendidik · Online</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Stats -->
+        <div class="stats-row" id="stats-row">
+            <div class="stat-card">
+                <div class="stat-icon green"><i class="fa-solid fa-chalkboard"></i></div>
+                <div>
+                    <div class="stat-label">Total Kelas</div>
+                    <div class="stat-value" id="stat-kelas">–</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon blue"><i class="fa-solid fa-child-reaching"></i></div>
+                <div>
+                    <div class="stat-label">Total Anak Terdaftar</div>
+                    <div class="stat-value" id="stat-anak">–</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon amber"><i class="fa-solid fa-calendar-check"></i></div>
+                <div>
+                    <div class="stat-label">Total Jadwal Kegiatan</div>
+                    <div class="stat-value" id="stat-jadwal">–</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Top Bar -->
+        <div class="topbar">
+            <div class="topbar-info">
+                <div class="topbar-icon"><i class="fa-solid fa-layer-group"></i></div>
+                <div class="topbar-text">
+                    <h3>Daftar Kelas Aktif</h3>
+                    <p>Tambah, edit, atau hapus kelas. Kelas tidak bisa dihapus jika masih ada anak terdaftar.</p>
+                </div>
+            </div>
+            <button type="button" class="btn-primary" onclick="bukaModal()">
+                <i class="fa-solid fa-plus"></i> Tambah Kelas
+            </button>
+        </div>
+
+        <!-- Kelas Cards -->
+        <div class="kelas-grid" id="kelas-grid">
+            <div class="empty-state">
+                <i class="fa-solid fa-spinner fa-spin"></i>
+                <p>Memuat data kelas...</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- MODAL TAMBAH/EDIT -->
+    <div class="modal-overlay" id="modal-kelas">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 id="modal-title"><i class="fa-solid fa-chalkboard"></i> Tambah Kelas</h2>
+                <button type="button" class="btn-close-modal" onclick="tutupModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="edit-id">
+                <div class="form-group">
+                    <label class="form-label">Nama Kelas <span class="req">*</span></label>
+                    <input type="text" class="form-input" id="input-nama" placeholder="cth: TK A, TK B, Kelompok Bermain..." maxlength="50">
+                    <span class="form-hint">Nama kelas harus unik (tidak boleh sama)</span>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Tahun Ajaran <span class="req">*</span></label>
+                    <input type="text" class="form-input" id="input-tahun" placeholder="cth: 2026/2027" maxlength="20">
+                    <span class="form-hint">Format: YYYY/YYYY, contoh: 2026/2027</span>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-cancel" onclick="tutupModal()">Batal</button>
+                <button type="button" class="btn-save" id="btn-modal-save" onclick="simpanKelas()">
+                    <i class="fa-solid fa-floppy-disk"></i> Simpan
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <script>
+        let dataKelas = [];
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            await muatUser();
+            await muatDataKelas();
+        });
+
+        async function muatUser() {
+            try {
+                const res = await fetch('/api/me');
+                if (!res.ok) { window.location.replace('/login'); return; }
+                const user = await res.json();
+                if (!['admin', 'guru'].includes(user.role)) { window.location.replace('/login'); return; }
+
+                const uname = user.username || 'Guru';
+                document.getElementById('user-display-name').textContent = uname;
+                document.getElementById('avatar-initial').textContent = uname.charAt(0).toUpperCase();
+
+                if (user.role === 'admin') {
+                    document.getElementById('user-role-label').textContent = 'Administrator · Online';
+                    document.getElementById('sidebar-nav').innerHTML = `
+                        <span style="padding:12px 18px 6px;font-size:11px;font-weight:700;color:#a3c4b5;text-transform:uppercase;letter-spacing:.5px;display:block;">Menu Utama</span>
+                        <a href="/dashboard-admin" class="menu-item"><i class="fa-solid fa-gauge-high"></i> Dashboard</a>
+                        <a href="/kelola-akun" class="menu-item"><i class="fa-solid fa-users-gear"></i> Kelola Akun</a>
+                        <a href="/kelola-pengumuman" class="menu-item"><i class="fa-solid fa-bullhorn"></i> Kelola Pengumuman</a>
+                        <a href="/kelola-kelas" class="menu-item active"><i class="fa-solid fa-chalkboard"></i> Kelola Kelas</a>
+                        <a href="/kelola-anak" class="menu-item"><i class="fa-solid fa-user-group"></i> Kelola Anak</a>
+                        <a href="/kelola-menu" class="menu-item"><i class="fa-solid fa-utensils"></i> Kelola Menu</a>
+                    `;
+                }
+            } catch(e) { console.error(e); }
+        }
+
+        function keluarAplikasi(e) {
+            if (e) e.preventDefault();
+            try { fetch('/logout', { method: 'POST' }); } catch(err) {}
+            sessionStorage.clear();
+            localStorage.removeItem('kpalya_user');
+            window.location.href = '/login';
+        }
+
+        async function muatDataKelas() {
+            const grid = document.getElementById('kelas-grid');
+            try {
+                const res = await fetch('/api/kelas');
+                dataKelas = await res.json();
+
+                // Update stats
+                const totalAnak = dataKelas.reduce((s, k) => s + (k.jumlah_anak || 0), 0);
+                const totalJadwal = dataKelas.reduce((s, k) => s + (k.jumlah_jadwal || 0), 0);
+                document.getElementById('stat-kelas').textContent = dataKelas.length;
+                document.getElementById('stat-anak').textContent = totalAnak;
+                document.getElementById('stat-jadwal').textContent = totalJadwal;
+
+                renderKelas();
+            } catch(err) {
+                grid.innerHTML = `<div class="empty-state">
+                    <i class="fa-solid fa-triangle-exclamation" style="color:#ef4444;"></i>
+                    <p>Gagal memuat data kelas</p>
+                </div>`;
+            }
+        }
+
+        function renderKelas() {
+            const grid = document.getElementById('kelas-grid');
+            if (dataKelas.length === 0) {
+                grid.innerHTML = `<div class="empty-state">
+                    <i class="fa-solid fa-chalkboard"></i>
+                    <p>Belum ada kelas terdaftar.<br>Klik <strong>Tambah Kelas</strong> untuk memulai.</p>
+                </div>`;
+                return;
+            }
+
+            grid.innerHTML = dataKelas.map(k => {
+                const inisial = (k.nama_kelas || '?').substring(0, 2).toUpperCase();
+                const jumlahAnak = k.jumlah_anak || 0;
+                const jumlahJadwal = k.jumlah_jadwal || 0;
+                return `
+                <div class="kelas-card" id="kelas-card-${k.id_kelas}">
+                    <div class="kelas-card-header">
+                        <div class="kelas-name-wrap">
+                            <div class="kelas-avatar">${esc(inisial)}</div>
+                            <div>
+                                <div class="kelas-title">${esc(k.nama_kelas)}</div>
+                                <div class="kelas-tahun"><i class="fa-regular fa-calendar" style="margin-right:4px;"></i>T.A. ${esc(k.tahun_ajaran)}</div>
+                            </div>
+                        </div>
+                        <div class="kelas-actions">
+                            <button class="btn-icon" title="Edit Kelas" onclick="bukaEdit(${k.id_kelas})">
+                                <i class="fa-solid fa-pen"></i>
+                            </button>
+                            <button class="btn-icon danger" title="Hapus Kelas" onclick="hapusKelas(${k.id_kelas}, '${esc(k.nama_kelas)}')">
+                                <i class="fa-solid fa-trash-can"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="kelas-divider"></div>
+                    <div class="kelas-stats">
+                        <div class="kelas-stat-item">
+                            <div class="kelas-stat-num">${jumlahAnak}</div>
+                            <div class="kelas-stat-label">Anak Terdaftar</div>
+                        </div>
+                        <div class="kelas-stat-item">
+                            <div class="kelas-stat-num">${jumlahJadwal}</div>
+                            <div class="kelas-stat-label">Item Jadwal</div>
+                        </div>
+                    </div>
+                    <div class="kelas-footer">
+                        <a href="/kelola-anak?kelas=${k.id_kelas}" class="btn-link">
+                            <i class="fa-solid fa-child-reaching"></i> Lihat Anak
+                        </a>
+                        <a href="/kelola-jadwal" class="btn-link">
+                            <i class="fa-solid fa-calendar-days"></i> Lihat Jadwal
+                        </a>
+                    </div>
+                </div>
+                `;
+            }).join('');
+        }
+
+        // ===== MODAL =====
+        let isEditMode = false;
+
+        function bukaModal() {
+            isEditMode = false;
+            document.getElementById('modal-title').innerHTML = '<i class="fa-solid fa-plus-circle"></i> Tambah Kelas Baru';
+            document.getElementById('edit-id').value = '';
+            document.getElementById('input-nama').value = '';
+            document.getElementById('input-tahun').value = new Date().getFullYear() + '/' + (new Date().getFullYear() + 1);
+            document.getElementById('btn-modal-save').innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Simpan';
+            document.getElementById('modal-kelas').classList.add('active');
+            setTimeout(() => document.getElementById('input-nama').focus(), 100);
+        }
+
+        function bukaEdit(id) {
+            const k = dataKelas.find(x => x.id_kelas === id);
+            if (!k) return;
+            isEditMode = true;
+            document.getElementById('modal-title').innerHTML = '<i class="fa-solid fa-pen"></i> Edit Kelas';
+            document.getElementById('edit-id').value = k.id_kelas;
+            document.getElementById('input-nama').value = k.nama_kelas;
+            document.getElementById('input-tahun').value = k.tahun_ajaran;
+            document.getElementById('btn-modal-save').innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Perbarui';
+            document.getElementById('modal-kelas').classList.add('active');
+            setTimeout(() => document.getElementById('input-nama').focus(), 100);
+        }
+
+        function tutupModal() {
+            document.getElementById('modal-kelas').classList.remove('active');
+        }
+
+        async function simpanKelas() {
+            const nama = document.getElementById('input-nama').value.trim();
+            const tahun = document.getElementById('input-tahun').value.trim();
+            const id = document.getElementById('edit-id').value;
+            const btn = document.getElementById('btn-modal-save');
+
+            if (!nama) { document.getElementById('input-nama').focus(); return; }
+            if (!tahun) { document.getElementById('input-tahun').focus(); return; }
+
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Menyimpan...';
+
+            try {
+                const url = isEditMode ? `/api/kelas/${id}` : '/api/kelas';
+                const method = isEditMode ? 'PUT' : 'POST';
+                const res = await fetch(url, {
+                    method,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ nama_kelas: nama, tahun_ajaran: tahun })
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error || 'Gagal menyimpan');
+                tutupModal();
+                showToast(isEditMode ? `Kelas "${nama}" berhasil diperbarui` : `Kelas "${nama}" berhasil ditambahkan`);
+                await muatDataKelas();
+            } catch(err) {
+                showToast(err.message, true);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = isEditMode
+                    ? '<i class="fa-solid fa-floppy-disk"></i> Perbarui'
+                    : '<i class="fa-solid fa-floppy-disk"></i> Simpan';
+            }
+        }
+
+        async function hapusKelas(id, nama) {
+            if (!confirm(`Hapus kelas "${nama}"?\n\nKelas tidak bisa dihapus jika masih ada anak terdaftar.`)) return;
+            try {
+                const res = await fetch(`/api/kelas/${id}`, { method: 'DELETE' });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error || 'Gagal menghapus kelas');
+                showToast(`Kelas "${nama}" berhasil dihapus`);
+                await muatDataKelas();
+            } catch(err) {
+                showToast(err.message, true);
+            }
+        }
+
+        // ===== HELPERS =====
+        function showToast(msg, isError = false) {
+            const c = document.getElementById('toast-container');
+            const t = document.createElement('div');
+            t.className = `toast ${isError ? 'error' : ''}`;
+            t.innerHTML = `<i class="fa-solid ${isError ? 'fa-circle-exclamation' : 'fa-circle-check'}"></i><span>${esc(msg)}</span>`;
+            c.appendChild(t);
+            setTimeout(() => { t.style.opacity='0'; t.style.transform='translateY(8px)'; t.style.transition='all .3s'; setTimeout(() => t.remove(), 300); }, 3500);
+        }
+
+        function esc(s) {
+            return String(s || '').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
+        }
+
+        // Enter key in modal
+        document.addEventListener('keydown', e => {
+            if (e.key === 'Enter' && document.getElementById('modal-kelas').classList.contains('active')) {
+                simpanKelas();
+            }
+            if (e.key === 'Escape') tutupModal();
+        });
+    </script>
+</body>
+</html>
+
