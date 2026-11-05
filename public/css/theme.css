@@ -1,0 +1,23 @@
+:root {
+    --sidebar-bg: #18302b;
+    --sidebar-active: #2a5a50;
+    --text-dark: #124b3c;
+    --text-muted: #5a7366;
+    --bg-color: #f4f6f5;
+    --card-bg: #ffffff;
+    --accent: #124b3c;
+    --accent-light: #edf5f0;
+    --accent-border: #d2e4d8;
+    --border-color: #e5e9e6;
+    --danger: #dc2626;
+    --danger-bg: #fef2f2;
+    --danger-border: #fecaca;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Inter', sans-serif;
+}
+

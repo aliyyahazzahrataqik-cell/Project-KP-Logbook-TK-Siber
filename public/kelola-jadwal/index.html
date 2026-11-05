@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
@@ -6,6 +6,7 @@
     <title>Kelola Jadwal – TK SIBER (iTales)</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/theme.css">
     <style>
         :root {
             --sidebar-bg: #405d4d;
@@ -671,7 +672,7 @@
             </div>
         </div>
         
-        <nav class="sidebar-menu">
+        <nav class="sidebar-menu" id="sidebar-nav">
             <a href="/dashboard-guru" class="menu-item">
                 <i class="fa-solid fa-house"></i> Dashboard
             </a>
@@ -892,6 +893,20 @@
                     const uname = user.username || 'Guru';
                     document.getElementById('user-display-name').textContent = uname;
                     document.getElementById('avatar-initial').textContent = uname.charAt(0).toUpperCase();
+                    if (user.role === 'admin') {
+                        document.getElementById('sidebar-nav').innerHTML = `
+                            <span style="padding:12px 18px 6px;font-size:11px;font-weight:700;color:#a3c4b5;text-transform:uppercase;letter-spacing:.5px;display:block;">Menu Utama</span>
+                            <a href="/dashboard-admin" class="menu-item"><i class="fa-solid fa-gauge-high"></i> Dashboard</a>
+                            <a href="/kelola-akun" class="menu-item"><i class="fa-solid fa-users-gear"></i> Kelola Akun</a>
+                            <a href="/kelola-pengumuman" class="menu-item"><i class="fa-solid fa-bullhorn"></i> Kelola Pengumuman</a>
+                            <a href="/kelola-menu" class="menu-item"><i class="fa-solid fa-utensils"></i> Kelola Menu</a>
+                            <span style="padding:12px 18px 6px;font-size:11px;font-weight:700;color:#a3c4b5;text-transform:uppercase;letter-spacing:.5px;display:block;">Akademik</span>
+                            <a href="/kelola-kelas" class="menu-item"><i class="fa-solid fa-chalkboard"></i> Kelola Kelas</a>
+                            <a href="/kelola-anak" class="menu-item"><i class="fa-solid fa-user-group"></i> Kelola Anak</a>
+                            <a href="/kelola-jadwal" class="menu-item active"><i class="fa-solid fa-calendar-days"></i> Kelola Jadwal</a>
+                            <a href="/kelola-logbook" class="menu-item"><i class="fa-solid fa-book-open"></i> Kelola Logbook</a>
+                        `;
+                    }
                 }
             } catch(e) {}
         }

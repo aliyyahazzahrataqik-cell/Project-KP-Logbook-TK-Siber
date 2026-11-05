@@ -134,12 +134,8 @@ function requireAuth(req, res, next) {
 
 function requireRole(...roles) {
     const guruAllowed = [
-        '/kelola-kelas',
-        '/kelola-anak',
-        '/kelola-jadwal',
-        '/kelola-menu',
-        '/kelola-logbook',
-        // API endpoints that guru may use
+        '/dashboard-guru',
+        '/api/dashboard-stats',
         '/api/kelas',
         '/api/anak',
         '/api/jadwal',
@@ -669,7 +665,7 @@ app.delete('/api/pengumuman/:id', requireRole('admin'), (req, res) => {
 });
 
 // GET /api/jadwal?hari=Senin&kelas=1
-app.get('/api/jadwal', requireLogin, (req, res) => {
+app.get('/api/jadwal', requireRole('admin', 'guru'), (req, res) => {
     const { hari, kelas } = req.query;
     let query = `
         SELECT jadwal.*, kelas.nama_kelas
@@ -726,7 +722,7 @@ app.delete('/api/jadwal/:id', requireRole('admin', 'guru'), (req, res) => {
 // ===================== API ANAK =====================
 
 // GET /api/anak
-app.get('/api/anak', requireLogin, (req, res) => {
+app.get('/api/anak', requireRole('admin', 'guru'), (req, res) => {
     const query = `
         SELECT anak.*, kelas.nama_kelas
         FROM anak
@@ -810,7 +806,7 @@ app.put('/api/anak/:id', requireRole('admin', 'guru'), (req, res) => {
 });
 
 // PUT /api/user/ganti-password — ganti password sendiri (khususnya untuk Orang Tua)
-app.put('/api/user/ganti-password', requireLogin, async (req, res) => {
+app.put('/api/user/ganti-password', requireRole('admin', 'guru', 'orang_tua'), async (req, res) => {
     const { password_baru, konfirmasi_password } = req.body;
     if (!password_baru || !konfirmasi_password) {
         return res.status(400).json({ error: 'Password baru dan konfirmasi wajib diisi' });
@@ -918,7 +914,7 @@ app.delete('/api/kelas/:id', requireRole('admin', 'guru'), (req, res) => {
 // ===================== API LOGBOOK =====================
 
 // GET /api/logbook?tanggal=...&kelas=...
-app.get('/api/logbook', requireLogin, (req, res) => {
+app.get('/api/logbook', requireRole('admin', 'guru'), (req, res) => {
     const { tanggal, kelas } = req.query;
     let query = `
         SELECT 
@@ -959,7 +955,7 @@ app.get('/api/logbook', requireLogin, (req, res) => {
 });
 
 // GET /api/logbook/:id
-app.get('/api/logbook/:id', requireLogin, (req, res) => {
+app.get('/api/logbook/:id', requireRole('admin', 'guru'), (req, res) => {
     const id = req.params.id;
     const queryLogbook = `
         SELECT l.id_logbook, l.id_kelas, DATE_FORMAT(l.tanggal, '%Y-%m-%d') AS tanggal,
@@ -1549,7 +1545,7 @@ app.get('/api/ortu/logbook/:id', requireApiOrtu, (req, res) => {
 
 // ===================== API DASHBOARD STATS =====================
 
-app.get('/api/dashboard-stats', requireLogin, (req, res) => {
+app.get('/api/dashboard-stats', requireRole('admin', 'guru'), (req, res) => {
     const hariSekarang = new Date().toLocaleDateString('id-ID', { weekday: 'long' });
 
     const queries = {

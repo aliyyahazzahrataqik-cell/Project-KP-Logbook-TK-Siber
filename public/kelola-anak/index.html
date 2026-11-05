@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -53,7 +54,7 @@
             align-items: center;
             gap: 14px;
             padding: 26px 22px;
-            border-bottom: 1px solid rgba(255,255,255,0.08);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
         }
 
         .sidebar-brand img {
@@ -97,14 +98,14 @@
         }
 
         .menu-item:hover {
-            background-color: rgba(255,255,255,0.08);
+            background-color: rgba(255, 255, 255, 0.08);
             color: white;
         }
 
         .menu-item.active {
             background-color: var(--sidebar-active);
             color: white;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
         }
 
         .menu-item i {
@@ -115,7 +116,7 @@
 
         .sidebar-footer {
             padding: 15px 10px 20px;
-            border-top: 1px solid rgba(255,255,255,0.08);
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
         }
 
         .btn-logout-sidebar {
@@ -181,7 +182,7 @@
             background: white;
             padding: 6px 14px 6px 8px;
             border-radius: 50px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
             border: 1px solid var(--border-color);
         }
 
@@ -230,7 +231,7 @@
             background: #fca5a5;
             color: #991b1b;
             transform: translateY(-1px);
-            box-shadow: 0 2px 8px rgba(220,38,38,0.2);
+            box-shadow: 0 2px 8px rgba(220, 38, 38, 0.2);
         }
 
         /* Stats Cards */
@@ -248,7 +249,7 @@
             display: flex;
             align-items: center;
             gap: 16px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
             border: 1px solid var(--border-color);
         }
 
@@ -262,10 +263,25 @@
             font-size: 20px;
         }
 
-        .icon-green { background: #d7ede1; color: #124b3c; }
-        .icon-blue  { background: #e0f2fe; color: #0284c7; }
-        .icon-pink  { background: #fce7f3; color: #db2777; }
-        .icon-amber { background: #fef3c7; color: #d97706; }
+        .icon-green {
+            background: #d7ede1;
+            color: #124b3c;
+        }
+
+        .icon-blue {
+            background: #e0f2fe;
+            color: #0284c7;
+        }
+
+        .icon-pink {
+            background: #fce7f3;
+            color: #db2777;
+        }
+
+        .icon-amber {
+            background: #fef3c7;
+            color: #d97706;
+        }
 
         .stat-info h3 {
             font-size: 24px;
@@ -286,7 +302,7 @@
             background: var(--card-bg);
             border-radius: 16px;
             padding: 0;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
             border: 1px solid var(--border-color);
             overflow: hidden;
         }
@@ -339,7 +355,7 @@
         .search-input:focus {
             border-color: var(--accent);
             background: white;
-            box-shadow: 0 0 0 3px rgba(18,75,60,0.1);
+            box-shadow: 0 0 0 3px rgba(18, 75, 60, 0.1);
         }
 
         .filter-select {
@@ -372,7 +388,7 @@
             display: flex;
             align-items: center;
             gap: 8px;
-            box-shadow: 0 4px 12px rgba(18,75,60,0.25);
+            box-shadow: 0 4px 12px rgba(18, 75, 60, 0.25);
             transition: all 0.2s;
         }
 
@@ -538,14 +554,21 @@
             border-radius: 20px;
             width: 480px;
             max-width: 100%;
-            box-shadow: 0 25px 60px rgba(0,0,0,0.2);
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.2);
             overflow: hidden;
             animation: modalPop 0.22s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         @keyframes modalPop {
-            from { opacity: 0; transform: translateY(15px) scale(0.97); }
-            to { opacity: 1; transform: translateY(0) scale(1); }
+            from {
+                opacity: 0;
+                transform: translateY(15px) scale(0.97);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
         }
 
         .modal-header {
@@ -597,7 +620,7 @@
             color: #374151;
         }
 
-        .form-group input, 
+        .form-group input,
         .form-group select {
             padding: 11px 14px;
             border: 1.5px solid #d1d5db;
@@ -608,10 +631,10 @@
             transition: border-color 0.15s, box-shadow 0.15s;
         }
 
-        .form-group input:focus, 
+        .form-group input:focus,
         .form-group select:focus {
             border-color: var(--accent);
-            box-shadow: 0 0 0 3px rgba(18,75,60,0.12);
+            box-shadow: 0 0 0 3px rgba(18, 75, 60, 0.12);
         }
 
         .form-group .hint {
@@ -682,7 +705,7 @@
             font-size: 13.5px;
             font-weight: 600;
             cursor: pointer;
-            box-shadow: 0 4px 14px rgba(18,75,60,0.3);
+            box-shadow: 0 4px 14px rgba(18, 75, 60, 0.3);
             transition: background 0.15s, transform 0.1s;
         }
 
@@ -720,19 +743,21 @@
         }
     </style>
 </head>
+
 <body>
 
     <!-- ===== SIDEBAR ===== -->
     <aside class="sidebar">
         <div class="sidebar-brand">
-            <img src="/assets/Logo_uin.png" alt="Logo" onerror="this.src='https://ui-avatars.com/api/?name=TK&background=fff&color=124b3c'">
+            <img src="/assets/Logo_uin.png" alt="Logo"
+                onerror="this.src='https://ui-avatars.com/api/?name=TK&background=fff&color=124b3c'">
             <div>
                 <h2>TK SIBER</h2>
                 <p>Logbook & Kegiatan</p>
             </div>
         </div>
-        
-        <nav class="sidebar-menu">
+
+        <nav class="sidebar-menu" id="sidebar-nav">
             <a href="/dashboard-guru" class="menu-item">
                 <i class="fa-solid fa-house"></i> Dashboard
             </a>
@@ -901,12 +926,14 @@
                 <div class="form-group">
                     <label for="input-panggilan">Nama Panggilan Siswa *</label>
                     <input type="text" id="input-panggilan" placeholder="Contoh: Fatih" autocomplete="off">
-                    <span class="hint">Nama panggilan otomatis digunakan sebagai username & password awal akun orang tua.</span>
+                    <span class="hint">Nama panggilan otomatis digunakan sebagai username & password awal akun orang
+                        tua.</span>
                 </div>
 
                 <div class="form-group">
                     <label for="input-nisn">NISN (Nomor Induk Siswa Nasional) *</label>
-                    <input type="text" id="input-nisn" placeholder="Contoh: 0012345678" maxlength="15" autocomplete="off">
+                    <input type="text" id="input-nisn" placeholder="Contoh: 0012345678" maxlength="15"
+                        autocomplete="off">
                 </div>
 
                 <div class="form-group">
@@ -943,12 +970,12 @@
     <!-- ===== JAVASCRIPT LOGIC ===== -->
     <script>
         // Cegah akses lewat tombol Back setelah logout (bfcache fix)
-        window.addEventListener('pageshow', async function(event) {
+        window.addEventListener('pageshow', async function (event) {
             if (event.persisted) {
                 try {
                     const r = await fetch('/api/me', { cache: 'no-store' });
                     if (!r.ok) window.location.replace('/login');
-                } catch(e) {
+                } catch (e) {
                     window.location.replace('/login');
                 }
                 return;
@@ -962,7 +989,7 @@
             if (e) e.preventDefault();
             try {
                 fetch('/logout', { method: 'POST' });
-            } catch(err) {}
+            } catch (err) { }
             sessionStorage.clear();
             sessionStorage.setItem('kpalya_logged_out', 'true');
             localStorage.removeItem('kpalya_user');
@@ -988,8 +1015,22 @@
                     const user = await res.json();
                     document.getElementById('user-name').textContent = user.username || 'Guru';
                     document.getElementById('user-avatar').textContent = (user.username || 'G').charAt(0).toUpperCase();
+                    if (user.role === 'admin') {
+                        document.getElementById('sidebar-nav').innerHTML = `
+                            <span style="padding:12px 18px 6px;font-size:11px;font-weight:700;color:#a3c4b5;text-transform:uppercase;letter-spacing:.5px;display:block;">Menu Utama</span>
+                            <a href="/dashboard-admin" class="menu-item"><i class="fa-solid fa-gauge-high"></i> Dashboard</a>
+                            <a href="/kelola-akun" class="menu-item"><i class="fa-solid fa-users-gear"></i> Kelola Akun</a>
+                            <a href="/kelola-pengumuman" class="menu-item"><i class="fa-solid fa-bullhorn"></i> Kelola Pengumuman</a>
+                            <a href="/kelola-menu" class="menu-item"><i class="fa-solid fa-utensils"></i> Kelola Menu</a>
+                            <span style="padding:12px 18px 6px;font-size:11px;font-weight:700;color:#a3c4b5;text-transform:uppercase;letter-spacing:.5px;display:block;">Akademik</span>
+                            <a href="/kelola-kelas" class="menu-item"><i class="fa-solid fa-chalkboard"></i> Kelola Kelas</a>
+                            <a href="/kelola-anak" class="menu-item active"><i class="fa-solid fa-user-group"></i> Kelola Anak</a>
+                            <a href="/kelola-jadwal" class="menu-item"><i class="fa-solid fa-calendar-days"></i> Kelola Jadwal</a>
+                            <a href="/kelola-logbook" class="menu-item"><i class="fa-solid fa-book-open"></i> Kelola Logbook</a>
+                        `;
+                    }
                 }
-            } catch(e) {}
+            } catch (e) { }
         }
 
         // Ambil data siswa murni dari database via API backend
@@ -1040,7 +1081,7 @@
 
             let filtered = listAnak.filter(anak => {
                 const matchSearch = anak.nama_lengkap.toLowerCase().includes(keyword) ||
-                                    (anak.nisn && anak.nisn.toLowerCase().includes(keyword));
+                    (anak.nisn && anak.nisn.toLowerCase().includes(keyword));
                 const matchKelas = filterKelas === 'semua' || anak.nama_kelas === filterKelas;
                 const matchGender = filterGender === 'semua' || anak.jenis_kelamin === filterGender;
 
@@ -1250,12 +1291,12 @@
         document.getElementById('input-search').addEventListener('input', terapkanFilter);
 
         // Tutup modal jika klik di luar
-        document.getElementById('modal-anak').addEventListener('click', function(e) {
+        document.getElementById('modal-anak').addEventListener('click', function (e) {
             if (e.target === this) tutupModal();
         });
 
         // Shortcut Escape key
-        document.addEventListener('keydown', function(e) {
+        document.addEventListener('keydown', function (e) {
             if (e.key === 'Escape') tutupModal();
         });
 
@@ -1266,4 +1307,5 @@
         });
     </script>
 </body>
+
 </html>

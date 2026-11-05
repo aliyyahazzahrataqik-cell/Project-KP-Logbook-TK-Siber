@@ -6,24 +6,8 @@
     <title>Kelola Kelas – TK SIBER (iTales)</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/theme.css">
     <style>
-        :root {
-            --sidebar-bg: #405d4d;
-            --sidebar-active: #537a63;
-            --text-dark: #124b3c;
-            --text-muted: #5a7366;
-            --bg-color: #f6f8f7;
-            --card-bg: #ffffff;
-            --accent: #124b3c;
-            --accent-light: #d6ead2;
-            --accent-hover: #1b6351;
-            --border-color: #e5e9e6;
-            --danger: #ef4444;
-            --danger-bg: #fee2e2;
-        }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
-
         body { display: flex; background-color: var(--bg-color); min-height: 100vh; color: #1f2937; }
 
         /* ===== SIDEBAR ===== */
@@ -413,9 +397,12 @@
                         <a href="/dashboard-admin" class="menu-item"><i class="fa-solid fa-gauge-high"></i> Dashboard</a>
                         <a href="/kelola-akun" class="menu-item"><i class="fa-solid fa-users-gear"></i> Kelola Akun</a>
                         <a href="/kelola-pengumuman" class="menu-item"><i class="fa-solid fa-bullhorn"></i> Kelola Pengumuman</a>
+                        <a href="/kelola-menu" class="menu-item"><i class="fa-solid fa-utensils"></i> Kelola Menu</a>
+                        <span style="padding:12px 18px 6px;font-size:11px;font-weight:700;color:#a3c4b5;text-transform:uppercase;letter-spacing:.5px;display:block;">Akademik</span>
                         <a href="/kelola-kelas" class="menu-item active"><i class="fa-solid fa-chalkboard"></i> Kelola Kelas</a>
                         <a href="/kelola-anak" class="menu-item"><i class="fa-solid fa-user-group"></i> Kelola Anak</a>
-                        <a href="/kelola-menu" class="menu-item"><i class="fa-solid fa-utensils"></i> Kelola Menu</a>
+                        <a href="/kelola-jadwal" class="menu-item"><i class="fa-solid fa-calendar-days"></i> Kelola Jadwal</a>
+                        <a href="/kelola-logbook" class="menu-item"><i class="fa-solid fa-book-open"></i> Kelola Logbook</a>
                     `;
                 }
             } catch(e) { console.error(e); }
