@@ -4,8 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kelola Pengumuman – iTales Admin</title>
+    <link rel="icon" type="image/png" href="/assets/Logo_uin.png">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/theme.css">
     <style>
         :root {
             --sidebar-bg: #18302b;
@@ -569,13 +571,13 @@
     <!-- SIDEBAR -->
     <aside class="sidebar">
         <div class="sidebar-brand">
-            <img src="/assets/Logo_uin.png" alt="Logo" onerror="this.src='https://ui-avatars.com/api/?name=IT&background=1d5c45&color=fff'">
+            <img src="/assets/Logo_uin.png" alt="Logo TK Siber" onerror="this.src='https://ui-avatars.com/api/?name=TK&background=18302b&color=fff'">
             <div class="brand-text">
-                <h2>iTales</h2>
-                <p>Panel Administrator</p>
+                <h2>TK SIBER</h2>
+                <p id="sidebar-role-label">Panel Administrator</p>
             </div>
         </div>
-        <div class="sidebar-menu">
+        <div class="sidebar-menu" id="sidebar-nav">
             <span class="sidebar-section">Menu Utama</span>
             <a href="/dashboard-admin" class="menu-item">
                 <i class="fa-solid fa-gauge-high"></i> Dashboard
@@ -662,12 +664,12 @@
         <!-- TOOLBAR & TABS -->
         <div class="toolbar">
             <div class="category-tabs">
-                <button class="tab-btn active" onclick="filterKategori('Semua', this)">Semua</button>
-                <button class="tab-btn" onclick="filterKategori('Penting', this)">Penting</button>
-                <button class="tab-btn" onclick="filterKategori('Agenda', this)">Agenda</button>
-                <button class="tab-btn" onclick="filterKategori('Libur', this)">Libur</button>
-                <button class="tab-btn" onclick="filterKategori('Prestasi', this)">Prestasi</button>
-                <button class="tab-btn" onclick="filterKategori('Umum', this)">Umum</button>
+                <button class="tab-btn active" onclick="filterKategori('Semua', this)"><i class="fa-solid fa-list-ul" style="margin-right:6px;"></i> Semua</button>
+                <button class="tab-btn" onclick="filterKategori('Penting', this)"><i class="fa-solid fa-triangle-exclamation" style="margin-right:6px;"></i> Penting</button>
+                <button class="tab-btn" onclick="filterKategori('Agenda', this)"><i class="fa-solid fa-calendar-check" style="margin-right:6px;"></i> Agenda</button>
+                <button class="tab-btn" onclick="filterKategori('Libur', this)"><i class="fa-solid fa-umbrella-beach" style="margin-right:6px;"></i> Libur</button>
+                <button class="tab-btn" onclick="filterKategori('Prestasi', this)"><i class="fa-solid fa-trophy" style="margin-right:6px;"></i> Prestasi</button>
+                <button class="tab-btn" onclick="filterKategori('Umum', this)"><i class="fa-solid fa-bullhorn" style="margin-right:6px;"></i> Umum</button>
             </div>
 
             <div class="toolbar-right">
@@ -719,7 +721,7 @@
         <form class="modal" id="form-pengumuman" onsubmit="simpanPengumuman(event)">
             <div class="modal-head">
                 <h3 id="modal-form-title">Buat Pengumuman Baru</h3>
-                <button type="button" class="btn-close-modal" onclick="tutupModalForm()">&times;</button>
+                <button type="button" class="btn-close-modal" onclick="tutupModalForm()"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <div class="modal-body">
                 <input type="hidden" id="form-id">
@@ -775,7 +777,7 @@
             </div>
 
             <div class="modal-footer">
-                <button type="button" class="btn-modal-cancel" onclick="tutupModalForm()">Batal</button>
+                <button type="button" class="btn-modal-cancel" onclick="tutupModalForm()"><i class="fa-solid fa-xmark"></i> Batal</button>
                 <button type="submit" class="btn-modal-save" id="btn-submit-form">
                     <i class="fa-solid fa-paper-plane"></i> Publikasikan
                 </button>
@@ -788,7 +790,7 @@
         <div class="modal">
             <div class="modal-head">
                 <h3>Pratinjau Pengumuman</h3>
-                <button type="button" class="btn-close-modal" onclick="tutupModalPreview()">&times;</button>
+                <button type="button" class="btn-close-modal" onclick="tutupModalPreview()"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <div class="modal-body">
                 <div id="preview-foto-container" style="display:none; margin-bottom: 16px; border-radius: 12px; overflow: hidden; max-height: 260px; background: #f3f4f6;">
@@ -805,7 +807,7 @@
                 <div class="preview-content" id="preview-isi">-</div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn-modal-cancel" onclick="tutupModalPreview()">Tutup</button>
+                <button type="button" class="btn-modal-cancel" onclick="tutupModalPreview()"><i class="fa-solid fa-xmark"></i> Tutup</button>
             </div>
         </div>
     </div>
@@ -813,6 +815,7 @@
     <!-- TOAST CONTAINER -->
     <div class="toast-container" id="toast-container"></div>
 
+    <script src="/js/sidebar.js"></script>
     <script>
         let semuaPengumuman = [];
         let kategoriAktif = 'Semua';
@@ -830,16 +833,12 @@
         // Cek info admin login & proteksi akses
         async function muatPengguna() {
             try {
-                const res = await fetch('/api/me', { cache: 'no-store' });
-                if (!res.ok) { window.location.replace('/login'); return; }
-                const user = await res.json();
+                const user = await window.renderAppSidebar('kelola-pengumuman');
                 if (!user || user.role !== 'admin') {
                     window.location.replace('/login');
                     return;
                 }
                 const uname = user.username || 'Admin';
-                document.getElementById('user-display-name').textContent = uname;
-                document.getElementById('avatar-initial').textContent = uname.charAt(0).toUpperCase();
                 document.getElementById('form-penulis').value = uname;
             } catch (e) {
                 window.location.replace('/login');

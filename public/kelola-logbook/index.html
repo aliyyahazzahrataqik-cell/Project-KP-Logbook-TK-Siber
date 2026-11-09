@@ -1,18 +1,20 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kelola Logbook – TK SIBER (iTales)</title>
+    <link rel="icon" type="image/png" href="/assets/Logo_uin.png">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/theme.css">
     <style>
         :root {
-            --sidebar-bg: #405d4d;
-            --sidebar-active: #537a63;
+            --sidebar-bg: #18302b;
+            --sidebar-active: #2a5a50;
             --text-dark: #124b3c;
             --text-muted: #5a7366;
-            --bg-color: #f6f8f7;
+            --bg-color: #f4f6f5;
             --card-bg: #ffffff;
             --accent: #124b3c;
             --accent-light: #d6ead2;
@@ -1065,14 +1067,14 @@
     <!-- ===== SIDEBAR ===== -->
     <aside class="sidebar">
         <div class="sidebar-brand">
-            <img src="/assets/Logo_uin.png" alt="Logo" onerror="this.src='https://ui-avatars.com/api/?name=TK&background=fff&color=124b3c'">
-            <div>
+            <img src="/assets/Logo_uin.png" alt="Logo TK Siber" onerror="this.src='https://ui-avatars.com/api/?name=TK&background=18302b&color=fff'">
+            <div class="brand-text">
                 <h2>TK SIBER</h2>
-                <p>Logbook & Kegiatan</p>
+                <p id="sidebar-role-label">Ruang Pendidik</p>
             </div>
         </div>
         
-        <nav class="sidebar-menu">
+        <nav class="sidebar-menu" id="sidebar-nav">
             <a href="/dashboard-guru" class="menu-item">
                 <i class="fa-solid fa-house"></i> Dashboard
             </a>
@@ -1244,8 +1246,8 @@
             </div>
 
             <div class="modal-footer">
-                <button class="btn-batal" onclick="tutupModal()">Batal</button>
-                <button class="btn-simpan" id="btn-simpan" onclick="simpanLogbook()">Simpan</button>
+                <button class="btn-batal" onclick="tutupModal()"><i class="fa-solid fa-xmark"></i> Batal</button>
+                <button class="btn-simpan" id="btn-simpan" onclick="simpanLogbook()"><i class="fa-solid fa-floppy-disk"></i> Simpan</button>
             </div>
         </div>
     </div>
@@ -1268,6 +1270,7 @@
     <!-- Toast -->
     <div class="toast" id="toast"></div>
 
+<script src="/js/sidebar.js"></script>
 <script>
 // ===================== GLOBAL STATE =====================
 let semuaLogbook = [];
@@ -1309,14 +1312,9 @@ async function inisialisasi() {
         return;
     }
 
-    // Load user info
+    // Load user info & inisialisasi sidebar seragam
     try {
-        const res = await fetch('/api/me');
-        if (!res.ok) { window.location.replace('/login'); return; }
-        const user = await res.json();
-        const uname = user.username || 'Guru';
-        document.getElementById('user-display-name').textContent = uname;
-        document.getElementById('avatar-initial').textContent = uname.charAt(0).toUpperCase();
+        await window.renderAppSidebar('kelola-logbook');
     } catch(e) {}
 
     // Load kelas

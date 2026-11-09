@@ -4,8 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kelola Akun – iTales Admin</title>
+    <link rel="icon" type="image/png" href="/assets/Logo_uin.png">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/theme.css">
     <style>
         :root {
             --sidebar-bg: #18302b;
@@ -198,13 +200,13 @@
     <!-- SIDEBAR -->
     <div class="sidebar">
         <div class="sidebar-brand">
-            <img src="/assets/Logo_uin.png" alt="Logo" onerror="this.src='https://ui-avatars.com/api/?name=IT&background=1d5c45&color=fff'">
+            <img src="/assets/Logo_uin.png" alt="Logo TK Siber" onerror="this.src='https://ui-avatars.com/api/?name=TK&background=18302b&color=fff'">
             <div class="brand-text">
-                <h2>iTales</h2>
-                <p>Panel Administrator</p>
+                <h2>TK SIBER</h2>
+                <p id="sidebar-role-label">Panel Administrator</p>
             </div>
         </div>
-        <div class="sidebar-menu">
+        <div class="sidebar-menu" id="sidebar-nav">
             <span class="sidebar-section">Menu Utama</span>
             <a href="/dashboard-admin" class="menu-item">
                 <i class="fa-solid fa-gauge-high"></i> Dashboard
@@ -260,9 +262,9 @@
 
         <!-- Tab filter -->
         <div class="tabs">
-            <button class="tab-btn active" id="tab-semua" onclick="filterTab('semua')">Semua</button>
-            <button class="tab-btn" id="tab-guru" onclick="filterTab('guru')">Guru</button>
-            <button class="tab-btn" id="tab-orang_tua" onclick="filterTab('orang_tua')">Orang Tua</button>
+            <button class="tab-btn active" id="tab-semua" onclick="filterTab('semua')"><i class="fa-solid fa-users" style="margin-right:6px;"></i> Semua</button>
+            <button class="tab-btn" id="tab-guru" onclick="filterTab('guru')"><i class="fa-solid fa-chalkboard-user" style="margin-right:6px;"></i> Guru</button>
+            <button class="tab-btn" id="tab-orang_tua" onclick="filterTab('orang_tua')"><i class="fa-solid fa-hands-holding-child" style="margin-right:6px;"></i> Orang Tua</button>
         </div>
 
         <!-- Tabel akun -->
@@ -270,7 +272,7 @@
             <div class="card-head">
                 <h3>Daftar Akun</h3>
                 <button class="btn-tambah" onclick="bukaModal()">
-                    <i class="fa-solid fa-plus"></i> Tambah Akun
+                    <i class="fa-solid fa-user-plus"></i> Tambah Akun
                 </button>
             </div>
             <table>
@@ -340,12 +342,13 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button class="btn-batal" id="btn-batal">Batal</button>
-                <button class="btn-simpan" id="btn-simpan" onclick="simpanAkun()">Simpan</button>
+                <button class="btn-batal" id="btn-batal"><i class="fa-solid fa-xmark"></i> Batal</button>
+                <button class="btn-simpan" id="btn-simpan" onclick="simpanAkun()"><i class="fa-solid fa-floppy-disk"></i> Simpan</button>
             </div>
         </div>
     </div>
 
+    <script src="/js/sidebar.js"></script>
     <script>
         // Cegah akses lewat tombol Back setelah logout (bfcache fix)
         window.addEventListener('pageshow', async function(event) {
@@ -371,15 +374,10 @@
             window.location.href = '/logout';
         }
 
-        // Muat info user
+        // Muat info user & inisialisasi sidebar seragam
         async function muatInfoUser() {
             try {
-                const res = await fetch('/api/me', { cache: 'no-store' });
-                if (!res.ok) { window.location.replace('/login'); return; }
-                const user = await res.json();
-                const uname = user.username || 'Admin';
-                document.getElementById('user-display-name').textContent = uname;
-                document.getElementById('avatar-initial').textContent = uname.charAt(0).toUpperCase();
+                await window.renderAppSidebar('kelola-akun');
             } catch(e) {}
         }
 

@@ -4,8 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard Admin – TK SIBER (iTales)</title>
+    <link rel="icon" type="image/png" href="/assets/Logo_uin.png">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/theme.css">
     <style>
         :root {
             --sidebar-bg: #18302b;
@@ -39,7 +41,7 @@
 
         /* ===== SIDEBAR ===== */
         .sidebar {
-            width: 255px;
+            width: 250px;
             background-color: var(--sidebar-bg);
             color: white;
             display: flex;
@@ -155,7 +157,7 @@
         /* ===== MAIN CONTENT ===== */
         .main-content {
             flex: 1;
-            margin-left: 255px;
+            margin-left: 250px;
             padding: 28px 36px 40px;
             min-height: 100vh;
             max-width: 1360px;
@@ -573,7 +575,7 @@
             </div>
         </div>
 
-        <nav class="sidebar-menu">
+        <nav class="sidebar-menu" id="sidebar-nav">
             <span class="sidebar-section">Menu Utama</span>
             <a href="/dashboard-admin" class="menu-item active">
                 <i class="fa-solid fa-gauge-high"></i> Dashboard
@@ -721,6 +723,7 @@
 
     </main>
 
+    <script src="/js/sidebar.js"></script>
     <script>
         // Cegah akses lewat tombol Back setelah logout
         window.addEventListener('pageshow', async function(event) {
@@ -749,16 +752,12 @@
         }
 
         async function muatAdmin() {
-            // Validasi sesi & info user
-            try {
-                const res = await fetch('/api/me', { cache: 'no-store' });
-                if (!res.ok) { window.location.replace('/login'); return; }
-                const user = await res.json();
+            // Validasi sesi & inisialisasi sidebar seragam
+            const user = await window.renderAppSidebar('dashboard');
+            if (user) {
                 const uname = user.username || 'Admin';
                 document.getElementById('header-sub').textContent = `Selamat datang kembali, ${uname}! Kelola sistem TK SIBER dengan mudah.`;
-                document.getElementById('user-display-name').textContent = uname;
-                document.getElementById('avatar-initial').textContent = uname.charAt(0).toUpperCase();
-            } catch(e) {}
+            }
 
             // Stats (hanya total akun pengguna, dimuat dari /api/users di bawah)
 

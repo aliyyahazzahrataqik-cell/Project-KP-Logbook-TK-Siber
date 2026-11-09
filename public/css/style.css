@@ -899,6 +899,9 @@ a {
 }
 
 .kelas-filter-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
     background: transparent;
     border: 1px solid #c8d7d1;
     color: #3b665c;
@@ -979,6 +982,9 @@ a {
 }
 
 .filter-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
     padding: 8px 18px;
     border-radius: 50px;
     border: 1px solid #d2ded8;

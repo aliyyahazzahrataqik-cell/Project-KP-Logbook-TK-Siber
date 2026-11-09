@@ -6,9 +6,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="iTales – Ruang informasi publik TK SIBER UINSSC. Jelajahi jadwal kegiatan tanpa perlu login.">
     <title>iTales – Ruang Informasi Publik</title>
+    <link rel="icon" type="image/png" href="/assets/Logo_uin.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="css/style.css">
 </head>
 
@@ -20,7 +22,7 @@
 
             <div class="logo">
                 <div class="logo-icon-svg">
-                    <img src="assets/Logo_uin.png" alt="Logo UINSSC" width="36" height="36">
+                    <img src="/assets/Logo_uin.png" alt="Logo UINSSC" width="36" height="36">
                 </div>
                 <div class="logo-brand">
                     <span class="logo-text">iTales</span>
@@ -30,23 +32,23 @@
 
             <nav class="nav-menu">
                 <a href="#beranda" id="nav-beranda" class="nav-link active">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                    <i class="fa-solid fa-house"></i>
                     Beranda
                 </a>
                 <a href="#jadwal-section" id="nav-jadwal" class="nav-link">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                    <i class="fa-solid fa-calendar-days"></i>
                     Jadwal Belajar
                 </a>
                 <a href="#menu-makan-section" id="nav-menu-makan" class="nav-link">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>
+                    <i class="fa-solid fa-utensils"></i>
                     Menu Sehat
                 </a>
                 <a href="#pengumuman-section" id="nav-pengumuman" class="nav-link">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+                    <i class="fa-solid fa-bullhorn"></i>
                     Pengumuman
                 </a>
                 <a href="/login" id="nav-login" class="login-btn">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+                    <i class="fa-solid fa-arrow-right-to-bracket"></i>
                     Login
                 </a>
             </nav>
@@ -63,18 +65,27 @@
 
                 <!-- Kiri -->
                 <div class="hero-left">
-                    <span class="hero-badge">Selamat datang di iTales</span>
+                    <span class="hero-badge"><i class="fa-solid fa-sparkles"></i> Selamat datang di iTales</span>
                     <h1>Cerita kecil,<br>langkah besar.</h1>
                     <p class="hero-desc">
                         iTales membantu sekolah dan keluarga terhubung melalui informasi kegiatan.
                         Jelajahi agenda publik tanpa perlu login.
                     </p>
+                    <div class="hero-actions" style="margin-top: 24px;">
+                        <a href="#jadwal-section" class="btn-primary">
+                            <i class="fa-solid fa-calendar-day"></i> Lihat Jadwal Belajar
+                        </a>
+                        <a href="/login" class="btn-ghost">
+                            <i class="fa-solid fa-arrow-right-to-bracket"></i> Masuk Aplikasi
+                        </a>
+                    </div>
+                    <p class="hero-hint" style="margin-top: 14px;"><i class="fa-solid fa-circle-check" style="color: #2d7a56; margin-right: 4px;"></i> Akses terbuka untuk wali murid & umum</p>
                 </div>
 
                 <!-- Kanan -->
                 <div class="hero-right">
                     <div class="hero-image-card">
-                        <img src="assets/gedung.jpg" alt="Gedung TK SIBER UINSSC">
+                        <img src="/assets/gedung.jpg" alt="Gedung TK SIBER UINSSC">
                         <div class="image-caption">
                             <span class="caption-title">TK SIBER · UINSSC</span>
                             <span class="caption-sub">Ruang belajar, bermain, dan bertumbuh.</span>
@@ -125,9 +136,9 @@
 
                         <div class="jadwal-day-actions">
                             <div class="kelas-filter-group" id="filter-kelas-group">
-                                <button type="button" class="kelas-filter-btn active" data-kelas="semua">Semua Kelas</button>
-                                <button type="button" class="kelas-filter-btn" data-kelas="TK A">TK A</button>
-                                <button type="button" class="kelas-filter-btn" data-kelas="TK B">TK B</button>
+                                <button type="button" class="kelas-filter-btn active" data-kelas="semua"><i class="fa-solid fa-shapes"></i> Semua Kelas</button>
+                                <button type="button" class="kelas-filter-btn" data-kelas="TK A"><i class="fa-solid fa-child"></i> TK A</button>
+                                <button type="button" class="kelas-filter-btn" data-kelas="TK B"><i class="fa-solid fa-child-reaching"></i> TK B</button>
                             </div>
 
                             <div class="select-hari-wrap">
@@ -199,12 +210,12 @@
 
                 <!-- Filter Kategori Pengumuman -->
                 <div class="pengumuman-filter-bar">
-                    <button type="button" class="filter-pill active" onclick="filterPengumuman('Semua', this)">Semua Informasi</button>
-                    <button type="button" class="filter-pill" onclick="filterPengumuman('Penting', this)">Penting</button>
-                    <button type="button" class="filter-pill" onclick="filterPengumuman('Agenda', this)">Agenda</button>
-                    <button type="button" class="filter-pill" onclick="filterPengumuman('Libur', this)">Libur</button>
-                    <button type="button" class="filter-pill" onclick="filterPengumuman('Prestasi', this)">Prestasi</button>
-                    <button type="button" class="filter-pill" onclick="filterPengumuman('Umum', this)">Umum</button>
+                    <button type="button" class="filter-pill active" onclick="filterPengumuman('Semua', this)"><i class="fa-solid fa-list-ul"></i> Semua Informasi</button>
+                    <button type="button" class="filter-pill" onclick="filterPengumuman('Penting', this)"><i class="fa-solid fa-triangle-exclamation"></i> Penting</button>
+                    <button type="button" class="filter-pill" onclick="filterPengumuman('Agenda', this)"><i class="fa-solid fa-calendar-check"></i> Agenda</button>
+                    <button type="button" class="filter-pill" onclick="filterPengumuman('Libur', this)"><i class="fa-solid fa-umbrella-beach"></i> Libur</button>
+                    <button type="button" class="filter-pill" onclick="filterPengumuman('Prestasi', this)"><i class="fa-solid fa-trophy"></i> Prestasi</button>
+                    <button type="button" class="filter-pill" onclick="filterPengumuman('Umum', this)"><i class="fa-solid fa-bullhorn"></i> Umum</button>
                 </div>
 
                 <!-- Grid Pengumuman (diisi JS) -->
@@ -226,7 +237,7 @@
             <div class="footer-brand">
                 <div class="logo footer-logo">
                     <div class="logo-icon-svg">
-                        <img src="assets/Logo_uin.png" alt="Logo UINSSC" width="30" height="30">
+                        <img src="/assets/Logo_uin.png" alt="Logo UINSSC" width="30" height="30">
                     </div>
                     <span class="logo-text">iTales</span>
                 </div>
@@ -441,6 +452,14 @@
             });
         });
 
+        function getUploadUrl(path) {
+            if (!path) return '';
+            if (path.startsWith('http://') || path.startsWith('https://')) return path;
+            const clean = path.replace(/^\/+/, '');
+            if (clean.startsWith('uploads/')) return '/' + clean;
+            return '/uploads/' + clean;
+        }
+
         async function muatMenuMakan() {
             const grid = document.getElementById('menu-makan-grid');
             try {
@@ -457,12 +476,13 @@
                 grid.innerHTML = list.map(item => {
                     const isToday = item.hari.toLowerCase() === hariIni;
                     const cleanKet = (item.keterangan || '').replace(/'/g, "\\'");
+                    const fotoUrl = getUploadUrl(item.foto);
                     const visualHtml = item.foto 
-                        ? `<div class="menu-photo-wrap" onclick="previewFotoMenu('/uploads/${item.foto}', '${item.menu}', '${item.hari}', '${cleanKet}')" title="Klik untuk perbesar">
-                             <img src="/uploads/${item.foto}" alt="${item.menu}">
+                        ? `<div class="menu-photo-wrap" onclick="previewFotoMenu('${fotoUrl}', '${item.menu}', '${item.hari}', '${cleanKet}')" title="Klik untuk perbesar">
+                             <img src="${fotoUrl}" alt="${item.menu}" onerror="this.parentElement.style.display='none'">
                            </div>`
                         : `<div class="menu-icon-wrap">
-                             <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>
+                             <i class="fa-solid fa-utensils" style="font-size: 20px; color: #1d5c45;"></i>
                            </div>`;
                     return `
                         <div class="menu-card ${isToday ? 'is-today' : ''}">
@@ -545,9 +565,10 @@
             grid.innerHTML = filtered.map(item => {
                 const badgeClass = getBadgeKategoriClass(item.kategori);
                 const tgl = formatTglLanding(item.tanggal);
+                const fotoUrl = getUploadUrl(item.foto);
                 const fotoHtml = item.foto 
                     ? `<div class="pengumuman-cover-wrap">
-                         <img src="/uploads/${item.foto}" alt="${escapeHtml(item.judul)}">
+                         <img src="${fotoUrl}" alt="${escapeHtml(item.judul)}" onerror="this.parentElement.style.display='none'">
                        </div>` 
                     : '';
                 return `
@@ -556,7 +577,7 @@
                         <div class="pengumuman-card-body">
                             <div class="pengumuman-card-top">
                                 <span class="pengumuman-date">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                                    <i class="fa-regular fa-calendar" style="font-size: 12px; margin-right: 4px;"></i>
                                     ${tgl}
                                 </span>
                                 <span class="kategori-badge ${badgeClass}">${item.kategori}</span>
@@ -568,7 +589,7 @@
                             <span class="pengumuman-author">Oleh: ${escapeHtml(item.penulis || 'Admin')}</span>
                             <button type="button" class="btn-read-more" onclick="bukaDetailPengumuman(${item.id_pengumuman})">
                                 Baca Lengkap
-                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                                <i class="fa-solid fa-arrow-right"></i>
                             </button>
                         </div>
                     </div>
@@ -583,7 +604,7 @@
             const fotoContainer = document.getElementById('modal-detail-foto-container');
             const fotoImg = document.getElementById('modal-detail-foto');
             if (item.foto) {
-                fotoImg.src = `/uploads/${item.foto}`;
+                fotoImg.src = getUploadUrl(item.foto);
                 fotoContainer.style.display = 'block';
             } else {
                 fotoContainer.style.display = 'none';
@@ -666,7 +687,7 @@
                     <span id="modal-detail-badge" class="kategori-badge kategori-umum">Umum</span>
                     <span id="modal-detail-date" style="font-size:12.5px; color:#7a9e96; font-weight:600;">-</span>
                 </div>
-                <button type="button" onclick="tutupDetailPengumuman()" style="background:none; border:none; font-size:22px; cursor:pointer; color:#7a9e96; line-height:1;">&times;</button>
+                <button type="button" onclick="tutupDetailPengumuman()" style="background:none; border:none; font-size:20px; cursor:pointer; color:#7a9e96; line-height:1;"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <div class="landing-modal-body">
                 <div id="modal-detail-foto-container" style="display:none; border-radius: 12px; overflow: hidden; margin-bottom: 16px; max-height: 320px; background: #f3f4f6;">
@@ -680,7 +701,7 @@
             </div>
             <div class="landing-modal-footer">
                 <button type="button" onclick="tutupDetailPengumuman()" class="btn-primary" style="padding:8px 20px; font-size:13px; border-radius:8px;">
-                    Tutup
+                    <i class="fa-solid fa-xmark"></i> Tutup
                 </button>
             </div>
         </div>
@@ -690,7 +711,7 @@
     <div class="landing-modal-overlay" id="landing-modal-foto-menu" onclick="if(event.target === this) tutupFotoMenu()">
         <div class="landing-modal" style="max-width: 480px; text-align: center;">
             <div class="landing-modal-header" style="justify-content: flex-end; padding-bottom: 4px;">
-                <button type="button" onclick="tutupFotoMenu()" style="background:none; border:none; font-size:24px; cursor:pointer; color:#7a9e96; line-height:1;">&times;</button>
+                <button type="button" onclick="tutupFotoMenu()" style="background:none; border:none; font-size:20px; cursor:pointer; color:#7a9e96; line-height:1;"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <div class="landing-modal-body" style="padding-top: 0;">
                 <div style="border-radius: 12px; overflow: hidden; margin-bottom: 14px; background: #f3f4f6; max-height: 380px;">
@@ -701,7 +722,7 @@
             </div>
             <div class="landing-modal-footer" style="justify-content: center;">
                 <button type="button" onclick="tutupFotoMenu()" class="btn-primary" style="padding:8px 24px; font-size:13px; border-radius:8px;">
-                    Tutup
+                    <i class="fa-solid fa-xmark"></i> Tutup
                 </button>
             </div>
         </div>

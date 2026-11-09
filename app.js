@@ -478,8 +478,9 @@ app.put('/api/menu-makan/:id', requireRole('admin', 'guru'), (req, res) => {
         return res.status(400).json({ error: 'Nama menu wajib diisi' });
     }
 
+    const fotoClean = foto ? foto.replace(/^\/uploads\//, '') : null;
     const query = `UPDATE menu_makan SET menu = ?, keterangan = ?, foto = ? WHERE id_menu = ?`;
-    db.query(query, [menu, keterangan || null, foto || null, req.params.id], (err, result) => {
+    db.query(query, [menu, keterangan || null, fotoClean, req.params.id], (err, result) => {
         if (err) {
             console.error('Error update menu makan:', err);
             return res.status(500).json({ error: 'Gagal memperbarui menu makan' });
@@ -517,6 +518,7 @@ app.post('/api/menu-makan/bulk', requireRole('admin', 'guru'), async (req, res) 
         for (const item of items) {
             if (item.hari && item.menu) {
                 await new Promise((resolve, reject) => {
+                    const fotoClean = item.foto ? item.foto.replace(/^\/uploads\//, '') : null;
                     const sql = `
                         INSERT INTO menu_makan (hari, menu, keterangan, foto) 
                         VALUES (?, ?, ?, ?) 
@@ -525,7 +527,7 @@ app.post('/api/menu-makan/bulk', requireRole('admin', 'guru'), async (req, res) 
                             keterangan = VALUES(keterangan),
                             foto = VALUES(foto)
                     `;
-                    db.query(sql, [item.hari, item.menu, item.keterangan || null, item.foto || null], (err, r) => {
+                    db.query(sql, [item.hari, item.menu, item.keterangan || null, fotoClean], (err, r) => {
                         if (err) reject(err);
                         else resolve(r);
                     });
@@ -619,9 +621,10 @@ app.post('/api/pengumuman', requireRole('admin'), (req, res) => {
 
     const kategoriFix = kategori || 'Umum';
     const penulisFix = penulis || req.session.user.nama || 'Admin TK Siber';
+    const fotoClean = foto ? foto.replace(/^\/uploads\//, '') : null;
 
     const sql = `INSERT INTO pengumuman (judul, kategori, isi, tanggal, penulis, foto) VALUES (?, ?, ?, ?, ?, ?)`;
-    db.query(sql, [judul, kategoriFix, isi, tanggal, penulisFix, foto || null], (err, result) => {
+    db.query(sql, [judul, kategoriFix, isi, tanggal, penulisFix, fotoClean], (err, result) => {
         if (err) {
             console.error('Error tambah pengumuman:', err);
             return res.status(500).json({ error: 'Gagal menambahkan pengumuman' });
@@ -640,9 +643,10 @@ app.put('/api/pengumuman/:id', requireRole('admin'), (req, res) => {
 
     const kategoriFix = kategori || 'Umum';
     const penulisFix = penulis || req.session.user.nama || 'Admin TK Siber';
+    const fotoClean = foto ? foto.replace(/^\/uploads\//, '') : null;
 
     const sql = `UPDATE pengumuman SET judul = ?, kategori = ?, isi = ?, tanggal = ?, penulis = ?, foto = ? WHERE id_pengumuman = ?`;
-    db.query(sql, [judul, kategoriFix, isi, tanggal, penulisFix, foto || null, id], (err, result) => {
+    db.query(sql, [judul, kategoriFix, isi, tanggal, penulisFix, fotoClean, id], (err, result) => {
         if (err) {
             console.error('Error update pengumuman:', err);
             return res.status(500).json({ error: 'Gagal memperbarui pengumuman' });

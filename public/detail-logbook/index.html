@@ -1,18 +1,20 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Detail Logbook – iTales (TK SIBER)</title>
+    <link rel="icon" type="image/png" href="/assets/Logo_uin.png">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/theme.css">
     <style>
         :root {
-            --sidebar-bg: #405d4d;
-            --sidebar-active: #537a63;
+            --sidebar-bg: #18302b;
+            --sidebar-active: #2a5a50;
             --text-dark: #124b3c;
             --text-muted: #5a7366;
-            --bg-color: #f6f8f7;
+            --bg-color: #f4f6f5;
             --card-bg: #ffffff;
             --accent: #124b3c;
             --accent-light: #edf5f0;
@@ -1118,16 +1120,14 @@
     <!-- ===== SIDEBAR ===== -->
     <aside class="sidebar">
         <div class="sidebar-brand">
-            <img src="/assets/Logo_uin.png" alt="Logo TK Siber" onerror="this.src='https://ui-avatars.com/api/?name=TK&background=fff&color=124b3c'">
-            <div>
+            <img src="/assets/Logo_uin.png" alt="Logo TK Siber" onerror="this.src='https://ui-avatars.com/api/?name=TK&background=18302b&color=fff'">
+            <div class="brand-text">
                 <h2>TK SIBER</h2>
-                <p>iTales · Ruang wali kelas</p>
+                <p id="sidebar-role-label">Ruang Pendidik</p>
             </div>
         </div>
 
-        <div class="sidebar-section-title">RUANG KELAS</div>
-
-        <nav class="sidebar-menu">
+        <nav class="sidebar-menu" id="sidebar-nav">
             <a href="/dashboard-guru" class="menu-item">
                 <i class="fa-solid fa-house"></i> Dashboard
             </a>
@@ -1305,8 +1305,8 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button class="btn-batal" onclick="tutupModalCatatan()">Batal</button>
-                <button class="btn-simpan" onclick="simpanCatatanAnak()">Simpan Catatan</button>
+                <button class="btn-batal" onclick="tutupModalCatatan()"><i class="fa-solid fa-xmark"></i> Batal</button>
+                <button class="btn-simpan" onclick="simpanCatatanAnak()"><i class="fa-solid fa-floppy-disk"></i> Simpan Catatan</button>
             </div>
         </div>
     </div>
@@ -1346,7 +1346,7 @@
                     </div>
 
                     <div class="modal-footer" style="padding: 16px 0 0; margin-top: 16px; border-top: 1px solid #e5e7eb; display: flex; justify-content: flex-end; gap: 10px;">
-                        <button type="button" class="btn-batal" onclick="tutupModalUploadDoc()">Batal</button>
+                        <button type="button" class="btn-batal" onclick="tutupModalUploadDoc()"><i class="fa-solid fa-xmark"></i> Batal</button>
                         <button type="submit" class="btn-simpan" id="btn-submit-upload">
                             <i class="fa-solid fa-arrow-up-from-bracket"></i> Unggah Sekarang
                         </button>
@@ -1411,7 +1411,7 @@
                 </div>
             </div>
             <div class="modal-footer" style="padding: 12px 24px; display: flex; justify-content: flex-end; background: #fafafa; border-top: 1px solid #e5e7eb;">
-                <button type="button" class="btn-batal" onclick="tutupModalDetailAnak()">Tutup</button>
+                <button type="button" class="btn-batal" onclick="tutupModalDetailAnak()"><i class="fa-solid fa-xmark"></i> Tutup</button>
             </div>
         </div>
     </div>
@@ -1432,6 +1432,7 @@
     <!-- Toast Notification -->
     <div class="toast" id="toast"></div>
 
+<script src="/js/sidebar.js"></script>
 <script>
 // ===================== STATE =====================
 let currentLogbookId = null;
@@ -1474,13 +1475,14 @@ async function inisialisasi() {
     const params = new URLSearchParams(window.location.search);
     currentLogbookId = params.get('id') || '1'; // Default ke 1 jika tidak ada
 
-    // 2. Load User Info
+    // 2. Load User Info & inisialisasi sidebar seragam
     try {
-        const resMe = await fetch('/api/me');
-        if (!resMe.ok) { window.location.replace('/login'); return; }
-        const me = await resMe.json();
-        const uname = me.username || 'Guru';
-        document.getElementById('user-avatar-initial').textContent = uname.charAt(0).toUpperCase();
+        const me = await window.renderAppSidebar('kelola-logbook');
+        if (me) {
+            const uname = me.username || 'Guru';
+            const av = document.getElementById('user-avatar-initial');
+            if (av) av.textContent = uname.charAt(0).toUpperCase();
+        }
     } catch(e) {}
 
     // 3. Load Detail Logbook

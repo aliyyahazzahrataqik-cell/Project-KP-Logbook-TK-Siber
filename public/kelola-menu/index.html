@@ -1,18 +1,20 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kelola Menu – TK SIBER (iTales)</title>
+    <link rel="icon" type="image/png" href="/assets/Logo_uin.png">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/theme.css">
     <style>
         :root {
-            --sidebar-bg: #405d4d;
-            --sidebar-active: #537a63;
+            --sidebar-bg: #18302b;
+            --sidebar-active: #2a5a50;
             --text-dark: #124b3c;
             --text-muted: #5a7366;
-            --bg-color: #f6f8f7;
+            --bg-color: #f4f6f5;
             --card-bg: #ffffff;
             --accent: #124b3c;
             --accent-light: #d6ead2;
@@ -818,14 +820,14 @@
     <!-- ===== SIDEBAR ===== -->
     <aside class="sidebar">
         <div class="sidebar-brand">
-            <img src="/assets/Logo_uin.png" alt="Logo" onerror="this.src='https://ui-avatars.com/api/?name=TK&background=fff&color=124b3c'">
-            <div>
+            <img src="/assets/Logo_uin.png" alt="Logo TK Siber" onerror="this.src='https://ui-avatars.com/api/?name=TK&background=18302b&color=fff'">
+            <div class="brand-text">
                 <h2>TK SIBER</h2>
-                <p>Logbook & Kegiatan</p>
+                <p id="sidebar-role-label">Ruang Pendidik</p>
             </div>
         </div>
         
-        <nav class="sidebar-menu">
+        <nav class="sidebar-menu" id="sidebar-nav">
             <a href="/dashboard-guru" class="menu-item">
                 <i class="fa-solid fa-house"></i> Dashboard
             </a>
@@ -906,7 +908,7 @@
         <div class="modal-lightbox" onclick="event.stopPropagation()">
             <div class="modal-lightbox-header">
                 <h3 id="lightbox-title"><i class="fa-solid fa-camera"></i> Foto Menu Makan</h3>
-                <button type="button" class="btn-close-lightbox" onclick="tutupLightbox()">&times;</button>
+                <button type="button" class="btn-close-lightbox" onclick="tutupLightbox()"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <div class="modal-lightbox-body">
                 <img id="lightbox-img" src="" alt="Foto Menu">
@@ -918,6 +920,7 @@
     <div class="toast-container" id="toast-container"></div>
 
     <!-- Script Compress Foto Universal -->
+    <script src="/js/sidebar.js"></script>
     <script src="/js/image-compress.js"></script>
 
     <script>
@@ -930,44 +933,13 @@
             await muatDataMenu();
         });
 
-        // Muat Data User
+        // Muat Data User & inisialisasi sidebar seragam
         async function muatUser() {
             try {
-                const res = await fetch('/api/me');
-                if (!res.ok) {
+                const user = await window.renderAppSidebar('kelola-menu');
+                if (!user || (user.role !== 'admin' && user.role !== 'guru')) {
                     window.location.replace('/login');
                     return;
-                }
-                const user = await res.json();
-                if (user.role !== 'admin' && user.role !== 'guru') {
-                    window.location.replace('/login');
-                    return;
-                }
-                const uname = user.username || 'Guru';
-                document.getElementById('user-display-name').textContent = uname;
-                document.getElementById('avatar-initial').textContent = uname.charAt(0).toUpperCase();
-
-                if (user.role === 'admin') {
-                    const roleEl = document.querySelector('.profile-role');
-                    if (roleEl) roleEl.textContent = 'Administrator · Online';
-                    const nav = document.querySelector('.sidebar-menu');
-                    if (nav) {
-                        nav.innerHTML = `
-                            <span style="padding: 12px 18px 6px; font-size: 11px; font-weight: 700; color: #a3c4b5; text-transform: uppercase; letter-spacing: 0.5px;">Menu Utama</span>
-                            <a href="/dashboard-admin" class="menu-item">
-                                <i class="fa-solid fa-gauge-high"></i> Dashboard
-                            </a>
-                            <a href="/kelola-akun" class="menu-item">
-                                <i class="fa-solid fa-users-gear"></i> Kelola Akun
-                            </a>
-                            <a href="/kelola-pengumuman" class="menu-item">
-                                <i class="fa-solid fa-bullhorn"></i> Kelola Pengumuman
-                            </a>
-                            <a href="/kelola-menu" class="menu-item active">
-                                <i class="fa-solid fa-utensils"></i> Kelola Menu
-                            </a>
-                        `;
-                    }
                 }
             } catch (e) {
                 console.error('Error fetching user info:', e);

@@ -4,8 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard – iTales</title>
+    <link rel="icon" type="image/png" href="/assets/Logo_uin.png">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/theme.css">
     <style>
         :root {
             --sidebar-bg: #18302b;
@@ -544,14 +546,14 @@
     <!-- Sidebar -->
     <div class="sidebar">
         <div class="sidebar-brand">
-            <img src="/assets/Logo_uin.png" alt="Logo" onerror="this.src='https://ui-avatars.com/api/?name=TK&background=fff&color=124b3c'">
-            <div>
+            <img src="/assets/Logo_uin.png" alt="Logo TK Siber" onerror="this.src='https://ui-avatars.com/api/?name=TK&background=18302b&color=fff'">
+            <div class="brand-text">
                 <h2>TK SIBER</h2>
-                <p>Logbook</p>
+                <p id="sidebar-role-label">Ruang Pendidik</p>
             </div>
         </div>
         
-        <div class="sidebar-menu">
+        <div class="sidebar-menu" id="sidebar-nav">
             <a href="/dashboard-guru" class="menu-item active">
                 <i class="fa-solid fa-house"></i> Dashboard
             </a>
@@ -708,8 +710,8 @@
                 <!-- Dynamic rows for Senin - Jumat -->
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn-batal" onclick="tutupModalMenu()">Batal</button>
-                <button type="button" class="btn-simpan" id="btn-simpan-menu" onclick="simpanMenuMakan()">Simpan Perubahan</button>
+                <button type="button" class="btn-batal" onclick="tutupModalMenu()"><i class="fa-solid fa-xmark"></i> Batal</button>
+                <button type="button" class="btn-simpan" id="btn-simpan-menu" onclick="simpanMenuMakan()"><i class="fa-solid fa-floppy-disk"></i> Simpan Perubahan</button>
             </div>
         </div>
     </div>
@@ -729,6 +731,7 @@
         </div>
     </div>
 
+    <script src="/js/sidebar.js"></script>
     <script src="/js/image-compress.js"></script>
 </body>
 </html>
@@ -787,16 +790,11 @@ async function muatDashboard() {
 
     // Info user & validasi autentikasi
     try {
-        const res = await fetch('/api/me');
-        if (!res.ok) {
-            window.location.replace('/login');
-            return;
+        const user = await window.renderAppSidebar('dashboard');
+        if (user) {
+            const uname = user.username || 'Guru';
+            document.getElementById('header-greeting').textContent = `Selamat datang, ${uname}!`;
         }
-        const user = await res.json();
-        const uname = user.username || 'Guru';
-        document.getElementById('header-greeting').textContent = `Selamat datang, ${uname}!`;
-        document.getElementById('user-display-name').textContent = uname;
-        document.getElementById('avatar-initial').textContent = uname.charAt(0).toUpperCase();
     } catch(e) {}
 
     // Stats

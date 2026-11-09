@@ -7,15 +7,17 @@
     <meta name="description"
         content="Dashboard Orang Tua – iTales TK SIBER. Pantau kegiatan dan perkembangan anak Anda.">
     <title>Dashboard Orang Tua – iTales</title>
+    <link rel="icon" type="image/png" href="/assets/Logo_uin.png">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/theme.css">
     <style>
         :root {
-            --sidebar-bg: #405d4d;
-            --sidebar-active: #537a63;
+            --sidebar-bg: #18302b;
+            --sidebar-active: #2a5a50;
             --text-dark: #124b3c;
             --text-muted: #5a7366;
-            --bg-color: #f6f6f6;
+            --bg-color: #f4f6f5;
             --card-bg: #ffffff;
             --accent: #124b3c;
             --accent-light: #edf5f0;
@@ -818,15 +820,15 @@
     <!-- ===== SIDEBAR ===== -->
     <div class="sidebar">
         <div class="sidebar-brand">
-            <img src="/assets/Logo_uin.png" alt="Logo"
-                onerror="this.src='https://ui-avatars.com/api/?name=TK&background=fff&color=124b3c'">
-            <div>
+            <img src="/assets/Logo_uin.png" alt="Logo TK Siber"
+                onerror="this.src='https://ui-avatars.com/api/?name=TK&background=18302b&color=fff'">
+            <div class="brand-text">
                 <h2>TK SIBER</h2>
-                <p>Logbook</p>
+                <p id="sidebar-role-label">Portal Orang Tua</p>
             </div>
         </div>
 
-        <div class="sidebar-menu">
+        <div class="sidebar-menu" id="sidebar-nav">
             <a href="/dashboard-ortu" class="menu-item active">
                 <i class="fa-solid fa-house"></i> Dashboard
             </a>
@@ -1004,6 +1006,7 @@
         </div>
     </div>
 
+    <script src="/js/sidebar.js"></script>
     <script>
         // ===== AUTH GUARD =====
         window.addEventListener('pageshow', async function (event) {
@@ -1056,15 +1059,13 @@
                 return;
             }
 
-            // 1. Info user
+            // 1. Info user & sidebar seragam
             try {
-                const res = await fetch('/api/me');
-                if (!res.ok) { window.location.replace('/login'); return; }
-                const user = await res.json();
-                const uname = user.username || 'Orang Tua';
-                document.getElementById('header-greeting').textContent = `Selamat datang, ${uname}!`;
-                document.getElementById('user-display-name').textContent = uname;
-                document.getElementById('avatar-initial').textContent = uname.charAt(0).toUpperCase();
+                const user = await window.renderAppSidebar('dashboard');
+                if (user) {
+                    const uname = user.username || 'Orang Tua';
+                    document.getElementById('header-greeting').textContent = `Selamat datang, ${uname}!`;
+                }
             } catch (e) {
                 window.location.replace('/login');
                 return;
@@ -1514,7 +1515,7 @@
                 style="padding: 14px 20px; display: flex; justify-content: space-between; align-items: center; color: white; background: #1f2937;">
                 <span id="lightbox-ortu-title" style="font-size: 13.5px; font-weight: 600;">Dokumentasi</span>
                 <button type="button" onclick="tutupLightboxOrtu()"
-                    style="background: none; border: none; color: white; font-size: 22px; cursor: pointer; line-height: 1;">&times;</button>
+                    style="background: none; border: none; color: white; font-size: 20px; cursor: pointer; line-height: 1;"><i class="fa-solid fa-xmark"></i></button>
             </div>
         </div>
     </div>
@@ -1524,7 +1525,7 @@
         <div class="modal" style="width: 440px;">
             <div class="modal-header">
                 <h2><i class="fa-solid fa-key" style="color:#124b3c; margin-right:8px;"></i> Ganti Password Akun</h2>
-                <button type="button" class="btn-close-modal" onclick="tutupModalGantiPassword()">&times;</button>
+                <button type="button" class="btn-close-modal" onclick="tutupModalGantiPassword()"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <form id="form-ganti-pw" onsubmit="simpanPasswordBaru(event)">
                 <div class="modal-body" style="padding: 22px;">
@@ -1549,10 +1550,9 @@
                 <div
                     style="padding:14px 22px; display:flex; justify-content:flex-end; gap:10px; background:#f9fafb; border-top:1px solid #f3f4f6;">
                     <button type="button" onclick="tutupModalGantiPassword()"
-                        style="padding:9px 16px; border-radius:8px; border:1px solid #d1d5db; background:white; font-size:13px; font-weight:600; cursor:pointer;">Batal</button>
+                        style="padding:9px 16px; border-radius:8px; border:1px solid #d1d5db; background:white; font-size:13px; font-weight:600; cursor:pointer;"><i class="fa-solid fa-xmark"></i> Batal</button>
                     <button type="submit" id="btn-submit-pw"
-                        style="padding:9px 18px; border-radius:8px; border:none; background:#124b3c; color:white; font-size:13px; font-weight:700; cursor:pointer;">Simpan
-                        Password</button>
+                        style="padding:9px 18px; border-radius:8px; border:none; background:#124b3c; color:white; font-size:13px; font-weight:700; cursor:pointer;"><i class="fa-solid fa-floppy-disk"></i> Simpan Password</button>
                 </div>
             </form>
         </div>
