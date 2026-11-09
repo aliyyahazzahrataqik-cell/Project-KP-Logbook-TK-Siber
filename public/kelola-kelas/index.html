@@ -138,13 +138,16 @@
 
         .kelas-actions { display: flex; gap: 6px; flex-shrink: 0; }
         .btn-icon {
-            width: 34px; height: 34px; border-radius: 8px; border: 1px solid #e5e7eb;
-            background: #f9fafb; cursor: pointer; display: flex; align-items: center;
-            justify-content: center; font-size: 14px; color: #6b7280;
+            width: 32px; height: 32px; border-radius: 8px; border: 1px solid #dbeafe;
+            background: #eff6ff; cursor: pointer; display: flex; align-items: center;
+            justify-content: center; font-size: 13px; color: #2563eb;
             transition: all 0.15s ease;
         }
-        .btn-icon:hover { background: #e8f3ee; border-color: #c7e1d5; color: var(--accent); }
-        .btn-icon.danger:hover { background: var(--danger-bg); border-color: #fecaca; color: var(--danger); }
+        .btn-icon:hover { background: #2563eb; border-color: #2563eb; color: #ffffff; }
+        .btn-icon.danger {
+            background: #fef2f2; border-color: #fee2e2; color: #dc2626;
+        }
+        .btn-icon.danger:hover { background: #dc2626; border-color: #dc2626; color: #ffffff; }
 
         .kelas-divider { height: 1px; background: #f3f4f6; margin: 0 22px; }
 

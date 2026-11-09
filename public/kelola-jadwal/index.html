@@ -679,7 +679,7 @@
             </a>
             <a href="/kelola-kelas" class="menu-item"><i class="fa-solid fa-chalkboard"></i> Kelola Kelas</a>
             <a href="/kelola-anak" class="menu-item">
-                <i class="fa-solid fa-user-group"></i> Kelola Anak
+                <i class="fa-solid fa-children"></i> Kelola Anak
             </a>
             <a href="/kelola-jadwal" class="menu-item active">
                 <i class="fa-solid fa-calendar-days"></i> Kelola Jadwal
@@ -688,7 +688,7 @@
                 <i class="fa-solid fa-utensils"></i> Kelola Menu
             </a>
             <a href="/kelola-logbook" class="menu-item">
-                <i class="fa-solid fa-book"></i> Kelola Logbook
+                <i class="fa-solid fa-book-bookmark"></i> Kelola Logbook
             </a>
         </nav>
 
@@ -721,12 +721,12 @@
         <!-- Filters & Button -->
         <div class="top-actions">
             <div class="days-filter">
-                <button class="day-btn active" onclick="pilihHari('Senin')">Senin</button>
-                <button class="day-btn" onclick="pilihHari('Selasa')">Selasa</button>
-                <button class="day-btn" onclick="pilihHari('Rabu')">Rabu</button>
-                <button class="day-btn" onclick="pilihHari('Kamis')">Kamis</button>
-                <button class="day-btn" onclick="pilihHari('Jumat')">Jumat</button>
-                <button class="day-btn" onclick="pilihHari('Sabtu')">Sabtu</button>
+                <button class="day-btn active" data-hari="Senin" onclick="pilihHari('Senin')"><i class="fa-regular fa-calendar-day"></i> Senin</button>
+                <button class="day-btn" data-hari="Selasa" onclick="pilihHari('Selasa')"><i class="fa-regular fa-calendar-day"></i> Selasa</button>
+                <button class="day-btn" data-hari="Rabu" onclick="pilihHari('Rabu')"><i class="fa-regular fa-calendar-day"></i> Rabu</button>
+                <button class="day-btn" data-hari="Kamis" onclick="pilihHari('Kamis')"><i class="fa-regular fa-calendar-day"></i> Kamis</button>
+                <button class="day-btn" data-hari="Jumat" onclick="pilihHari('Jumat')"><i class="fa-regular fa-calendar-day"></i> Jumat</button>
+                <button class="day-btn" data-hari="Sabtu" onclick="pilihHari('Sabtu')"><i class="fa-regular fa-calendar-day"></i> Sabtu</button>
             </div>
 
             <div class="toolbar-right">
@@ -757,11 +757,11 @@
                     <thead>
                         <tr>
                             <th style="width: 60px;">No</th>
-                            <th style="width: 170px;">Waktu Kegiatan</th>
-                            <th>Nama Kegiatan</th>
-                            <th>Keterangan</th>
-                            <th style="width: 120px;">Kelas</th>
-                            <th style="width: 100px; text-align: center;">Aksi</th>
+                            <th style="width: 170px;"><i class="fa-regular fa-clock"></i> Waktu Kegiatan</th>
+                            <th><i class="fa-solid fa-list-check"></i> Nama Kegiatan</th>
+                            <th><i class="fa-regular fa-comment-dots"></i> Keterangan</th>
+                            <th style="width: 120px;"><i class="fa-solid fa-graduation-cap"></i> Kelas</th>
+                            <th style="width: 100px; text-align: center;"><i class="fa-solid fa-gear"></i> Aksi</th>
                         </tr>
                     </thead>
                     <tbody id="tbody-jadwal">
@@ -914,7 +914,8 @@
         function pilihHari(hari) {
             hariAktif = hari;
             document.querySelectorAll('.day-btn').forEach(btn => {
-                btn.classList.toggle('active', btn.textContent.trim() === hari);
+                const target = btn.dataset.hari || btn.textContent.trim();
+                btn.classList.toggle('active', target === hari);
             });
             document.getElementById('title-hari-aktif').textContent = `Jadwal Hari ${hari}`;
             renderJadwal();

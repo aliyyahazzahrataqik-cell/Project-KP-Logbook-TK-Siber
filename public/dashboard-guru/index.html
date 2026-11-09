@@ -539,6 +539,34 @@
         .btn-simpan:hover {
             background: #0d382c;
         }
+
+        .btn-quick-guru {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 9px 16px;
+            background: white;
+            color: var(--text-dark);
+            border: 1px solid #d2e4d8;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 700;
+            text-decoration: none;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+            transition: all 0.15s ease;
+        }
+        .btn-quick-guru:hover {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+            transform: translateY(-1px);
+        }
+        .btn-quick-guru i {
+            color: var(--accent);
+        }
+        .btn-quick-guru:hover i {
+            color: white;
+        }
     </style>
 </head>
 <body>
@@ -554,12 +582,13 @@
         </div>
         
         <div class="sidebar-menu" id="sidebar-nav">
+            <span class="sidebar-section" style="padding: 10px 20px 4px; font-size: 11px; font-weight: 700; color: #a3c4b5; text-transform: uppercase;"><i class="fa-solid fa-chalkboard-user"></i> Menu Guru</span>
             <a href="/dashboard-guru" class="menu-item active">
                 <i class="fa-solid fa-house"></i> Dashboard
             </a>
             <a href="/kelola-kelas" class="menu-item"><i class="fa-solid fa-chalkboard"></i> Kelola Kelas</a>
             <a href="/kelola-anak" class="menu-item">
-                <i class="fa-solid fa-user-group"></i> Kelola Anak
+                <i class="fa-solid fa-children"></i> Kelola Anak
             </a>
             <a href="/kelola-jadwal" class="menu-item">
                 <i class="fa-solid fa-calendar-days"></i> Kelola Jadwal
@@ -568,7 +597,7 @@
                 <i class="fa-solid fa-utensils"></i> Kelola Menu
             </a>
             <a href="/kelola-logbook" class="menu-item">
-                <i class="fa-solid fa-book"></i> Kelola Logbook
+                <i class="fa-solid fa-book-bookmark"></i> Kelola Logbook
             </a>
         </div>
 
@@ -636,14 +665,14 @@
             <!-- Left Column -->
             <div class="left-col">
                 <div class="card">
-                    <h3>Kegiatan Hari ini</h3>
+                    <h3><i class="fa-solid fa-calendar-day" style="color:var(--accent);margin-right:8px;"></i>Kegiatan Hari ini</h3>
                     <div class="table-container">
                         <table>
                             <thead>
                                 <tr>
-                                    <th>Waktu</th>
-                                    <th>Kegiatan</th>
-                                    <th>Keterangan</th>
+                                    <th><i class="fa-regular fa-clock"></i> Waktu</th>
+                                    <th><i class="fa-solid fa-list-check"></i> Kegiatan</th>
+                                    <th><i class="fa-regular fa-comment-dots"></i> Keterangan</th>
                                 </tr>
                             </thead>
                             <tbody id="tbody-jadwal">
@@ -656,7 +685,7 @@
                 <!-- Menu Makan Minggu ini -->
                 <div class="card">
                     <div style="display: flex; justify-content: space-between; align-items: center; padding: 18px 24px 12px; border-bottom: 1px solid #f3f4f6;">
-                        <h3 style="margin: 0; font-size: 16px; color: var(--text-dark);">Menu Makan Minggu ini</h3>
+                        <h3 style="margin: 0; font-size: 16px; color: var(--text-dark);"><i class="fa-solid fa-utensils" style="color:var(--accent);margin-right:8px;"></i>Menu Makan Minggu ini</h3>
                         <a href="/kelola-menu" class="btn-kelola-menu" style="text-decoration: none; display: inline-flex; align-items: center; gap: 8px;">
                             <i class="fa-solid fa-pen-to-square"></i> Kelola Menu
                         </a>
@@ -665,10 +694,10 @@
                         <table>
                             <thead>
                                 <tr>
-                                    <th style="width: 100px;">Hari</th>
-                                    <th style="width: 65px; text-align: center;">Foto</th>
-                                    <th>Menu</th>
-                                    <th>Keterangan</th>
+                                    <th style="width: 100px;"><i class="fa-regular fa-calendar"></i> Hari</th>
+                                    <th style="width: 65px; text-align: center;"><i class="fa-solid fa-camera"></i> Foto</th>
+                                    <th><i class="fa-solid fa-bowl-food"></i> Menu</th>
+                                    <th><i class="fa-regular fa-comment-dots"></i> Keterangan</th>
                                 </tr>
                             </thead>
                             <tbody id="tbody-menu-makan">
@@ -683,7 +712,7 @@
             <div class="right-col">
                 <div class="card">
                     <div style="display: flex; justify-content: space-between; align-items: center; padding: 20px 24px 14px;">
-                        <h3 style="margin: 0;" id="title-doc-dashboard">Dokumentasi Hari ini</h3>
+                        <h3 style="margin: 0;" id="title-doc-dashboard"><i class="fa-solid fa-images" style="color:var(--accent);margin-right:8px;"></i>Dokumentasi Hari ini</h3>
                         <a href="/kelola-logbook" style="font-size: 12px; font-weight: 600; color: #124b3c; text-decoration: none;">
                             Buka Logbook <i class="fa-solid fa-arrow-right"></i>
                         </a>

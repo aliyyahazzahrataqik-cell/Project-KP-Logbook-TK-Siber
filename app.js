@@ -1344,6 +1344,23 @@ app.delete('/api/users/:id', requireRole('admin'), (req, res) => {
     });
 });
 
+// PUT /api/users/:id/reset-password (admin only)
+app.put('/api/users/:id/reset-password', requireRole('admin'), async (req, res) => {
+    const { password_baru } = req.body;
+    if (!password_baru || password_baru.length < 4) {
+        return res.status(400).json({ error: 'Password baru minimal 4 karakter' });
+    }
+    try {
+        const hashed = await bcrypt.hash(password_baru, 10);
+        db.query(`UPDATE users SET password = ? WHERE id_user = ?`, [hashed, req.params.id], (err) => {
+            if (err) return res.status(500).json({ error: 'Gagal mereset password akun' });
+            res.json({ success: true, message: 'Password akun berhasil direset!' });
+        });
+    } catch(e) {
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
 // ===================== API ORANG TUA (READ-ONLY) =====================
 
 function requireApiOrtu(req, res, next) {

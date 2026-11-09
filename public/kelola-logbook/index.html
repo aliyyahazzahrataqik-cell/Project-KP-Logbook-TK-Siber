@@ -1080,7 +1080,7 @@
             </a>
             <a href="/kelola-kelas" class="menu-item"><i class="fa-solid fa-chalkboard"></i> Kelola Kelas</a>
             <a href="/kelola-anak" class="menu-item">
-                <i class="fa-solid fa-user-group"></i> Kelola Anak
+                <i class="fa-solid fa-children"></i> Kelola Anak
             </a>
             <a href="/kelola-jadwal" class="menu-item">
                 <i class="fa-solid fa-calendar-days"></i> Kelola Jadwal
@@ -1089,7 +1089,7 @@
                 <i class="fa-solid fa-utensils"></i> Kelola Menu
             </a>
             <a href="/kelola-logbook" class="menu-item active">
-                <i class="fa-solid fa-book"></i> Kelola Logbook
+                <i class="fa-solid fa-book-bookmark"></i> Kelola Logbook
             </a>
         </nav>
 
@@ -1177,12 +1177,12 @@
                 <table>
                     <thead>
                         <tr>
-                            <th style="width: 160px;">Tanggal</th>
-                            <th style="width: 90px;">Kelas</th>
-                            <th>Pembelajaran</th>
-                            <th style="width: 110px;">Dokumentasi</th>
-                            <th style="width: 110px;">Catatan anak</th>
-                            <th style="width: 220px; text-align: center;">Aksi</th>
+                            <th style="width: 160px;"><i class="fa-regular fa-calendar"></i> Tanggal</th>
+                            <th style="width: 90px;"><i class="fa-solid fa-graduation-cap"></i> Kelas</th>
+                            <th><i class="fa-solid fa-book-open"></i> Pembelajaran</th>
+                            <th style="width: 110px;"><i class="fa-solid fa-camera"></i> Dokumentasi</th>
+                            <th style="width: 110px;"><i class="fa-solid fa-comment-dots"></i> Catatan anak</th>
+                            <th style="width: 220px; text-align: center;"><i class="fa-solid fa-gear"></i> Aksi</th>
                         </tr>
                     </thead>
                     <tbody id="tbody-logbook">
@@ -1457,7 +1457,7 @@ let kegiatanCounter = 0;
 
 function bukaModalTambah() {
     document.getElementById('modal-title').textContent = 'Tambah Logbook Baru';
-    document.getElementById('btn-simpan').textContent = 'Simpan';
+    document.getElementById('btn-simpan').innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Simpan';
     document.getElementById('input-id-logbook').value = '';
     document.getElementById('input-tanggal').value = new Date().toISOString().split('T')[0];
     document.getElementById('input-kelas').value = '';
@@ -1473,7 +1473,7 @@ function bukaModalTambah() {
 
 async function bukaModalEdit(id) {
     document.getElementById('modal-title').textContent = 'Edit Logbook';
-    document.getElementById('btn-simpan').textContent = 'Perbarui';
+    document.getElementById('btn-simpan').innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Perbarui';
     hideAlerts();
 
     try {

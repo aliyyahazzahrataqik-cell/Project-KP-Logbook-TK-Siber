@@ -576,7 +576,7 @@
         </div>
 
         <nav class="sidebar-menu" id="sidebar-nav">
-            <span class="sidebar-section">Menu Utama</span>
+            <span class="sidebar-section"><i class="fa-solid fa-layer-group"></i> Menu Utama</span>
             <a href="/dashboard-admin" class="menu-item active">
                 <i class="fa-solid fa-gauge-high"></i> Dashboard
             </a>
@@ -589,18 +589,18 @@
             <a href="/kelola-menu" class="menu-item">
                 <i class="fa-solid fa-utensils"></i> Kelola Menu
             </a>
-            <span class="sidebar-section">Akademik</span>
+            <span class="sidebar-section"><i class="fa-solid fa-graduation-cap"></i> Akademik</span>
             <a href="/kelola-kelas" class="menu-item">
                 <i class="fa-solid fa-chalkboard"></i> Kelola Kelas
             </a>
             <a href="/kelola-anak" class="menu-item">
-                <i class="fa-solid fa-user-group"></i> Kelola Anak
+                <i class="fa-solid fa-children"></i> Kelola Anak
             </a>
             <a href="/kelola-jadwal" class="menu-item">
                 <i class="fa-solid fa-calendar-days"></i> Kelola Jadwal
             </a>
             <a href="/kelola-logbook" class="menu-item">
-                <i class="fa-solid fa-book-open"></i> Kelola Logbook
+                <i class="fa-solid fa-book-bookmark"></i> Kelola Logbook
             </a>
         </nav>
 
@@ -670,10 +670,11 @@
                             <th><i class="fa-solid fa-user"></i> Pengguna</th>
                             <th><i class="fa-solid fa-shield-halved"></i> Peran</th>
                             <th><i class="fa-regular fa-clock"></i> Terdaftar</th>
+                            <th style="width: 70px; text-align: center;"><i class="fa-solid fa-gear"></i> Aksi</th>
                         </tr>
                     </thead>
                     <tbody id="tbody-users">
-                        <tr><td colspan="3" style="text-align:center;color:#9ca3af;padding:30px;">
+                        <tr><td colspan="4" style="text-align:center;color:#9ca3af;padding:30px;">
                             <i class="fa-solid fa-spinner fa-spin"></i> Memuat data akun...
                         </td></tr>
                     </tbody>
@@ -807,12 +808,17 @@
                                     <i class="fa-solid ${icon}"></i> ${roleLabel[u.role] || u.role}
                                 </span>
                             </td>
-                            <td>${new Date(u.created_at).toLocaleDateString('id-ID')}</td>
+                            <td style="color: #6b7280; font-size: 13px;">${new Date(u.created_at).toLocaleDateString('id-ID')}</td>
+                            <td style="text-align: center;">
+                                <a href="/kelola-akun" title="Kelola Akun ${escapeHtml(u.username)}" style="width: 32px; height: 32px; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; background: #e0f2fe; color: #0284c7; text-decoration: none; border: 1px solid #bae6fd; transition: all 0.15s ease;">
+                                    <i class="fa-solid fa-arrow-right"></i>
+                                </a>
+                            </td>
                         </tr>
                     `;
                 }).join('');
             } catch(e) {
-                document.getElementById('tbody-users').innerHTML = `<tr><td colspan="3" style="text-align:center;color:#ef4444;padding:30px;">Gagal memuat data</td></tr>`;
+                document.getElementById('tbody-users').innerHTML = `<tr><td colspan="4" style="text-align:center;color:#ef4444;padding:30px;">Gagal memuat data</td></tr>`;
             }
         }
 
