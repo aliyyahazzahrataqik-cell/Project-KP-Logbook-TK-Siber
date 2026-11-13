@@ -46,7 +46,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 app.use(session({
-    secret: 'itales-secret-key-2026',
+    secret: 'labsmart-secret-key-2026',
     resave: false,
     saveUninitialized: false,
     cookie: { maxAge: 1000 * 60 * 60 * 8 } // 8 jam
@@ -107,6 +107,16 @@ db.query("SHOW COLUMNS FROM menu_makan LIKE 'foto'", (err, rows) => {
         db.query("ALTER TABLE menu_makan ADD COLUMN foto VARCHAR(255) NULL AFTER keterangan", (alterErr) => {
             if (alterErr) console.error("Gagal menambahkan kolom foto ke menu_makan:", alterErr.message);
             else console.log("Kolom foto berhasil ditambahkan ke menu_makan! 📸");
+        });
+    }
+});
+
+// Auto-alter tabel anak untuk kolom tanggal_lahir jika belum ada
+db.query("SHOW COLUMNS FROM anak LIKE 'tanggal_lahir'", (err, rows) => {
+    if (!err && rows && rows.length === 0) {
+        db.query("ALTER TABLE anak ADD COLUMN tanggal_lahir DATE NULL AFTER jenis_kelamin", (alterErr) => {
+            if (alterErr) console.error("Gagal menambahkan kolom tanggal_lahir ke anak:", alterErr.message);
+            else console.log("Kolom tanggal_lahir berhasil ditambahkan ke tabel anak! 📅");
         });
     }
 });
@@ -344,7 +354,14 @@ app.post('/login', (req, res) => {
         const user = results[0];
 
         // 4. Verifikasi Password
-        const valid = await bcrypt.compare(password, user.password);
+        let valid = await bcrypt.compare(password, user.password);
+        // Fleksibilitas untuk login orang tua (misal tanggal lahir berformat 15-01-2020 atau 15/01/2020 menjadi 15012020)
+        if (!valid && password) {
+            const cleanNumeric = password.replace(/[^0-9]/g, '');
+            if (cleanNumeric.length === 8 && cleanNumeric !== password) {
+                valid = await bcrypt.compare(cleanNumeric, user.password);
+            }
+        }
         if (!valid) {
             const failRecord = recordFailedAttempt(rateKey);
             if (failRecord.lockedUntil) {
@@ -741,16 +758,17 @@ app.get('/api/anak', requireRole('admin', 'guru'), (req, res) => {
 
 // POST /api/anak
 app.post('/api/anak', requireRole('admin', 'guru'), (req, res) => {
-    const { nama_lengkap, nama_panggilan, nisn, jenis_kelamin, id_kelas } = req.body;
+    const { nama_lengkap, nama_panggilan, nisn, jenis_kelamin, tanggal_lahir, id_kelas } = req.body;
     if (!nama_lengkap || !nisn || !jenis_kelamin || !id_kelas) {
         return res.status(400).json({ error: 'Data tidak lengkap' });
     }
 
     const panggilanFix = (nama_panggilan || nama_lengkap.split(' ')[0] || 'anak').trim();
+    const dobFix = (tanggal_lahir && String(tanggal_lahir).trim()) ? String(tanggal_lahir).trim() : null;
 
     db.query(
-        `INSERT INTO anak (nama_lengkap, nama_panggilan, nisn, jenis_kelamin, id_kelas) VALUES (?, ?, ?, ?, ?)`,
-        [nama_lengkap, panggilanFix, nisn, jenis_kelamin, id_kelas],
+        `INSERT INTO anak (nama_lengkap, nama_panggilan, nisn, jenis_kelamin, tanggal_lahir, id_kelas) VALUES (?, ?, ?, ?, ?, ?)`,
+        [nama_lengkap, panggilanFix, nisn, jenis_kelamin, dobFix, id_kelas],
         async (err, result) => {
             if (err) {
                 if (err.code === 'ER_DUP_ENTRY') return res.status(400).json({ error: 'NISN sudah terdaftar' });
@@ -759,7 +777,20 @@ app.post('/api/anak', requireRole('admin', 'guru'), (req, res) => {
 
             const idAnakBaru = result.insertId;
 
-            // Otomatis buatkan akun orang tua dengan username & password awal = nama panggilan
+            // Password awal orang tua otomatis dari tanggal lahir anak (format DDMMYYYY), fallback ke nama panggilan
+            let defaultPw = panggilanFix.toLowerCase();
+            if (dobFix) {
+                const parts = dobFix.split('-');
+                if (parts.length === 3) {
+                    const [y, m, d] = parts;
+                    defaultPw = `${d.padStart(2, '0')}${m.padStart(2, '0')}${y}`;
+                } else {
+                    const clean = dobFix.replace(/[^0-9]/g, '');
+                    if (clean.length === 8) defaultPw = clean;
+                }
+            }
+
+            // Otomatis buatkan akun orang tua dengan username = nama panggilan, password = tanggal lahir
             try {
                 let baseUsername = panggilanFix.toLowerCase().replace(/[^a-z0-9]/g, '');
                 if (!baseUsername) baseUsername = `ortu${idAnakBaru}`;
@@ -770,35 +801,36 @@ app.post('/api/anak', requireRole('admin', 'guru'), (req, res) => {
                         finalUsername = `${baseUsername}${idAnakBaru}`;
                     }
 
-                    const defaultHash = await bcrypt.hash(panggilanFix.toLowerCase(), 10);
+                    const defaultHash = await bcrypt.hash(defaultPw, 10);
                     db.query(
                         `INSERT INTO users (username, password, role, id_anak) VALUES (?, ?, 'orang_tua', ?)`,
                         [finalUsername, defaultHash, idAnakBaru],
                         (insUErr) => {
                             if (insUErr) console.error('Gagal auto-create akun ortu:', insUErr.message);
-                            else console.log(`Akun ortu otomatis dibuat: ${finalUsername} / ${panggilanFix.toLowerCase()}`);
+                            else console.log(`Akun ortu otomatis dibuat: ${finalUsername} / ${defaultPw}`);
                         }
                     );
                 });
             } catch (e) { }
 
-            res.json({ success: true, id: idAnakBaru, username_ortu: panggilanFix.toLowerCase() });
+            res.json({ success: true, id: idAnakBaru, username_ortu: panggilanFix.toLowerCase(), password_ortu: defaultPw });
         }
     );
 });
 
 // PUT /api/anak/:id
 app.put('/api/anak/:id', requireRole('admin', 'guru'), (req, res) => {
-    const { nama_lengkap, nama_panggilan, nisn, jenis_kelamin, id_kelas } = req.body;
+    const { nama_lengkap, nama_panggilan, nisn, jenis_kelamin, tanggal_lahir, id_kelas } = req.body;
     if (!nama_lengkap || !nisn || !jenis_kelamin || !id_kelas) {
         return res.status(400).json({ error: 'Data tidak lengkap' });
     }
 
     const panggilanFix = (nama_panggilan || nama_lengkap.split(' ')[0] || '').trim();
+    const dobFix = (tanggal_lahir && String(tanggal_lahir).trim()) ? String(tanggal_lahir).trim() : null;
 
     db.query(
-        `UPDATE anak SET nama_lengkap=?, nama_panggilan=?, nisn=?, jenis_kelamin=?, id_kelas=? WHERE id_anak=?`,
-        [nama_lengkap, panggilanFix, nisn, jenis_kelamin, id_kelas, req.params.id],
+        `UPDATE anak SET nama_lengkap=?, nama_panggilan=?, nisn=?, jenis_kelamin=?, tanggal_lahir=?, id_kelas=? WHERE id_anak=?`,
+        [nama_lengkap, panggilanFix, nisn, jenis_kelamin, dobFix, id_kelas, req.params.id],
         (err) => {
             if (err) {
                 if (err.code === 'ER_DUP_ENTRY') return res.status(400).json({ error: 'NISN sudah terdaftar' });
@@ -1709,5 +1741,5 @@ function autoSeedLogbook() {
 app.listen(PORT, () => {
     autoSeedUsers();
     autoSeedLogbook();
-    console.log(`Server iTales berjalan di http://localhost:${PORT} 🚀`);
+    console.log(`Server LABSMART berjalan di http://localhost:${PORT} 🚀`);
 });

@@ -5,8 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description"
-        content="Dashboard Orang Tua – iTales TK SIBER. Pantau kegiatan dan perkembangan anak Anda.">
-    <title>Dashboard Orang Tua – iTales</title>
+        content="Dashboard Orang Tua – LABSMART (Labschool Management and Academic Record Technology). Pantau kegiatan dan perkembangan anak Anda.">
+    <title>Dashboard Orang Tua – LABSMART</title>
     <link rel="icon" type="image/png" href="/assets/Logo_uin.png">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -663,6 +663,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            flex-shrink: 0;
         }
 
         .modal-header h2 {
@@ -690,7 +691,14 @@
             display: flex;
             flex-direction: column;
             gap: 18px;
+            flex: 1;
+            min-height: 0;
         }
+
+        .modal-body::-webkit-scrollbar { width: 6px; }
+        .modal-body::-webkit-scrollbar-track { background: #f1f5f3; }
+        .modal-body::-webkit-scrollbar-thumb { background: #c2d6ce; border-radius: 4px; }
+        .modal-body::-webkit-scrollbar-thumb:hover { background: #124b3c; }
 
         .modal-section-title {
             font-size: 13px;
@@ -820,10 +828,10 @@
     <!-- ===== SIDEBAR ===== -->
     <div class="sidebar">
         <div class="sidebar-brand">
-            <img src="/assets/Logo_uin.png" alt="Logo TK Siber"
-                onerror="this.src='https://ui-avatars.com/api/?name=TK&background=18302b&color=fff'">
+            <img src="/assets/Logo_uin.png" alt="Logo LABSMART"
+                onerror="this.src='https://ui-avatars.com/api/?name=LABSMART&background=18302b&color=fff'">
             <div class="brand-text">
-                <h2>TK SIBER</h2>
+                <h2>LABSMART</h2>
                 <p id="sidebar-role-label">Portal Orang Tua</p>
             </div>
         </div>

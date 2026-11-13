@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kelola Anak – TK SIBER (iTales)</title>
+    <title>Kelola Siswa – LABSMART</title>
     <link rel="icon" type="image/png" href="/assets/Logo_uin.png">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -559,6 +559,10 @@
             box-shadow: 0 25px 60px rgba(0, 0, 0, 0.2);
             overflow: hidden;
             animation: modalPop 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+            display: flex;
+            flex-direction: column;
+            max-height: 90vh;
+            margin: auto;
         }
 
         @keyframes modalPop {
@@ -580,6 +584,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            flex-shrink: 0;
         }
 
         .modal-header h2 {
@@ -608,7 +613,15 @@
             display: flex;
             flex-direction: column;
             gap: 18px;
+            overflow-y: auto;
+            flex: 1;
+            min-height: 0;
         }
+
+        .modal-body::-webkit-scrollbar { width: 6px; }
+        .modal-body::-webkit-scrollbar-track { background: #f1f5f3; }
+        .modal-body::-webkit-scrollbar-thumb { background: #c2d6ce; border-radius: 4px; }
+        .modal-body::-webkit-scrollbar-thumb:hover { background: #124b3c; }
 
         .form-group {
             display: flex;
@@ -680,6 +693,7 @@
             justify-content: flex-end;
             gap: 10px;
             padding: 0 28px 24px;
+            flex-shrink: 0;
         }
 
         .btn-batal {
@@ -751,10 +765,10 @@
     <!-- ===== SIDEBAR ===== -->
     <aside class="sidebar">
         <div class="sidebar-brand">
-            <img src="/assets/Logo_uin.png" alt="Logo TK Siber"
-                onerror="this.src='https://ui-avatars.com/api/?name=TK&background=18302b&color=fff'">
+            <img src="/assets/Logo_uin.png" alt="Logo LABSMART"
+                onerror="this.src='https://ui-avatars.com/api/?name=LABSMART&background=18302b&color=fff'">
             <div class="brand-text">
-                <h2>TK SIBER</h2>
+                <h2>LABSMART</h2>
                 <p id="sidebar-role-label">Ruang Pendidik</p>
             </div>
         </div>
@@ -928,8 +942,13 @@
                 <div class="form-group">
                     <label for="input-panggilan">Nama Panggilan Siswa *</label>
                     <input type="text" id="input-panggilan" placeholder="Contoh: Fatih" autocomplete="off">
-                    <span class="hint">Nama panggilan otomatis digunakan sebagai username & password awal akun orang
-                        tua.</span>
+                    <span class="hint">Nama panggilan otomatis digunakan sebagai username login akun orang tua.</span>
+                </div>
+
+                <div class="form-group">
+                    <label for="input-tanggal-lahir">Tanggal Lahir Siswa *</label>
+                    <input type="date" id="input-tanggal-lahir" required>
+                    <span class="hint">Tanggal lahir otomatis menjadi password awal akun orang tua (format DDMMYYYY, contoh: 15012020).</span>
                 </div>
 
                 <div class="form-group">
@@ -1108,7 +1127,10 @@
                         <td><span class="nisn-pill">${anak.nisn || '-'}</span></td>
                         <td>
                             <strong style="color: #124b3c; font-size: 14px;">${anak.nama_lengkap}</strong>
-                            ${anak.nama_panggilan ? `<span style="display:block; font-size:12px; color:#5a7366; font-weight:500;">Panggilan: <strong style="color:#1d5c45;">${anak.nama_panggilan}</strong> (User Ortu: <em>${anak.nama_panggilan.toLowerCase()}</em>)</span>` : ''}
+                            <div style="font-size: 12px; color: #5a7366; margin-top: 2px; line-height: 1.4;">
+                                ${anak.nama_panggilan ? `<span>Panggilan: <strong style="color: #1d5c45;">${anak.nama_panggilan}</strong> (User: <em>${anak.nama_panggilan.toLowerCase()}</em>)</span>` : ''}
+                                ${anak.tanggal_lahir ? `<span style="display:block; color:#374151; margin-top:2px;"><i class="fa-regular fa-calendar" style="margin-right:4px; color:#1d5c45;"></i>Lahir: <strong>${formatTglIndo(anak.tanggal_lahir)}</strong> · PW: <code style="background:#eef5f1; color:#124b3c; padding:1px 6px; border-radius:4px; font-weight:700;">${formatPwDob(anak.tanggal_lahir)}</code></span>` : ''}
+                            </div>
                         </td>
                         <td>${genderBadge}</td>
                         <td><span class="badge badge-kelas">${kelasNama}</span></td>
@@ -1129,6 +1151,22 @@
             footerCount.textContent = `Menampilkan ${data.length} dari ${listAnak.length} siswa`;
         }
 
+        function formatTglIndo(tglStr) {
+            if (!tglStr) return '-';
+            const d = new Date(tglStr);
+            if (isNaN(d.getTime())) return tglStr;
+            return d.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
+        }
+
+        function formatPwDob(tglStr) {
+            if (!tglStr) return '-';
+            const parts = tglStr.split('T')[0].split('-');
+            if (parts.length === 3) {
+                return `${parts[2]}${parts[1]}${parts[0]}`;
+            }
+            return tglStr.replace(/[^0-9]/g, '');
+        }
+
         // Handler pilihan gender radio
         function pilihGender(gender) {
             genderTerpilih = gender;
@@ -1143,6 +1181,7 @@
             document.getElementById('input-id-anak').value = '';
             document.getElementById('input-nama').value = '';
             document.getElementById('input-panggilan').value = '';
+            document.getElementById('input-tanggal-lahir').value = '';
             document.getElementById('input-nisn').value = '';
             document.getElementById('input-kelas').value = '';
             pilihGender('');
@@ -1161,6 +1200,7 @@
             document.getElementById('input-id-anak').value = anak.id_anak;
             document.getElementById('input-nama').value = anak.nama_lengkap;
             document.getElementById('input-panggilan').value = anak.nama_panggilan || '';
+            document.getElementById('input-tanggal-lahir').value = anak.tanggal_lahir ? anak.tanggal_lahir.split('T')[0] : '';
             document.getElementById('input-nisn').value = anak.nisn;
             document.getElementById('input-kelas').value = anak.id_kelas || (anak.nama_kelas === 'TK A' ? '1' : '2');
             pilihGender(anak.jenis_kelamin);
@@ -1175,7 +1215,7 @@
         function showAlert(tipe, pesan) {
             sembunyikanAlert();
             const el = document.getElementById(`modal-alert-${tipe}`);
-            el.textContent = pesan;
+            el.innerHTML = pesan;
             el.style.display = 'block';
         }
 
@@ -1189,6 +1229,7 @@
             const id = document.getElementById('input-id-anak').value;
             const nama = document.getElementById('input-nama').value.trim();
             const nama_panggilan = document.getElementById('input-panggilan').value.trim();
+            const tanggal_lahir = document.getElementById('input-tanggal-lahir').value;
             const nisn = document.getElementById('input-nisn').value.trim();
             const id_kelas = document.getElementById('input-kelas').value;
             const jenis_kelamin = genderTerpilih;
@@ -1196,6 +1237,7 @@
             // Validasi input
             if (!nama) return showAlert('error', 'Nama lengkap siswa wajib diisi!');
             if (!nama_panggilan) return showAlert('error', 'Nama panggilan siswa wajib diisi!');
+            if (!tanggal_lahir) return showAlert('error', 'Tanggal lahir siswa wajib diisi!');
             if (!nisn) return showAlert('error', 'NISN wajib diisi!');
             if (!jenis_kelamin) return showAlert('error', 'Silakan pilih jenis kelamin!');
             if (!id_kelas) return showAlert('error', 'Silakan pilih kelas!');
@@ -1209,7 +1251,7 @@
                     const res = await fetch(`/api/anak/${id}`, {
                         method: 'PUT',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ nama_lengkap: nama, nama_panggilan, nisn, jenis_kelamin, id_kelas })
+                        body: JSON.stringify({ nama_lengkap: nama, nama_panggilan, tanggal_lahir, nisn, jenis_kelamin, id_kelas })
                     });
                     const result = await res.json();
                     if (!res.ok) {
@@ -1222,7 +1264,7 @@
                     const res = await fetch('/api/anak', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ nama_lengkap: nama, nama_panggilan, nisn, jenis_kelamin, id_kelas })
+                        body: JSON.stringify({ nama_lengkap: nama, nama_panggilan, tanggal_lahir, nisn, jenis_kelamin, id_kelas })
                     });
                     const result = await res.json();
                     if (!res.ok) {
@@ -1230,7 +1272,7 @@
                         btn.textContent = 'Simpan Data';
                         return showAlert('error', result.error || 'Gagal menambah data siswa');
                     }
-                    showAlert('success', `Siswa berhasil ditambahkan! Akun ortu otomatis dibuat: ${result.username_ortu || nama_panggilan.toLowerCase()}`);
+                    showAlert('success', `Siswa berhasil ditambahkan! Akun ortu otomatis: Username <strong>${result.username_ortu || nama_panggilan.toLowerCase()}</strong> | Password <strong>${result.password_ortu || formatPwDob(tanggal_lahir)}</strong>`);
                 }
 
                 // Muat ulang data terbaru langsung dari database

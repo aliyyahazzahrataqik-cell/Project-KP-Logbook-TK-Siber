@@ -1,5 +1,6 @@
 /**
- * TK SIBER (iTales) - UNIFIED SIDEBAR & USER SESSION MANAGER
+ * LABSMART - Labschool Management and Academic Record Technology
+ * UNIFIED SIDEBAR & USER SESSION MANAGER
  * Menjamin keseragaman navigasi, ikon lengkap, warna, logo, dan hak akses di seluruh halaman.
  */
 

@@ -1,5 +1,5 @@
 /**
- * iTales - Client-side Image Auto Compression Helper
+ * LABSMART - Client-side Image Auto Compression Helper
  * Otomatis mengompresi ukuran file dan dimensi foto sebelum diunggah ke server
  */
 function compressImage(file, options = {}) {

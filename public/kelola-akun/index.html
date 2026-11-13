@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kelola Akun – iTales Admin</title>
+    <title>Kelola Akun – LABSMART</title>
     <link rel="icon" type="image/png" href="/assets/Logo_uin.png">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -436,6 +436,8 @@
             z-index: 1000;
             align-items: center;
             justify-content: center;
+            padding: 20px;
+            overflow-y: auto;
         }
 
         .modal-overlay.active {
@@ -450,6 +452,10 @@
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.18);
             animation: modalIn 0.22s ease;
             overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            max-height: 90vh;
+            margin: auto;
         }
 
         @keyframes modalIn {
@@ -468,6 +474,7 @@
             background: var(--accent-light);
             padding: 22px 28px;
             border-bottom: 1px solid #c9e3c4;
+            flex-shrink: 0;
         }
 
         .modal-header h2 {
@@ -487,7 +494,15 @@
             display: flex;
             flex-direction: column;
             gap: 18px;
+            overflow-y: auto;
+            flex: 1;
+            min-height: 0;
         }
+
+        .modal-body::-webkit-scrollbar { width: 6px; }
+        .modal-body::-webkit-scrollbar-track { background: #f1f5f3; }
+        .modal-body::-webkit-scrollbar-thumb { background: #c2d6ce; border-radius: 4px; }
+        .modal-body::-webkit-scrollbar-thumb:hover { background: #124b3c; }
 
         .form-group {
             display: flex;
@@ -534,6 +549,7 @@
             justify-content: flex-end;
             gap: 10px;
             padding: 0 28px 26px;
+            flex-shrink: 0;
         }
 
         .btn-batal {
@@ -593,10 +609,10 @@
     <!-- SIDEBAR -->
     <div class="sidebar">
         <div class="sidebar-brand">
-            <img src="/assets/Logo_uin.png" alt="Logo TK Siber"
-                onerror="this.src='https://ui-avatars.com/api/?name=TK&background=18302b&color=fff'">
+            <img src="/assets/Logo_uin.png" alt="Logo LABSMART"
+                onerror="this.src='https://ui-avatars.com/api/?name=LABSMART&background=18302b&color=fff'">
             <div class="brand-text">
-                <h2>TK SIBER</h2>
+                <h2>LABSMART</h2>
                 <p id="sidebar-role-label">Panel Administrator</p>
             </div>
         </div>
@@ -838,7 +854,12 @@
                 sel.innerHTML = `<option value="" disabled selected>Pilih anak...</option>` +
                     semuaAnak.map(a => {
                         const panggilan = (a.nama_panggilan || (a.nama_lengkap ? a.nama_lengkap.split(' ')[0] : 'anak')).toLowerCase().replace(/\s+/g, '');
-                        return `<option value="${a.id_anak}" data-nisn="${a.nisn}" data-panggilan="${panggilan}">${a.nama_lengkap} (Panggilan: ${a.nama_panggilan || '-'}) – ${a.nama_kelas}</option>`;
+                        let dobPw = '';
+                        if (a.tanggal_lahir) {
+                            const parts = a.tanggal_lahir.split('T')[0].split('-');
+                            if (parts.length === 3) dobPw = `${parts[2]}${parts[1]}${parts[0]}`;
+                        }
+                        return `<option value="${a.id_anak}" data-nisn="${a.nisn}" data-panggilan="${panggilan}" data-dob="${dobPw}">${a.nama_lengkap} (Panggilan: ${a.nama_panggilan || '-'}) – ${a.nama_kelas}</option>`;
                     }).join('');
             } catch (e) { }
         }
@@ -910,19 +931,20 @@
             const isOrtu = role === 'orang_tua';
             document.getElementById('group-anak').style.display = isOrtu ? 'block' : 'none';
             document.getElementById('hint-username').textContent = isOrtu
-                ? 'Untuk orang tua, username & password awal otomatis menggunakan nama panggilan anak.'
+                ? 'Untuk orang tua: Username nama panggilan anak, Password awal tanggal lahir (DDMMYYYY).'
                 : '';
         }
 
-        // Auto-isi username & password dengan nama panggilan anak saat dipilih
+        // Auto-isi username & password dengan nama panggilan anak & tanggal lahir saat dipilih
         document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('input-anak').addEventListener('change', function () {
                 const opt = this.options[this.selectedIndex];
                 if (opt && opt.dataset.panggilan) {
                     const uname = opt.dataset.panggilan;
+                    const pw = opt.dataset.dob || uname;
                     document.getElementById('input-username').value = uname;
-                    document.getElementById('input-password').value = uname;
-                    document.getElementById('input-confirm').value = uname;
+                    document.getElementById('input-password').value = pw;
+                    document.getElementById('input-confirm').value = pw;
                 }
             });
 
